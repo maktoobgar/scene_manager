@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://addons/scene_manager/menu.gd" type="Script" id=1]
 [ext_resource path="res://addons/scene_manager/label.tscn" type="PackedScene" id=2]
+[ext_resource path="res://addons/scene_manager/scene_manager.gd" type="Script" id=3]
 
 [node name="margin_container" type="MarginContainer"]
 anchor_right = 1.0
@@ -10,6 +11,7 @@ custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10
 custom_constants/margin_bottom = 10
+script = ExtResource( 3 )
 
 [node name="container" type="VBoxContainer" parent="."]
 margin_left = 10.0
@@ -26,7 +28,7 @@ dialog_autowrap = true
 
 [node name="list" type="VBoxContainer" parent="container"]
 margin_right = 280.0
-margin_bottom = 156.0
+margin_bottom = 140.0
 custom_constants/separation = 10
 script = ExtResource( 1 )
 
@@ -77,6 +79,7 @@ margin_bottom = 30.0
 rect_min_size = Vector2( 0, 30 )
 size_flags_horizontal = 3
 size_flags_vertical = 2
+disabled = true
 text = "Save"
 
 [connection signal="button_up" from="MarginContainer/VBoxContainer/HBoxContainer/refresh" to="container/list" method="_on_refresh_button_up"]
