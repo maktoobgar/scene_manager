@@ -1,0 +1,5 @@
+#!env/bin/python
+
+print("""\n✨ Thanks for your Contribution ✨\n""")
+
+sys.exit(0)

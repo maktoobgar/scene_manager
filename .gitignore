@@ -1,0 +1,10 @@
+# env
+env
+.env
+venv
+
+# godot
+.tmp
+
+# vscode
+.vscode

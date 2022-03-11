@@ -1,0 +1,16 @@
+#!env/bin/python
+# Save CHANGELOG
+
+import os
+
+if os.path.isfile('.commit'):
+
+    os.system('rm .commit')
+
+    print("\nRecommit to add CHANGELOG.rst changes to the same commit:\n\n")
+
+    os.system("git add CHANGELOG.rst")
+    os.system("git commit --amend --no-edit")
+
+
+exit(0)

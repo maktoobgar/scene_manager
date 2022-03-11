@@ -1,0 +1,91 @@
+#!env/bin/python
+# Conventional Commit Check and sticker set
+
+import sys, re
+
+f = open(sys.argv[1], 'r')
+messages = f.readlines()
+message = ""
+for m in messages:
+    if m[0] != "#" and m[0] != "\n":
+        message += m
+message = message.strip()
+f.close()
+
+if len(message) == 0:
+    print('no commit message provided')
+    sys.exit(1)
+
+# Check if it is formatted before or not
+if message[0] in ['🎉', '🐛', '🔧', '📖', '🚀', '✨', '✅', '😬']:
+    sys.exit(0)
+
+did_pass = re.fullmatch(r"^((feat|fix|refactor|docs|perf|style|test|¯\\_\(ツ\)_/¯)(\(\w+(\-\w+)?\))?(!)?(: (.*\s*)*))|(: merge (.*\s*)*)|(: initial commit$)", message)
+# https://stackoverflow.com/a/62293234/14967240
+
+if not did_pass:
+    print("""your commit message does not follow this repositories `Conventional Commit` check:
+
+feat|fix|refactor|docs|perf|style|test(optional): <necessary description>|merge <what to what>|initial commit""")
+    sys.exit(1)
+
+first = messages[0].split(':')[0].split('(')[0]
+sticker = ""
+if first == "feat":
+    sticker = "🎉 "
+elif first == "fix":
+    sticker = "🐛 "
+elif first == "refactor":
+    sticker = "🔧 "
+elif first == "docs":
+    sticker = "📖 "
+elif first == "perf":
+    sticker = "🚀 "
+elif first == "style":
+    sticker = "✨ "
+elif first == "test":
+    sticker = "✅ "
+elif "¯\_(ツ)_/¯" in messages[0]:
+    sticker = "😬 "
+else:
+    print('how are we here? please don\'t change the script')
+    sys.exit(1)
+message = message.replace(first, sticker + first, 1)
+
+if first == "feat" or first == "fix" or first == "perf" or first == "test":
+
+    try:
+        f = open('CHANGELOG.rst', 'r')
+        contents = f.readlines()
+        content = ""
+        for c in contents:
+            content += c
+        f.close()
+
+        if message in content:
+            print("formatted commit message:\n\n" + message + "\n")
+        
+        else:
+            content = content.replace("UNRELEASED\n----------\n\n", f"UNRELEASED\n----------\n\n* {message}\n")
+
+            f = open('CHANGELOG.rst', 'w')
+            f.write(content)
+            f.close()
+
+            print("formatted commit message:\n\n" + message + "\n\nChangelog updated.\n")
+
+        f = open('.commit', 'w')
+        f.write("")
+        f.close()
+    except:
+        print("There was a problem when I tried to update CHANGELOG.rst file.\nPlease restore every changes you made to the file with `git restore CHANGELOG.rst`.")
+        sys.exit(1)
+
+else:
+    print("formatted commit message:\n\n" + message + "\n")
+
+f = open(sys.argv[1], 'w')
+f.write(message)
+f.close()
+
+sys.exit(0)
