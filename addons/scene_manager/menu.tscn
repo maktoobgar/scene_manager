@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/scene_manager/menu.gd" type="Script" id=1]
+[ext_resource path="res://addons/scene_manager/label.tscn" type="PackedScene" id=2]
+
+[node name="margin_container" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="container" type="VBoxContainer" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 290.0
+margin_bottom = 590.0
+custom_constants/separation = 10
+
+[node name="accept_dialog" type="AcceptDialog" parent="container"]
+margin_right = 280.0
+margin_bottom = 590.0
+window_title = "Error"
+dialog_autowrap = true
+
+[node name="list" type="VBoxContainer" parent="container"]
+margin_right = 280.0
+margin_bottom = 156.0
+custom_constants/separation = 10
+script = ExtResource( 1 )
+
+[node name="_title" type="HBoxContainer" parent="container/list"]
+margin_right = 280.0
+margin_bottom = 20.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="container/list/_title"]
+margin_right = 20.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+
+[node name="key" parent="container/list/_title" instance=ExtResource( 2 )]
+margin_left = 30.0
+margin_right = 150.0
+text = "Key:"
+
+[node name="value" parent="container/list/_title" instance=ExtResource( 2 )]
+margin_left = 160.0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_left = 10.0
+margin_top = 560.0
+margin_right = 290.0
+margin_bottom = 590.0
+size_flags_vertical = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_right = 280.0
+margin_bottom = 30.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+margin_right = 280.0
+margin_bottom = 30.0
+custom_constants/separation = 10
+
+[node name="refresh" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_right = 135.0
+margin_bottom = 30.0
+size_flags_horizontal = 3
+text = "Refresh"
+
+[node name="save" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+margin_left = 145.0
+margin_right = 280.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+size_flags_vertical = 2
+text = "Save"
+
+[connection signal="button_up" from="MarginContainer/VBoxContainer/HBoxContainer/refresh" to="container/list" method="_on_refresh_button_up"]
+[connection signal="button_up" from="MarginContainer/VBoxContainer/HBoxContainer/save" to="container/list" method="_on_save_button_up"]

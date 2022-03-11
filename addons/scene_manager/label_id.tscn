@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="id" type="Label"]
+margin_right = 20.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+size_flags_horizontal = 0
+text = "01"
+align = 1
+valign = 1

@@ -8,3 +8,6 @@ venv
 
 # vscode
 .vscode
+
+# scene manager
+scenes.json
