@@ -11,3 +11,5 @@ Under development...
 * [X] Refresh button added
 * [X] List duplication check added
 * [X] Save button (enable disable) automation feature added
+* [X] New change_scene function added
+* [X] Scroll to scene objects added
