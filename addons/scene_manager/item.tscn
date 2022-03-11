@@ -29,5 +29,6 @@ margin_right = 280.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 custom_styles/normal = ExtResource( 3 )
+editable = false
 
 [connection signal="text_changed" from="key" to="." method="_on_key_value_text_changed"]

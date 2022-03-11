@@ -138,7 +138,7 @@ func get_duplications(new_key: String, except: Node) -> Node:
 	return null
 
 func check_if_saved_values_are_same_with_view():
-	var save_button: Button = get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
+	var save_button: Button = get_parent().get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
 	var loaded_scenes = load_scenes(PATH)
 	var view_scenes = get_scenes_from_view()
 	if len(loaded_scenes) != len(view_scenes):
@@ -158,5 +158,5 @@ func all_nodes_to_default_theme():
 
 func _on_save_button_up():
 	save_scenes(PATH, get_scenes_from_view())
-	var save_button: Button = get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
+	var save_button: Button = get_parent().get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
 	save_button.disabled = true
