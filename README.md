@@ -9,3 +9,5 @@ Under development...
 * [X] Main tool menu structure added
 * [X] Save button added
 * [X] Refresh button added
+* [X] List duplication check added
+* [X] Save button (enable disable) automation feature added
