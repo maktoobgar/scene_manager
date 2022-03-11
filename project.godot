@@ -13,9 +13,17 @@ config_version=4
 config/name="Scene Manager"
 config/icon="res://icon.png"
 
+[autoload]
+
+SceneManager="*res://addons/scene_manager/menu.tscn"
+
 [display]
 
 window/size/width=300
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/scene_manager/plugin.cfg" )
 
 [physics]
 

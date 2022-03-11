@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🐛 fix: bug fix on scene_manager.gd script
 * 🎉 feat: scroll added
 * 🎉 feat: change_scene function added
 * 🎉 feat: duplication check and active inactive automation for save button added
