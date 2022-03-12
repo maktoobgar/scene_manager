@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: demo added
 * 🐛 fix: bug fix on scene_manager.gd script
 * 🎉 feat: scroll added
 * 🎉 feat: change_scene function added
