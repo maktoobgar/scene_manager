@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: general use case transition system added
 
 1.0.1 (2022-03-12)
 ------------------

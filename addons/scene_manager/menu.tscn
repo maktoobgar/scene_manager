@@ -37,7 +37,7 @@ dialog_autowrap = true
 
 [node name="list" type="VBoxContainer" parent="VBoxContainer/ScrollContainer/container"]
 margin_right = 280.0
-margin_bottom = 200.0
+margin_bottom = 230.0
 custom_constants/separation = 10
 script = ExtResource( 1 )
 

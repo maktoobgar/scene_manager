@@ -32,5 +32,6 @@ custom_fonts/font = SubResource( 2 )
 text = "CLICK ME"
 script = ExtResource( 1 )
 scene = "scene1"
+color = Color( 0.298039, 0.670588, 0.831373, 1 )
 
 [connection signal="button_up" from="CenterContainer/button" to="CenterContainer/button" method="_on_button_up"]

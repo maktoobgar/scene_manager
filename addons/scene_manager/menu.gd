@@ -3,21 +3,22 @@ extends Control
 
 const PATH: String = "res://scenes.json"
 const ROOT_ADDRESS = "res://"
-var id: int = 1
-var normal_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
-var duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
 
-func absolute_current_working_directory() -> String:
+onready var _id: int = 1
+onready var _normal_style_box_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
+onready var _root: Node = get_parent().get_parent().get_parent().get_parent()
+
+func _absolute_current_working_directory() -> String:
 	return ProjectSettings.globalize_path(Directory.new().get_current_dir())
 
-func merge_dict(dest: Dictionary, source: Dictionary) -> void:
+func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 	for key in source:
 		if dest.has(key):
 			var dest_value = dest[key]
 			var source_value = source[key]
 			if typeof(dest_value) == TYPE_DICTIONARY:       
 				if typeof(source_value) == TYPE_DICTIONARY: 
-					merge_dict(dest_value, source_value)  
+					_merge_dict(dest_value, source_value)  
 				else:
 					dest[key] = source_value
 			else:
@@ -25,7 +26,7 @@ func merge_dict(dest: Dictionary, source: Dictionary) -> void:
 		else:
 			dest[key] = source[key]
 
-func get_scenes(root_path: String) -> Dictionary:
+func _get_scenes(root_path: String) -> Dictionary:
 	var files: Dictionary = {}
 	var folders: Array = []
 	var dir = Directory.new()
@@ -44,58 +45,58 @@ func get_scenes(root_path: String) -> Dictionary:
 		dir.list_dir_end()
 
 		for folder in folders:
-			var new_files: Dictionary = get_scenes(root_path + folder + "/")
+			var new_files: Dictionary = _get_scenes(root_path + folder + "/")
 			if len(new_files) != 0:
-				merge_dict(files, new_files)
+				_merge_dict(files, new_files)
 	else:
 		print("Couldn't open ", root_path)
 
 	return files
 
-func clear_scenes() -> void:
-	id = 1
+func _clear_scenes() -> void:
+	_id = 1
 	while get_child_count() > 1:
 		get_child(1).remove_and_skip()
 
-func add_item(key: String, value: String) -> void:
+func _add_item(key: String, value: String) -> void:
 	var item = preload("res://addons/scene_manager/item.tscn").instance()
-	item.set_id(String(id))
+	item.set_id(String(_id))
 	item.set_key(key)
 	item.set_value(value)
 	add_child(item)
-	id += 1
+	_id += 1
 
 func _on_refresh_button_up() -> void:
-	clear_scenes()
-	var data: Dictionary = load_scenes(PATH)
-	var scenes: Dictionary = get_scenes(ROOT_ADDRESS)
+	_clear_scenes()
+	var data: Dictionary = _load_scenes(PATH)
+	var scenes: Dictionary = _get_scenes(ROOT_ADDRESS)
 	var scenes_values: Array = scenes.values()
 	for key in data:
 		if !(data[key] in scenes_values):
 			continue
-		add_item(key, data[key])
+		_add_item(key, data[key])
 
 	var data_values: Array = []
 	if data:
 		data_values = data.values()
 	for key in scenes:
 		if !(scenes[key] in data_values):
-			add_item(key, scenes[key])
+			_add_item(key, scenes[key])
 	check_if_saved_values_are_same_with_view()
 
 func _ready() -> void:
 	_on_refresh_button_up()
 
-func save_scenes(address: String, data: Dictionary) -> void:
+func _save_scenes(address: String, data: Dictionary) -> void:
 	var file = File.new()
 	file.open(address, File.WRITE)
 	file.store_var(to_json(data))
 	file.close()
 
-func load_scenes(address: String) -> Dictionary:
+func _load_scenes(address: String) -> Dictionary:
 	var data: Dictionary = {}
 
-	if file_exists(address):
+	if _file_exists(address):
 		var file = File.new()
 		file.open(address, File.READ)
 		data = parse_json(file.get_var())
@@ -103,10 +104,10 @@ func load_scenes(address: String) -> Dictionary:
 
 	return data
 
-func file_exists(address: String) -> bool:
+func _file_exists(address: String) -> bool:
 	return Directory.new().file_exists(address)
 
-func get_scenes_from_view() -> Dictionary:
+func _get_scenes_from_view() -> Dictionary:
 	var data: Dictionary = {}
 	for i in range(get_child_count()):
 		if i == 0: continue
@@ -115,7 +116,7 @@ func get_scenes_from_view() -> Dictionary:
 
 	return data
 
-func get_scene_nodes_from_view(except: Node = null) -> Array:
+func _get_scene_nodes_from_view(except: Node = null) -> Array:
 	var nodes: Array = []
 	for i in range(get_child_count()):
 		if i == 0: continue
@@ -126,16 +127,16 @@ func get_scene_nodes_from_view(except: Node = null) -> Array:
 	return nodes
 
 func get_duplications(new_key: String, except: Node) -> Node:
-	for node in get_scene_nodes_from_view(except):
+	for node in _get_scene_nodes_from_view(except):
 		if node.get_key() == new_key:
 			return node
 
 	return null
 
 func check_if_saved_values_are_same_with_view():
-	var save_button: Button = get_parent().get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
-	var loaded_scenes = load_scenes(PATH)
-	var view_scenes = get_scenes_from_view()
+	var save_button: Button = _root.find_node("save")
+	var loaded_scenes = _load_scenes(PATH)
+	var view_scenes = _get_scenes_from_view()
 	if len(loaded_scenes) != len(view_scenes):
 		save_button.disabled = false
 		return
@@ -146,12 +147,12 @@ func check_if_saved_values_are_same_with_view():
 	save_button.disabled = true
 
 func all_nodes_to_default_theme():
-	for node in get_scene_nodes_from_view():
+	for node in _get_scene_nodes_from_view():
 		node = node.get_key_node()
-		node.add_stylebox_override("normal", normal_line_edit)
-		node.add_stylebox_override("focus", normal_line_edit)
+		node.add_stylebox_override("normal", _normal_style_box_line_edit)
+		node.add_stylebox_override("focus", _normal_style_box_line_edit)
 
 func _on_save_button_up():
-	save_scenes(PATH, get_scenes_from_view())
-	var save_button: Button = get_parent().get_parent().get_parent().get_node("MarginContainer/VBoxContainer/HBoxContainer/save")
+	_save_scenes(PATH, _get_scenes_from_view())
+	var save_button: Button = _root.find_node("save")
 	save_button.disabled = true
