@@ -14,6 +14,7 @@ Under development...
 * [X] New change_scene function added
 * [X] Scroll to scene objects added
 * [X] Demo added
+* [X] Memory performance happened
 
 ## How To Use?
 
