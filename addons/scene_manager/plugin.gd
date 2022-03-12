@@ -4,7 +4,7 @@ extends EditorPlugin
 var menu: Node
 
 func _enter_tree():
-	add_autoload_singleton("SceneManager", "res://addons/scene_manager/menu.tscn")
+	add_autoload_singleton("SceneManager", "res://addons/scene_manager/scene_manager.gd")
 	menu = preload("res://addons/scene_manager/menu.tscn").instance()
 	menu.name = "Scene Manager"
 

@@ -6,7 +6,6 @@ const ROOT_ADDRESS = "res://"
 var id: int = 1
 var normal_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
 var duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
-var menu_data: Dictionary = {}
 
 func absolute_current_working_directory() -> String:
 	return ProjectSettings.globalize_path(Directory.new().get_current_dir())
@@ -66,9 +65,6 @@ func add_item(key: String, value: String) -> void:
 	add_child(item)
 	id += 1
 
-func update_menu_variable(data: Dictionary) -> void:
-	menu_data = data
-
 func _on_refresh_button_up() -> void:
 	clear_scenes()
 	var data: Dictionary = load_scenes(PATH)
@@ -86,7 +82,6 @@ func _on_refresh_button_up() -> void:
 		if !(scenes[key] in data_values):
 			add_item(key, scenes[key])
 	check_if_saved_values_are_same_with_view()
-	update_menu_variable(data)
 
 func _ready() -> void:
 	_on_refresh_button_up()

@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🚀 perf: now just a single node opens up as singleton autorun
 
 1.0.0 (2022-03-12)
 ------------------
