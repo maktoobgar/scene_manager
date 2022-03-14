@@ -15,6 +15,7 @@ Under development...
 * [X] Scroll to scene objects added
 * [X] Demo added
 * [X] Memory performance happened
+* [X] Scene transitions added
 
 ## How To Use?
 
@@ -58,24 +59,32 @@ The only amount of written code for this demo is just 6 lines:
 extends Button
 
 export(String) var scene
+export(float) var fade_out_speed = 1
+export(float) var fade_in_speed = 1
+export(Color) var color = Color(0, 0, 0)
+export(float) var timeout = 0
 
 func _ready() -> void:
 	# code break happens if scene is not recognizable
 	SceneManager.validate_key(scene)
 
 func _on_button_up():
-	SceneManager.change_scene(scene)
-```
+	var scene_options = SceneManager.create_options(fade_out_speed, fade_in_speed, color, timeout)
+	SceneManager.change_scene(scene, scene_options)
 
-1. SceneManager.validate_key(scene):
-   * This function does validate the scene you have written inside exported `scene` variable and if this scene key does not exist in the dictionary of tool, code will break and inform you about problem.
-2. SceneManager.change_scene(scene):
-   * Simply just changes the scene.
+```
 
 ## SceneManager
 
 This is the node you use inside your game code and it has these functions:
-1. validate_key(key: String) -> void:
+1. `validate_key`(key: String) -> void:
    * Checks and validate the key you will to use. (breaks game if key doesn't exist)
-2. change_scene(key: String) -> void:
+2. `change_scene`(key: String, options: Options) -> void:
    * Changes scene if key is valid, otherwise nothing happens.
+   * options is a bunch of options you can put in to customize your transitions and you can create that `Options` object by calling `create_options` function.
+3. `create_options`(fade_out_speed: float, fade_in_speed: float, color: Color, timeout: float = 0) -> Options:
+   * Creates Options object for `change_scene` function.
+   * fade_out_speed(second) = speed of going to black screen.
+   * fade_in_speed(second) = speed of going to next scene from black screen.
+   * color = color of screen which is between current scene and next scene. (It's color is black by default)
+   * timeout(second) = between this scene and next scene, there would be a gap which can take much longer that usual(default is 0) by your choice by changing this option.
