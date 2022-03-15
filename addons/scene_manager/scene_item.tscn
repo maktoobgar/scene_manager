@@ -2,7 +2,7 @@
 
 [ext_resource path="res://addons/scene_manager/themes/line_edit_normal.tres" type="StyleBox" id=1]
 [ext_resource path="res://addons/scene_manager/scene_item.gd" type="Script" id=2]
-[ext_resource path="res://addons/scene_manager/label_id.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" type="Texture" id=3]
 
 [node name="item" type="HBoxContainer"]
 margin_right = 280.0
@@ -14,21 +14,30 @@ __meta__ = {
 "_edit_group_": true
 }
 
-[node name="id" parent="." instance=ExtResource( 3 )]
+[node name="popup_button" type="Button" parent="."]
+margin_right = 28.0
+margin_bottom = 22.0
+icon = ExtResource( 3 )
 
 [node name="key" type="LineEdit" parent="."]
-margin_left = 30.0
-margin_right = 150.0
-margin_bottom = 20.0
+margin_left = 38.0
+margin_right = 154.0
+margin_bottom = 22.0
 size_flags_horizontal = 3
 custom_styles/normal = ExtResource( 1 )
 
 [node name="value" type="LineEdit" parent="."]
-margin_left = 160.0
+margin_left = 164.0
 margin_right = 280.0
-margin_bottom = 20.0
+margin_bottom = 22.0
 size_flags_horizontal = 3
 custom_styles/normal = ExtResource( 1 )
 editable = false
 
+[node name="popup_menu" type="PopupMenu" parent="."]
+margin_right = 20.0
+margin_bottom = 20.0
+
+[connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]
 [connection signal="text_changed" from="key" to="." method="_on_key_value_text_changed"]
+[connection signal="index_pressed" from="popup_menu" to="." method="_on_popup_menu_index_pressed"]

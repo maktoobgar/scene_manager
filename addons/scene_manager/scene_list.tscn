@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/scene_manager/label.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/scene_manager/scene_list.gd" type="Script" id=2]
+
+[node name="scenes" type="ScrollContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 2 )
+
+[node name="container" type="VBoxContainer" parent="."]
+margin_right = 300.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+custom_constants/separation = 10
+
+[node name="_title" type="HBoxContainer" parent="container"]
+margin_right = 300.0
+margin_bottom = 20.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="container/_title"]
+margin_right = 28.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 28, 20 )
+align = 1
+valign = 1
+
+[node name="key" parent="container/_title" instance=ExtResource( 1 )]
+margin_left = 38.0
+margin_right = 164.0
+text = "Key:"
+
+[node name="value" parent="container/_title" instance=ExtResource( 1 )]
+margin_left = 174.0
+margin_right = 300.0
