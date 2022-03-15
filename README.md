@@ -16,6 +16,7 @@ Under development...
 * [X] Demo added
 * [X] Memory performance happened
 * [X] Scene transitions added
+* [X] Ignore folder added in tool
 
 ## How To Use?
 
