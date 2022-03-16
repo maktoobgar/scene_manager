@@ -17,6 +17,8 @@ Under development...
 * [X] Memory performance happened
 * [X] Scene transitions added
 * [X] Ignore folder added in tool
+* [X] Categorization added in tool
+* [X] Ignore folder section can hide optionally
 
 ## How To Use?
 
@@ -31,22 +33,30 @@ Under development...
 
 ## Tool View
 
-This is the tool that you will see on your right side of the godot editor after activating `scene_manager` plugin:
+This is the tool that you will see on your right side of the godot editor after activating `scene_manager` plugin. By **Add Category** button under scenes categories you can create new categories.
 
 <p align="center">
 <img src="images/tool.png"/>
 </p>
 
 ### Double key checker:
-If editing of a scene key causes two keys of two different scenes match, both of them will get red color and you have to fix the duplication, otherwise the plugin does not work properly as you expect it to work.
+If editing of a scene key causes at least two keys of another scene match, both of them will get red color and you have to fix the duplication, otherwise the plugin does not work properly as you expect it to work.
 
 <p align="center">
 <img src="images/tool_double_key.png"/>
 </p>
 
+### Ignore Folder:
+
+Every folder that is added inside this section will be ignored and scenes inside them will not get included inside scenes categories section(the section above this section).
+
+<p align="center">
+<img src="images/ignore.png"/>
+</p>
+
 ## Demo
 
-The only amount of written code for this demo is just 6 lines:
+The only amount of written code for this demo is just 10 lines:
 
 <p align="center">
 <img src="./images/demo.gif"/>
