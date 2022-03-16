@@ -1,10 +1,9 @@
 tool
 extends HBoxContainer
 
-onready var _duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
 onready var _root: Node = self
 onready var _popup_menu: PopupMenu = find_node("popup_menu")
-onready var _sections: Array = []
+onready var _key: String = get_node("key").text
 
 func _ready() -> void:
 	while true:
@@ -15,6 +14,7 @@ func _ready() -> void:
 func set_key(text: String) -> void:
 	get_node("key").text = text
 	name = text
+	_key = text
 
 func set_value(text: String) -> void:
 	get_node("value").text = text
@@ -25,27 +25,12 @@ func get_key() -> String:
 func get_value() -> String:
 	return get_node("value").text
 
-func get_id() -> String:
-	return get_node("id").text
-
 func get_key_node() -> Node:
 	return get_node("key")
 
-func get_sections() -> Array:
-	return _sections
-
-func set_sections(secs: Array) -> void:
-	_sections = secs
-
-func _on_key_value_text_changed(new_text):
-	pass
-#	var duplications = _root.get_duplications()
-#	_root.all_nodes_to_default_theme()
-#	if duplications != []:
-#		for node in duplications:
-#			var key_line_edit: LineEdit = node.get_key_node()
-#			key_line_edit.add_stylebox_override("normal", _duplicate_line_edit)
-#			key_line_edit.add_stylebox_override("focus", _duplicate_line_edit)
+func custom_set_theme(theme: StyleBox) -> void:
+	get_key_node().add_stylebox_override("normal", theme)
+	get_key_node().add_stylebox_override("focus", theme)
 
 func _on_popup_button_button_up():
 	var i: int = 0
@@ -55,16 +40,27 @@ func _on_popup_button_button_up():
 		if value == "All":
 			continue
 		_popup_menu.add_check_item(value)
-		_popup_menu.set_item_checked(i, value in _sections)
+		_popup_menu.set_item_checked(i, value in _root.get_section(get_value()))
 		i += 1
 	if i == 0:
 		return
 	_popup_menu.popup(Rect2(get_global_mouse_position(), _popup_menu.rect_size))
 
 func _on_popup_menu_index_pressed(index: int):
+	_popup_menu.set_item_checked(index, !_popup_menu.is_item_checked(index))
 	if _popup_menu.is_item_checked(index):
-		_sections.append(_popup_menu.get_item_text(index))
-		_root.add_scene_to_list(_popup_menu.get_item_text(index))
+		_root.add_scene_to_list(_popup_menu.get_item_text(index), get_key(), get_value())
 	else:
-		_sections.remove(_sections.find(_popup_menu.get_item_text(index)))
-		_root.remove_scene_from_list(_popup_menu.get_item_text(index))
+		_root.remove_scene_from_list(_popup_menu.get_item_text(index), get_key(), get_value())
+
+func _on_key_value_text_changed() -> void:
+	_root.update_all_scene_with_key(_key, get_key(), get_value(), get_parent().get_parent())
+
+func _on_key_gui_input(event: InputEvent):
+	if len(get_key()) == 0:
+		set_key(_key)
+		return
+	if event is InputEventKey && event.is_pressed():
+		_on_key_value_text_changed()
+		_key = get_key()
+		_root.check_duplication()

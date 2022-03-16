@@ -7,6 +7,8 @@ const ROOT_ADDRESS = "res://"
 onready var _normal_style_box_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
 onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
 onready var _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
+onready var _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
+onready var _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
 onready var _ignore_list: Node = self.find_node("ignore_list")
 onready var _save_button: Button = self.find_node("save")
 onready var _refresh_button: Button = self.find_node("refresh")
@@ -16,6 +18,9 @@ onready var _category_name_line_edit: LineEdit = self.find_node("category_name")
 onready var _address_line_edit: LineEdit = self.find_node("address")
 onready var _file_dialog: FileDialog = self.find_node("file_dialog")
 onready var _tab_container: TabContainer = self.find_node("tab_container")
+onready var _hide_button: Button = self.find_node("hide")
+onready var _ignores_container: Node = self.find_node("ignores")
+onready var _sections: Dictionary = {}
 
 signal delete_ignore_child(node)
 
@@ -41,10 +46,12 @@ func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 		else:
 			dest[key] = source[key]
 
-func get_all_lists_names() -> Array:
+func get_all_lists_names(except: String = "") -> Array:
 	var arr: Array = []
-	for i in range(_tab_container.get_child_count()):
-		arr.append(_tab_container.get_child(i).name)
+	for node in _get_lists_nodes():
+		if node.name == except.capitalize():
+			continue
+		arr.append(node.name)
 	return arr
 
 func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
@@ -82,38 +89,49 @@ func _clear_scenes_list(name: String) -> void:
 	list.clear_scene_list()
 
 func _clear_all_lists() -> void:
-	for i in range(_tab_container.get_child_count()):
-		var child: Node = _tab_container.get_child(i)
-		child.clear_scene_list()
+	_sections = {}
+	for node in _get_lists_nodes():
+		node.clear_scene_list()
 
 func _delete_all_tabs() -> void:
-	for i in range(_tab_container.get_child_count()):
-		if _tab_container.get_child(i).name == "All":
+	for node in _get_lists_nodes():
+		if node.name == "All":
 			continue
-		_tab_container.get_child(i).queue_free()
+		node.free()
+
+func _get_lists_nodes() -> Array:
+	var arr: Array = []
+	for i in range(_tab_container.get_child_count()):
+		arr.append(_tab_container.get_child(i))
+	return arr
 
 func _get_list_by_name(name: String) -> Node:
-	for i in range(_tab_container.get_child_count()):
-		if name == _tab_container.get_child(i).name:
-			return _tab_container.get_child(i)
+	for node in _get_lists_nodes():
+		if name.capitalize() == node.name:
+			return node
 	return null
 
 func remove_scene_from_list(name: String, key: String, value: String) -> void:
 	var list: Node = _get_list_by_name(name)
 	list.remove_item(key, value)
+	_section_remove(name, value)
 
 func add_scene_to_list(name: String, key: String, value: String) -> void:
 	var list: Node = _get_list_by_name(name)
 	list.add_item(key, value)
+	_section_add(name, value)
 
 func _add_ignore_item(address: String) -> void:
 	var item = _ignore_item.instance()
 	item.set_address(address)
 	_ignore_list.add_child(item)
 
-func _append_scenes(scenes: Dictionary, list_name: String) -> void:
-	var node: Node = _get_list_by_name(list_name)
-	node.append_scenes(scenes)
+func _append_scenes(scenes: Dictionary) -> void:
+	_get_list_by_name("All").append_scenes(scenes)
+	for node in _get_lists_nodes():
+		for key in scenes:
+			if node.name in get_section(scenes[key]):
+				node.add_item(key, scenes[key])
 
 func _clear_all() -> void:
 	_delete_all_tabs()
@@ -128,16 +146,35 @@ func _reload_scenes() -> void:
 	for i in range(len(scenes_dics)):
 		scenes_values.append(scenes_dics[i])
 	for key in data:
-		if !(data[key]["value"] in scenes_values):
-			continue
-		for section in data[key]["sections"]:
-			add_scene_to_list(section, key, data[key]["value"])
+		if typeof(data[key]) == TYPE_DICTIONARY:
+			assert (
+				("value" in data[key].keys()) && ("sections" in data[key].keys()),
+				"Scene Manager Error: this version of json format is not supported. %s"%
+				"Every scene item has to have 'value' and 'sections' field inside them.'"
+			)
+		if typeof(data[key]) == TYPE_DICTIONARY:
+			if !(data[key]["value"] in scenes_values):
+				continue
+		elif typeof(data[key]) == TYPE_STRING:
+			if !(data[key] in scenes_values):
+				continue
+		if typeof(data[key]) == TYPE_DICTIONARY:
+			for section in data[key]["sections"]:
+				_section_add(section, data[key]["value"])
+				add_scene_to_list(section, key, data[key]["value"])
+		if typeof(data[key]) == TYPE_DICTIONARY:
+			add_scene_to_list("All", key, data[key]["value"])
+		elif typeof(data[key]) == TYPE_STRING:
+			add_scene_to_list("All", key, data[key])
 
 	var data_values: Array = []
 	if data:
 		var data_dics = data.values()
 		for i in range(len(data_dics)):
-			data_values.append(data_dics[i]["value"])
+			if typeof(data_dics[i]) == TYPE_DICTIONARY:
+				data_values.append(data_dics[i]["value"])
+			else:
+				data_values.append(data_dics[i])
 	for key in scenes:
 		if !(scenes[key] in data_values):
 			add_scene_to_list("All", key, scenes[key])
@@ -148,11 +185,10 @@ func _reload_ignores() -> void:
 
 func _reload_tabs() -> void:
 	var sections: Array = _load_sections(PATH)
+	if _get_list_by_name("All") == null:
+		_add_scene_list("All")
 	for section in sections:
 		_add_scene_list(section)
-	if _get_list_by_name("All") != null:
-		return
-	_add_scene_list("All")
 
 func _on_refresh_button_up() -> void:
 	_clear_all()
@@ -160,24 +196,74 @@ func _on_refresh_button_up() -> void:
 	_reload_scenes()
 	_reload_ignores()
 
+# _sections Manager
+
+func _section_add(section: String, value: String) -> void:
+	if section == "All":
+		return
+	if !_sections.has(value):
+		_sections[value] = []
+	if !(section in _sections[value]):
+		_sections[value].append(section)
+
+func _section_remove(section: String, value: String) -> void:
+	if !_sections.has(value):
+		return
+	if section in _sections[value]:
+		_sections[value].erase(section)
+	if len(_sections[value]) == 0:
+		_sections.erase(value)
+
+func get_section(value: String) -> Array:
+	if !_sections.has(value):
+		return []
+	return _sections[value]
+
+func _clean_sections() -> void:
+	var scenes: Array = get_all_lists_names("All")
+	for key in _sections:
+		var will_be_deleted: Array = []
+		for section in _sections[key]:
+			if !(section in scenes):
+				will_be_deleted.append(section)
+		for section in will_be_deleted:
+			_sections[key].erase(section)
+
+# End Of _sections Manager
+
+func update_all_scene_with_key(key: String, new_key: String, value: String, except: Node):
+	for node in _get_lists_nodes():
+		if node != except:
+			node.update_scene_with_key(key, new_key, value)
+
 func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
-	dic.erase("_ignore_list")
-	dic.erase("_sections")
+	if dic.has("_ignore_list"):
+		dic.erase("_ignore_list")
+	if dic.has("_sections"):
+		dic.erase("_sections")
 	return dic
 
 func _save_all(address: String, data: Dictionary) -> void:
 	var file = File.new()
 	file.open(address, File.WRITE)
-	file.store_var(to_json(data))
+	file.store_string(to_json(data))
 	file.close()
 
 func _load_all(address: String) -> Dictionary:
 	var data: Dictionary = {}
 
 	if _file_exists(address):
-		var file = File.new()
+		var file: File = File.new()
 		file.open(address, File.READ)
-		data = parse_json(file.get_var())
+		var string: String = file.get_as_text()
+		assert (
+			validate_json(string) == "",
+			"Scene Manager Error: `scenes.json` File is corrupted or you are comming from a lower %s"%
+			"version.\nIf you are comming from a lower version than 1.2.0, clean your %s"%
+			"`scenes.json` file to look like a clean, valid json file(like: `{data}`) %s"%
+			"and then run tool again."
+		)
+		data = parse_json(string)
 		file.close()
 	return data
 
@@ -202,12 +288,10 @@ func _file_exists(address: String) -> bool:
 func _get_scenes_from_view() -> Dictionary:
 	var list: Node = _get_list_by_name("All")
 	var data: Dictionary = {}
-	for i in range(list.get_child_count()):
-		if i == 0: continue
-		var node: Node = list.get_child(i)
+	for node in list.get_scene_nodes():
 		data[node.get_key()] = {
 			"value": node.get_value(),
-			"sections": node.get_sections(),
+			"sections": get_section(node.get_value()),
 		}
 	return data
 
@@ -221,10 +305,12 @@ func _get_scene_nodes_from_view() -> Array:
 	return nodes
 
 func _on_save_button_up():
+	_clean_sections()
 	var dic: Dictionary = _get_scenes_from_view()
 	dic["_ignore_list"] = _get_ignores_in_ignore_view()
-	dic["_sections"] = get_all_lists_names()
+	dic["_sections"] = get_all_lists_names("All")
 	_save_all(PATH, dic)
+	_on_refresh_button_up()
 
 func _get_nodes_in_ignore_view() -> Array:
 	var arr: Array = []
@@ -255,12 +341,16 @@ func _on_list_exists(address: String) -> bool:
 			return true
 	return false
 
+func _remove_scenes_begin_with(text: String):
+	for node in _get_lists_nodes():
+		node.remove_items_begins_with(text)
+
 func _on_add_button_up():
 	if _on_list_exists(_address_line_edit.text):
 		_address_line_edit.text = ""
 		return
 	_add_ignore_item(_address_line_edit.text)
-#	_remove_scenes_begin_with(_address_line_edit.text)
+	_remove_scenes_begin_with(_address_line_edit.text)
 	_address_line_edit.text = ""
 	_add_button.disabled = true
 
@@ -271,12 +361,16 @@ func _on_file_dialog_dir_file_selected(path):
 	_address_line_edit.text = path
 	_on_address_text_changed(path)
 
-func _on_delete_ignore_child(node: Node):
+func _on_delete_ignore_child(node: Node) -> void:
+	var address: String = node.get_address()
 	node.queue_free()
-#	_append_scenes(_get_scenes(node.get_address(), []))
-	yield(get_tree().create_timer(0.1), "timeout")
+	var ignores: Array = []
+	for ignore in _load_ignores(PATH):
+		if ignore.begins_with(address) && ignore != address:
+			ignores.append(ignore)
+	_append_scenes(_get_scenes(address, ignores))
 
-func _on_address_text_changed(new_text: String):
+func _on_address_text_changed(new_text: String) -> void:
 	if new_text != "":
 		var dir = Directory.new()
 		if dir.dir_exists(new_text) || dir.file_exists(new_text) && new_text.begins_with("res://"):
@@ -288,16 +382,32 @@ func _on_address_text_changed(new_text: String):
 
 func _add_scene_list(text: String) -> void:
 	var list = _scene_list_item.instance()
-	list.name = text
+	list.name = text.capitalize()
 	_tab_container.add_child(list)
 
 func _on_add_category_button_up():
 	if _category_name_line_edit.text != "":
 		_add_scene_list(_category_name_line_edit.text)
 		_category_name_line_edit.text = ""
+		_add_category_button.disabled = true
 
 func _on_category_name_text_changed(new_text):
-	if new_text == "":
-		_add_category_button.disabled = true
-	else:
+	if new_text != "" && !(new_text.capitalize() in get_all_lists_names()):
 		_add_category_button.disabled = false
+	else:
+		_add_category_button.disabled = true
+
+func check_duplication():
+	var list: Array = _get_list_by_name("All").check_duplication()
+	for node in _get_lists_nodes():
+		node.set_reset_theme_for_all()
+		if list:
+			node.set_duplicate_theme(list)
+
+func _on_hide_button_up():
+	if _ignores_container.visible:
+		_hide_button.icon = _hide_button_unchecked
+		_ignores_container.visible = false
+	else:
+		_hide_button.icon = _hide_button_checked
+		_ignores_container.visible = true

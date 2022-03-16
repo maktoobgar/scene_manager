@@ -39,5 +39,5 @@ margin_right = 20.0
 margin_bottom = 20.0
 
 [connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]
-[connection signal="text_changed" from="key" to="." method="_on_key_value_text_changed"]
+[connection signal="gui_input" from="key" to="." method="_on_key_gui_input"]
 [connection signal="index_pressed" from="popup_menu" to="." method="_on_popup_menu_index_pressed"]

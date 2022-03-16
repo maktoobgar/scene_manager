@@ -29,7 +29,15 @@ func _load_scenes(address: String) -> Dictionary:
 	_file_exists(address)
 	var file = File.new()
 	file.open(address, File.READ)
-	data = parse_json(file.get_var())
+	var data_var = file.get_as_text()
+	assert (
+		validate_json(data_var) == "",
+		"Scene Manager Error: `scenes.json` File is corrupted or you are comming from a lower %s"%
+		"version.\nIf you are comming from a lower version than 1.2.0, clean your %s"%
+		"`scenes.json` file to look like a clean, valid json file(like: `{data}`) %s"%
+		"and then run your game again."
+	)
+	data = parse_json(data_var)
 	file.close()
 
 	return data
@@ -75,7 +83,10 @@ func change_scene(key: String, options: Options) -> void:
 		_set_in_transition()
 		_fade_out(options.fade_out_speed)
 		yield(_animation_player, "animation_finished")
-		get_tree().change_scene(_menu[key])
+		if typeof(_menu[key]) == TYPE_DICTIONARY:
+			get_tree().change_scene(_menu[key]["value"])
+		else:
+			get_tree().change_scene(_menu[key])
 		yield(get_tree(), "node_added")
 		yield(get_tree().create_timer(options.timeout), "timeout")
 		_fade_in(options.fade_in_speed)
