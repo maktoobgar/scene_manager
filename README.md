@@ -1,5 +1,9 @@
 # Scene Manager
 
+<p align="center">
+<img src="icon.png"/>
+</p>
+
 A tool to manage transition between different scenes.
 
 Under development...
