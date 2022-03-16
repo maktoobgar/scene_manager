@@ -6,8 +6,6 @@
 
 A tool to manage transition between different scenes.
 
-Under development...
-
 ## Features
 
 * [X] Main tool menu structure added
