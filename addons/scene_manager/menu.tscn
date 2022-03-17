@@ -186,6 +186,13 @@ size_flags_horizontal = 3
 size_flags_vertical = 2
 text = "Save"
 
+[node name="accept_dialog" type="AcceptDialog" parent="."]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 290.0
+margin_bottom = 590.0
+dialog_autowrap = true
+
 [connection signal="text_changed" from="main_container/add_category_container/add_category_container/category_name" to="." method="_on_category_name_text_changed"]
 [connection signal="button_up" from="main_container/add_category_container/add_category_container/add_category" to="." method="_on_add_category_button_up"]
 [connection signal="dir_selected" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]

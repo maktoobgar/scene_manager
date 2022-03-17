@@ -13,7 +13,7 @@ onready var _in_transition: bool = false
 onready var _stack: Array = []
 onready var _current_scene: String = ""
 onready var _first_time: bool = true
-onready var _reserved_keys: Array = ["back", "null", "", "ignore", "refresh",
+onready var _reserved_keys: Array = ["back", "null", "ignore", "refresh",
 	"reload", "restart", "exit"]
 
 class Options:
@@ -187,7 +187,7 @@ func create_options(fade_out_speed: float = 1, fade_in_speed: float = 1,
 	return options
 
 func validate_key(key: String) -> void:
-	if key in _reserved_keys:
+	if key in _reserved_keys || !key:
 		return
 	assert(
 		_menu.has(key) == true,
@@ -207,7 +207,7 @@ func show_first_scene(options: Options) -> void:
 		_first_time = false
 
 func change_scene(key: String, options: Options) -> void:
-	if (_menu.has(key) || key in _reserved_keys) && !_in_transition:
+	if (_menu.has(key) || key in _reserved_keys || !key) && !_in_transition && !key.begins_with("_"):
 		_first_time = false
 		_set_in_transition()
 		_set_color(options.color)

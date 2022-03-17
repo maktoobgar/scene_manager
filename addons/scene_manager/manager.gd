@@ -17,10 +17,13 @@ onready var _add_category_button: Button = self.find_node("add_category")
 onready var _category_name_line_edit: LineEdit = self.find_node("category_name")
 onready var _address_line_edit: LineEdit = self.find_node("address")
 onready var _file_dialog: FileDialog = self.find_node("file_dialog")
+onready var _accept_dialog: AcceptDialog = self.find_node("accept_dialog")
 onready var _tab_container: TabContainer = self.find_node("tab_container")
 onready var _hide_button: Button = self.find_node("hide")
 onready var _ignores_container: Node = self.find_node("ignores")
 onready var _sections: Dictionary = {}
+onready var reserved_keys: Array = ["back", "null", "ignore", "refresh",
+	"reload", "restart", "exit"]
 
 signal delete_ignore_child(node)
 
@@ -53,6 +56,11 @@ func get_all_lists_names(except: String = "") -> Array:
 			continue
 		arr.append(node.name)
 	return arr
+
+func show_message(title: String, description: String) -> void:
+	_accept_dialog.window_title = title
+	_accept_dialog.dialog_text = description
+	_accept_dialog.popup_centered(Vector2(400, 100))
 
 func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 	var files: Dictionary = {}

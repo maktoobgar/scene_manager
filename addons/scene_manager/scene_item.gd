@@ -56,11 +56,22 @@ func _on_popup_menu_index_pressed(index: int):
 func _on_key_value_text_changed() -> void:
 	_root.update_all_scene_with_key(_key, get_key(), get_value(), get_parent().get_parent())
 
-func _on_key_gui_input(event: InputEvent):
-	if len(get_key()) == 0:
-		set_key(_key)
-		return
+func _show_message() -> void:
+	_root.show_message("Error", "\"%s\" and an empty string(\"\"), or every other word which will "%
+		String(_root.reserved_keys).replace("[", "").replace("]", "").replace(", ", "\", \"") +
+		"begin with an '_', are reserved or not allowed to be used as a scene key so please do not use them " +
+		"to avoid seeing weird reaction from Scene Manager tool.")
+
+func _check_reserved_keys() -> void:
+	if !get_key() || get_key().begins_with("_") || get_key() in _root.reserved_keys:
+		_show_message()
+
+func _on_key_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey && event.is_pressed():
-		_on_key_value_text_changed()
-		_key = get_key()
-		_root.check_duplication()
+		if !get_key():
+			_show_message()
+		elif get_key() != _key:
+			_check_reserved_keys()
+			_on_key_value_text_changed()
+			_key = get_key()
+			_root.check_duplication()
