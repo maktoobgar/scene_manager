@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: change to previous scene feature added, show_first_scene transition and reset_scene_manager functions added
 1.2.0 (2022-03-16)
 ------------------
 
