@@ -8,20 +8,23 @@ A tool to manage transition between different scenes.
 
 ## Features
 
-* [X] Main tool menu structure added
-* [X] Save button added
-* [X] Refresh button added
-* [X] List duplication check added
-* [X] Save button (enable disable) automation feature added
-* [X] New change_scene function added
-* [X] Scroll to scene objects added
-* [X] Demo added
-* [X] Memory performance happened
-* [X] Scene transitions added
-* [X] Ignore folder added in tool
-* [X] Categorization added in tool
+* [X] Main tool menu structure
+* [X] Save button
+* [X] Refresh button
+* [X] List duplication check
+* [X] New change_scene function
+* [X] Scroll to scene objects
+* [X] Demo
+* [X] Memory performance
+* [X] Scene transitions
+* [X] Ignore folders section
+* [X] Categorization for scenes
 * [X] Ignore folder section can hide optionally
-
+* [X] Change to previous scene
+* [X] Fully customizable transitions
+* [X] Customizable entering transition
+* [X] Reset scene manager function to reset first scene to the current scene
+* [X] Arrangeable scene categories(they will reset to alphabetic order with refresh or save button)
 ## How To Use?
 
 1. Copy and paste `scene_manager` folder which is inside `addons` folder. (don't change the `scene_manager` folder name)
@@ -58,7 +61,7 @@ Every folder that is added inside this section will be ignored and scenes inside
 
 ## Demo
 
-The only amount of written code for this demo is just 10 lines:
+The only amount of written code for this demo is just 16 lines:
 
 <p align="center">
 <img src="./images/demo.gif"/>
@@ -76,15 +79,20 @@ export(float) var fade_out_speed = 1
 export(float) var fade_in_speed = 1
 export(Color) var color = Color(0, 0, 0)
 export(float) var timeout = 0
+export(bool) var clickable = false
+onready var scene_options = SceneManager.create_options(fade_out_speed, fade_in_speed, color, timeout, clickable)
 
 func _ready() -> void:
+	var first_scene_options = SceneManager.create_options(0, 1, Color(1, 1, 1), 1, false)
+	SceneManager.show_first_scene(first_scene_options)
 	# code break happens if scene is not recognizable
 	SceneManager.validate_key(scene)
 
-func _on_button_up():
-	var scene_options = SceneManager.create_options(fade_out_speed, fade_in_speed, color, timeout)
+func _on_button_button_up():
 	SceneManager.change_scene(scene, scene_options)
 
+func _on_reset_button_up():
+	SceneManager.reset_scene_manager()
 ```
 
 ## SceneManager
@@ -95,9 +103,20 @@ This is the node you use inside your game code and it has these functions:
 2. `change_scene`(key: String, options: Options) -> void:
    * Changes scene if key is valid, otherwise nothing happens.
    * options is a bunch of options you can put in to customize your transitions and you can create that `Options` object by calling `create_options` function.
-3. `create_options`(fade_out_speed: float, fade_in_speed: float, color: Color, timeout: float = 0) -> Options:
+   * **Note**: `back` as value of scene variable, causes going back to previous scene.
+   * **Note**: `null`, `ignore` or an empty string as value of scene variable, causes nothing but just showing scene transition and does not change scenes at all.
+   * **Note**: `refresh`, `reload` or `restart` as value of scene variable, causes refreshing the current scene.
+   * **Note**: `exit` or `quit` as value of scene variable, causes exiting smoothly out of the game.
+   * **Note**: Any other value in scene variable which starts with an `_` will be ignored.
+3. `create_options`(fade_out_speed: float = 1, fade_in_speed: float = 1,
+  color: Color = BLACK, timeout: float = 0, clickable: bool = true) -> Options:
    * Creates Options object for `change_scene` function.
    * fade_out_speed(second) = speed of going to black screen.
    * fade_in_speed(second) = speed of going to next scene from black screen.
    * color = color of screen which is between current scene and next scene. (It's color is black by default)
    * timeout(second) = between this scene and next scene, there would be a gap which can take much longer that usual(default is 0) by your choice by changing this option.
+4. `show_first_scene`(options: Options) -> void:
+   * Call this method inside `_ready` function of a node with a script which that node is inside the first scene that game jumps into it and this causes to have a smooth transition into the first game scene.
+   * This function works just once at the beginning of the first game scene. After that, if you call this function again, nothing happens.
+5. `reset_scene_manager`() -> void:
+   * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
