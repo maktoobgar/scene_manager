@@ -31,6 +31,7 @@ margin_bottom = 359.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 tab_align = 0
+drag_to_rearrange_enabled = true
 
 [node name="add_category_container" type="MarginContainer" parent="main_container"]
 margin_top = 363.0

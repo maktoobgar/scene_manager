@@ -23,7 +23,7 @@ onready var _hide_button: Button = self.find_node("hide")
 onready var _ignores_container: Node = self.find_node("ignores")
 onready var _sections: Dictionary = {}
 onready var reserved_keys: Array = ["back", "null", "ignore", "refresh",
-	"reload", "restart", "exit"]
+	"reload", "restart", "exit", "quit"]
 
 signal delete_ignore_child(node)
 

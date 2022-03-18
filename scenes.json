@@ -1,1 +1,1 @@
-{"_ignore_list":["res://addons"],"_sections":["Menu","Character"],"scene1":{"sections":["Menu"],"value":"res://demo/scene1.tscn"},"scene2":{"sections":["Menu"],"value":"res://demo/scene2.tscn"},"scene3":{"sections":["Menu","Character"],"value":"res://demo/scene3.tscn"}}
+{"_ignore_list":["res://addons"],"_sections":["Character","Menu"],"scene1":{"sections":["Menu"],"value":"res://demo/scene1.tscn"},"scene2":{"sections":[],"value":"res://demo/scene2.tscn"},"scene3":{"sections":["Menu","Character"],"value":"res://demo/scene3.tscn"}}

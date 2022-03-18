@@ -14,7 +14,7 @@ onready var _stack: Array = []
 onready var _current_scene: String = ""
 onready var _first_time: bool = true
 onready var _reserved_keys: Array = ["back", "null", "ignore", "refresh",
-	"reload", "restart", "exit"]
+	"reload", "restart", "exit", "quit"]
 
 class Options:
 	# based on seconds
@@ -147,7 +147,7 @@ func _change_scene(key: String) -> bool:
 	elif key == "reload" || key == "refresh" || key == "restart":
 		return _refresh()
 
-	elif key == "exit":
+	elif key == "exit" || key == "quit":
 		get_tree().quit(0)
 
 	else:

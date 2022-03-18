@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: arrangeable scene categories
 * 🎉 feat: reserved keys will be informed to developer to avoid using them as a scene key
 * 🎉 feat: change to previous scene feature added, show_first_scene transition and reset_scene_manager functions added
 
