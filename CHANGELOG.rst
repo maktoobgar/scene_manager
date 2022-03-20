@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: shader scene transition added
 
 1.3.0 (2022-03-18)
 ------------------
