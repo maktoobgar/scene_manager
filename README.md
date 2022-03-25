@@ -26,6 +26,7 @@ A tool to manage transition between different scenes.
 * [X] Fade in and fade out with different desired patterns
 * [X] You can create instance of a scene just by calling the scene with a key
 * [X] Transition is so much customizable
+* [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file inside them,
 ## How To Use?
 
 1. Copy and paste `scene_manager` folder which is inside `addons` folder. (don't change the `scene_manager` folder name)
