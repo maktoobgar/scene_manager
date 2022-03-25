@@ -17,10 +17,6 @@ config/icon="res://icon.png"
 
 SceneManager="*res://addons/scene_manager/scene_manager.tscn"
 
-[display]
-
-window/size/width=300
-
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/scene_manager/plugin.cfg" )

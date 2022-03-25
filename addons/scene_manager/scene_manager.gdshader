@@ -1,11 +1,11 @@
 shader_type canvas_item;
 
 uniform sampler2D custom_texture;
-uniform float cutoff: hint_range(0, 1) = 0;
+uniform float cutoff: hint_range(0, 1) = 1;
 uniform float smoothness: hint_range(0, 1) = 0.1;
 uniform vec3 color = vec3(0, 0, 0);
 uniform bool inverted = false;
-uniform bool linear_fade = false;
+uniform bool linear_fade = true;
 
 void fragment() {
 	if (!linear_fade) {
