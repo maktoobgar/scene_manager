@@ -4,9 +4,15 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: folders with `.gdignore` file inside them, their scenes will be ignored from tool view
 * 🎉 feat: safe_validate_scene and safe_validate_pattern functions added
 * 🎉 feat: shader transition feature added, create_scene_instance function added, transition is so much more customizable
 * 🎉 feat: shader scene transition added
+
+.. * feat: safe_validate_scene and safe_validate_pattern functions added
+.. * feat: shader transition feature added
+.. * feat: create_scene_instance function added
+.. * feat: transition is so much more customizable
 
 1.3.0 (2022-03-18)
 ------------------

@@ -71,6 +71,8 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 	if !(root_path.substr(0, len(root_path) - 1) in ignores) && dir.open(root_path) == OK:
 		dir.list_dir_begin(true, true)
 
+		if dir.file_exists(root_path + ".gdignore"):
+			return files
 		while true:
 			var file_folder = dir.get_next()
 			if file_folder == "":
