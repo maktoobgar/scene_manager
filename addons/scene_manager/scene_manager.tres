@@ -4,7 +4,7 @@
 
 [resource]
 shader = ExtResource( 2 )
-shader_param/cutoff = 0.0
+shader_param/cutoff = 1.0
 shader_param/smoothness = 0.1
 shader_param/color = Vector3( 0, 0, 0 )
 shader_param/inverted = false

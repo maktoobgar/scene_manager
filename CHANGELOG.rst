@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: safe_validate_scene and safe_validate_pattern functions added
 * 🎉 feat: shader transition feature added, create_scene_instance function added, transition is so much more customizable
 * 🎉 feat: shader scene transition added
 

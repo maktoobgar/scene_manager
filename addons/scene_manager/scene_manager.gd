@@ -211,8 +211,7 @@ func reset_scene_manager() -> void:
 	_stack.clear()
 
 # creates options for fade_out or fade_in transition
-func create_options(fade_speed: float = 1, fade_pattern: String = "fade",
-  smoothness: float = 0.1, inverted: bool = false) -> Options:
+func create_options(fade_speed: float = 1, fade_pattern: String = "fade", smoothness: float = 0.1, inverted: bool = false) -> Options:
 	var options: Options = Options.new()
 	options.fade_speed = fade_speed
 	options.fade_pattern = fade_pattern
@@ -221,8 +220,7 @@ func create_options(fade_speed: float = 1, fade_pattern: String = "fade",
 	return options
 
 # creates options for common properties in transition
-func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0,
-  clickable: bool = true) -> GeneralOptions:
+func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0, clickable: bool = true) -> GeneralOptions:
 	var options: GeneralOptions = GeneralOptions.new()
 	options.color = color
 	options.timeout = timeout
@@ -231,20 +229,27 @@ func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0,
 
 # validates passed scene key
 func validate_scene(key: String) -> void:
-	if key in _reserved_keys || !key:
-		return
 	assert(
-		_menu.has(key) == true,
+		key in _reserved_keys || !key || _menu.has(key) == true,
 		"Scene Manager Error: `%s` key for scene is not recognized, please double check."% key
 	)
+
+# validates passed scene key
+func safe_validate_scene(key: String) -> bool:
+	return key in _reserved_keys || !key || _menu.has(key) == true
 
 # validates passed pattern key
 func validate_pattern(key: String) -> void:
 	assert(
 		key in _patterns || key == "fade" || key == "",
 		"Scene Manager Error: `%s` key for shader pattern is not recognizable, please double check."% key + "%s"%
-		"\n Acceptable keys are %s"% String(_patterns.keys()) + " %s"% "and 'fade'."
+		"\nAcceptable keys are \"%s\""% 
+		String(_patterns.keys()).replace("[", "").replace("]", "").replace(", ", "\", \"") + " %s"% ", \"fade\"."
 	)
+
+# validates passed pattern key
+func safe_validate_pattern(key: String) -> bool:
+	return key in _patterns || key == "fade" || key == ""
 
 # makes a fade_in transition for the first loaded scene in the game
 func show_first_scene(fade_in_options: Options, general_options: GeneralOptions) -> void:
