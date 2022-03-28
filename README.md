@@ -9,7 +9,7 @@ A tool to manage transition between different scenes.
 ## Features
 
 * [X] A fully responsive tool menu structure to manage and categorize your scene
-* [X] Save button that saves all scenes in a json format
+* [X] Save button that saves all scenes in a dictionary
 * [X] Refresh button that refreshes the tool with latest saved status of the scenes
 * [X] List duplication check for keys
 * [X] Smooth transition between scenes
@@ -26,7 +26,7 @@ A tool to manage transition between different scenes.
 * [X] Fade in and fade out with different desired patterns
 * [X] You can create instance of a scene just by calling the scene with a key
 * [X] Transition is so much customizable
-* [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file inside them,
+* [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file inside them
 ## How To Use?
 
 1. Copy and paste `scene_manager` folder which is inside `addons` folder. (don't change the `scene_manager` folder name)
@@ -35,9 +35,7 @@ A tool to manage transition between different scenes.
 4. After you are done with managing your scenes, always **save** your changes so that your changes have effect inside your actual game.
 
 **Note**: After activating `Scene Manager` tool, you have access to **SceneManager** script globally from anywhere in your scripts and you can use it to change scenes and ... (for more information, read [SceneManager](#scenemanager) section)
-**Note**: This tool saves your scenes data inside `res://scenes.json` file, if you want to have your latest changes and avoid redefining your scene keys, do not remove it.
-
-**Note**: Surely do not ignore `res://scenes.json` file from your git tool.
+**Note**: This tool saves your scenes data inside `res://addons/scene_manager/scenes.gd` file, if you want to have your latest changes and avoid redefining your scene keys, **do not** remove it, **do not** change it or modify it in anyway.
 
 ## Tool View
 
@@ -157,5 +155,5 @@ This is the node you use inside your game code and it has these functions:
    * **general_options** = creates it by calling `create_general_options` function.
 9. `reset_scene_manager`() -> void:
    * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
-10. `create_scene_instance`(**key**: String) -> PackedScene:
+10. `create_scene_instance`(**key**: String) -> Node:
    * Creates an instance of the passed scene **key** variable. (if **key** is not right, code breaks)
