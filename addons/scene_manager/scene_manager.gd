@@ -5,7 +5,6 @@ const COLOR: String = "color"
 const NO_COLOR: String = "no_color"
 const BLACK: Color = Color(0, 0, 0)
 
-onready var _menu: Dictionary = _load_scenes("res://scenes.json")
 onready var _fade_color_rect: ColorRect = find_node("fade")
 onready var _animation_player: AnimationPlayer = find_node("animation_player")
 onready var _in_transition: bool = false
@@ -31,12 +30,14 @@ class GeneralOptions:
 # sets current scene to starting point (used for `back` functionality)
 func _set_current_scene() -> void:
 	var root_key: String = get_tree().current_scene.filename
-	for key in _menu:
-		if typeof(_menu[key]) == TYPE_DICTIONARY:
-			if _menu[key]["value"] == root_key:
+	for key in Scenes.scenes:
+		if key.begins_with("_"):
+			continue
+		if typeof(Scenes.scenes[key]) == TYPE_DICTIONARY:
+			if Scenes.scenes[key]["value"] == root_key:
 				_current_scene = key
 		else:
-			if _menu[key] == root_key:
+			if Scenes.scenes[key] == root_key:
 				_current_scene = key
 	assert (
 		_current_scene != "",
@@ -63,37 +64,6 @@ func _get_patterns() -> void:
 func _ready() -> void:
 	_set_current_scene()
 	_get_patterns()
-
-# checks if a file exists
-func _file_exists(address: String) -> void:
-	assert (
-		Directory.new().file_exists(address),
-		"Scene Manager Error: `%s` file does not exist, please save your scenes by save button in tool gui."% address
-	)
-
-# loads scenes from `scenes.json` file
-func _load_scenes(address: String) -> Dictionary:
-	_file_exists(address)
-	var file = File.new()
-	file.open(address, File.READ)
-	var data_var = file.get_as_text()
-	assert (
-		validate_json(data_var) == "",
-		"Scene Manager Error: `scenes.json` File is corrupted or you are comming from a lower %s"%
-		"version.\nIf you are comming from a lower version than 1.2.0, clean your %s"%
-		"`scenes.json` file to look like a clean, valid json file(like: `{data}` format) %s"%
-		"and then run your game again."
-	)
-
-	var data: Dictionary = parse_json(data_var)
-
-	if data.has("_ignore_list"):
-		data.erase("_ignore_list")
-	if data.has("_sections"):
-		data.erase("_sections")
-	file.close()
-
-	return data
 
 # `speed` unit is in seconds
 func _fade_in(speed: float) -> bool:
@@ -132,20 +102,20 @@ func _pop_stack() -> String:
 # changes scene to the previous scene
 func _back() -> bool:
 	var pop: String = _pop_stack()
-	if pop && typeof(_menu[pop]) == TYPE_DICTIONARY:
-		get_tree().change_scene(_menu[pop]["value"])
+	if pop && typeof(Scenes.scenes[pop]) == TYPE_DICTIONARY:
+		get_tree().change_scene(Scenes.scenes[pop]["value"])
 		return true
 	elif pop:
-		get_tree().change_scene(_menu[pop])
+		get_tree().change_scene(Scenes.scenes[pop])
 		return true
 	return false
 
 # restart the same scene
 func _refresh() -> bool:
-	if typeof(_menu[_current_scene]) == TYPE_DICTIONARY:
-		get_tree().change_scene(_menu[_current_scene]["value"])
+	if typeof(Scenes.scenes[_current_scene]) == TYPE_DICTIONARY:
+		get_tree().change_scene(Scenes.scenes[_current_scene]["value"])
 	else:
-		get_tree().change_scene(_menu[_current_scene])
+		get_tree().change_scene(Scenes.scenes[_current_scene])
 	return true
 
 # checks different states of key and make actual transitions happen
@@ -163,10 +133,10 @@ func _change_scene(key: String) -> bool:
 		get_tree().quit(0)
 
 	else:
-		if typeof(_menu[key]) == TYPE_DICTIONARY:
-			get_tree().change_scene(_menu[key]["value"])
+		if typeof(Scenes.scenes[key]) == TYPE_DICTIONARY:
+			get_tree().change_scene(Scenes.scenes[key]["value"])
 		else:
-			get_tree().change_scene(_menu[key])
+			get_tree().change_scene(Scenes.scenes[key])
 		_append_stack(key)
 		return true
 	return false
@@ -203,7 +173,7 @@ func _set_pattern(options: Options, general_options: GeneralOptions) -> void:
 # creates scene instance for in code usage
 func create_scene_instance(key: String) -> PackedScene:
 	validate_scene(key)
-	return load(_menu[key]["value"]).instance()
+	return load(Scenes.scenes[key]["value"]).instance()
 
 # resets the `_current_scene` and clears `_stack`
 func reset_scene_manager() -> void:
@@ -230,13 +200,13 @@ func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0, c
 # validates passed scene key
 func validate_scene(key: String) -> void:
 	assert(
-		key in _reserved_keys || !key || _menu.has(key) == true,
+		key in _reserved_keys || !key || Scenes.scenes.has(key) == true,
 		"Scene Manager Error: `%s` key for scene is not recognized, please double check."% key
 	)
 
 # validates passed scene key
 func safe_validate_scene(key: String) -> bool:
-	return key in _reserved_keys || !key || _menu.has(key) == true
+	return key in _reserved_keys || !key || Scenes.scenes.has(key) == true
 
 # validates passed pattern key
 func validate_pattern(key: String) -> void:
@@ -267,7 +237,7 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 
 # changes current scene to the next scene
 func change_scene(key: String, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
-	if (_menu.has(key) || key in _reserved_keys || !key) && !_in_transition && !key.begins_with("_"):
+	if (Scenes.scenes.has(key) || key in _reserved_keys || !key) && !_in_transition && !key.begins_with("_"):
 		_first_time = false
 		_set_in_transition()
 		_set_clickable(general_options.clickable)

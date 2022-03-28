@@ -16,6 +16,7 @@ config/icon="res://icon.png"
 [autoload]
 
 SceneManager="*res://addons/scene_manager/scene_manager.tscn"
+Scenes="*res://addons/scene_manager/scenes.gd"
 
 [editor_plugins]
 

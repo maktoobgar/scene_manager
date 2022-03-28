@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: your scenes now save in `addons/scene_manager/scenes.gd` and you do not need to have a file near every export
 
 1.4.0 (2022-03-25)
 ------------------

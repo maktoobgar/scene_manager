@@ -1,28 +1,43 @@
 tool
 extends MarginContainer
 
-const PATH: String = "res://scenes.json"
+# paths
+const PATH: String = "res://addons/scene_manager/scenes.gd"
 const ROOT_ADDRESS = "res://"
 
-onready var _normal_style_box_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
+# prefile
+const comment: String = "#\n# Please do not edit anything in this script\n#\n# Just use the editor to change everything you want\n#\n"
+const prefile: String = "extends Node\n\nvar scenes: Dictionary = "
+
+# scene item, ignore item
 onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
 onready var _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
+# icons
 onready var _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
 onready var _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
 onready var _ignore_list: Node = self.find_node("ignore_list")
+# add save, refresh
 onready var _save_button: Button = self.find_node("save")
 onready var _refresh_button: Button = self.find_node("refresh")
-onready var _add_button: Button = self.find_node("add")
+# add category
 onready var _add_category_button: Button = self.find_node("add_category")
 onready var _category_name_line_edit: LineEdit = self.find_node("category_name")
+# add section
+onready var _add_section_button: Button = self.find_node("add_section")
+onready var _section_name_line_edit: LineEdit = self.find_node("section_name")
+# add ignore
 onready var _address_line_edit: LineEdit = self.find_node("address")
 onready var _file_dialog: FileDialog = self.find_node("file_dialog")
-onready var _accept_dialog: AcceptDialog = self.find_node("accept_dialog")
-onready var _tab_container: TabContainer = self.find_node("tab_container")
 onready var _hide_button: Button = self.find_node("hide")
+onready var _add_button: Button = self.find_node("add")
+# containers
+onready var _tab_container: TabContainer = self.find_node("tab_container")
 onready var _ignores_container: Node = self.find_node("ignores")
-onready var _sections: Dictionary = {}
-onready var reserved_keys: Array = ["back", "null", "ignore", "refresh",
+# generals
+onready var _accept_dialog: AcceptDialog = self.find_node("accept_dialog")
+
+var _sections: Dictionary = {}
+var reserved_keys: Array = ["back", "null", "ignore", "refresh",
 	"reload", "restart", "exit", "quit"]
 
 signal delete_ignore_child(node)
@@ -256,7 +271,8 @@ func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
 func _save_all(address: String, data: Dictionary) -> void:
 	var file = File.new()
 	file.open(address, File.WRITE)
-	file.store_string(to_json(data))
+	var write_data: String = comment + prefile + to_json(data) + "\n"
+	file.store_string(write_data)
 	file.close()
 
 func _load_all(address: String) -> Dictionary:
@@ -266,6 +282,8 @@ func _load_all(address: String) -> Dictionary:
 		var file: File = File.new()
 		file.open(address, File.READ)
 		var string: String = file.get_as_text()
+		string = string.replace(comment, "").replace(prefile, "").strip_escapes()
+
 		assert (
 			validate_json(string) == "",
 			"Scene Manager Error: `scenes.json` File is corrupted or you are comming from a lower %s"%

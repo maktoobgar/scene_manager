@@ -12,13 +12,13 @@ size_flags_vertical = 3
 script = ExtResource( 2 )
 
 [node name="container" type="VBoxContainer" parent="."]
-margin_right = 300.0
+margin_right = 1024.0
 margin_bottom = 22.0
 size_flags_horizontal = 3
 custom_constants/separation = 10
 
 [node name="_title" type="HBoxContainer" parent="container"]
-margin_right = 300.0
+margin_right = 1024.0
 margin_bottom = 22.0
 custom_constants/separation = 10
 
@@ -30,13 +30,13 @@ icon = ExtResource( 3 )
 
 [node name="key" parent="container/_title" instance=ExtResource( 1 )]
 margin_left = 38.0
-margin_right = 164.0
+margin_right = 526.0
 margin_bottom = 22.0
 text = "Key:"
 
 [node name="value" parent="container/_title" instance=ExtResource( 1 )]
-margin_left = 174.0
-margin_right = 300.0
+margin_left = 536.0
+margin_right = 1024.0
 margin_bottom = 22.0
 
 [connection signal="button_up" from="container/_title/delete_list" to="." method="_on_delete_list_button_up"]
