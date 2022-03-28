@@ -171,7 +171,7 @@ func _set_pattern(options: Options, general_options: GeneralOptions) -> void:
 		_fade_color_rect.material.set_shader_param("color", Vector3(general_options.color.r, general_options.color.g, general_options.color.b))
 
 # creates scene instance for in code usage
-func create_scene_instance(key: String) -> PackedScene:
+func create_scene_instance(key: String) -> Node:
 	validate_scene(key)
 	return load(Scenes.scenes[key]["value"]).instance()
 
