@@ -55,9 +55,9 @@ func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 		if dest.has(key):
 			var dest_value = dest[key]
 			var source_value = source[key]
-			if typeof(dest_value) == TYPE_DICTIONARY:       
-				if typeof(source_value) == TYPE_DICTIONARY: 
-					_merge_dict(dest_value, source_value)  
+			if typeof(dest_value) == TYPE_DICTIONARY:
+				if typeof(source_value) == TYPE_DICTIONARY:
+					_merge_dict(dest_value, source_value)
 				else:
 					dest[key] = source_value
 			else:
@@ -172,35 +172,23 @@ func _reload_scenes() -> void:
 	for i in range(len(scenes_dics)):
 		scenes_values.append(scenes_dics[i])
 	for key in data:
-		if typeof(data[key]) == TYPE_DICTIONARY:
-			assert (
-				("value" in data[key].keys()) && ("sections" in data[key].keys()),
-				"Scene Manager Error: this format is not supported. %s"%
-				"Every scene item has to have 'value' and 'sections' field inside them.'"
-			)
-		if typeof(data[key]) == TYPE_DICTIONARY:
-			if !(data[key]["value"] in scenes_values):
-				continue
-		elif typeof(data[key]) == TYPE_STRING:
-			if !(data[key] in scenes_values):
-				continue
-		if typeof(data[key]) == TYPE_DICTIONARY:
-			for section in data[key]["sections"]:
-				_section_add(section, data[key]["value"])
-				add_scene_to_list(section, key, data[key]["value"])
-		if typeof(data[key]) == TYPE_DICTIONARY:
-			add_scene_to_list("All", key, data[key]["value"])
-		elif typeof(data[key]) == TYPE_STRING:
-			add_scene_to_list("All", key, data[key])
+		assert (
+			("value" in data[key].keys()) && ("sections" in data[key].keys()),
+			"Scene Manager Error: this format is not supported. %s"%
+			"Every scene item has to have 'value' and 'sections' field inside them.'"
+		)
+		if !(data[key]["value"] in scenes_values):
+			continue
+		for section in data[key]["sections"]:
+			_section_add(section, data[key]["value"])
+			add_scene_to_list(section, key, data[key]["value"])
+		add_scene_to_list("All", key, data[key]["value"])
 
 	var data_values: Array = []
 	if data:
 		var data_dics = data.values()
 		for i in range(len(data_dics)):
-			if typeof(data_dics[i]) == TYPE_DICTIONARY:
-				data_values.append(data_dics[i]["value"])
-			else:
-				data_values.append(data_dics[i])
+			data_values.append(data_dics[i]["value"])
 	for key in scenes:
 		if !(scenes[key] in data_values):
 			add_scene_to_list("All", key, scenes[key])

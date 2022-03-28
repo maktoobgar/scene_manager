@@ -33,12 +33,8 @@ func _set_current_scene() -> void:
 	for key in Scenes.scenes:
 		if key.begins_with("_"):
 			continue
-		if typeof(Scenes.scenes[key]) == TYPE_DICTIONARY:
-			if Scenes.scenes[key]["value"] == root_key:
-				_current_scene = key
-		else:
-			if Scenes.scenes[key] == root_key:
-				_current_scene = key
+		if Scenes.scenes[key]["value"] == root_key:
+			_current_scene = key
 	assert (
 		_current_scene != "",
 		"Scene Manager Error: loaded scene is not defined in scene manager tool."
@@ -102,20 +98,14 @@ func _pop_stack() -> String:
 # changes scene to the previous scene
 func _back() -> bool:
 	var pop: String = _pop_stack()
-	if pop && typeof(Scenes.scenes[pop]) == TYPE_DICTIONARY:
+	if pop:
 		get_tree().change_scene(Scenes.scenes[pop]["value"])
-		return true
-	elif pop:
-		get_tree().change_scene(Scenes.scenes[pop])
 		return true
 	return false
 
 # restart the same scene
 func _refresh() -> bool:
-	if typeof(Scenes.scenes[_current_scene]) == TYPE_DICTIONARY:
-		get_tree().change_scene(Scenes.scenes[_current_scene]["value"])
-	else:
-		get_tree().change_scene(Scenes.scenes[_current_scene])
+	get_tree().change_scene(Scenes.scenes[_current_scene]["value"])
 	return true
 
 # checks different states of key and make actual transitions happen
@@ -133,10 +123,7 @@ func _change_scene(key: String) -> bool:
 		get_tree().quit(0)
 
 	else:
-		if typeof(Scenes.scenes[key]) == TYPE_DICTIONARY:
-			get_tree().change_scene(Scenes.scenes[key]["value"])
-		else:
-			get_tree().change_scene(Scenes.scenes[key])
+		get_tree().change_scene(Scenes.scenes[key]["value"])
 		_append_stack(key)
 		return true
 	return false
