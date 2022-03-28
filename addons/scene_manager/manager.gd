@@ -7,7 +7,8 @@ const ROOT_ADDRESS = "res://"
 
 # prefile
 const comment: String = "#\n# Please do not edit anything in this script\n#\n# Just use the editor to change everything you want\n#\n"
-const prefile: String = "extends Node\n\nvar scenes: Dictionary = "
+const extend_part: String = "extends Node\n\n"
+const var_part: String = "var scenes: Dictionary = "
 
 # scene item, ignore item
 onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
@@ -174,7 +175,7 @@ func _reload_scenes() -> void:
 		if typeof(data[key]) == TYPE_DICTIONARY:
 			assert (
 				("value" in data[key].keys()) && ("sections" in data[key].keys()),
-				"Scene Manager Error: this version of json format is not supported. %s"%
+				"Scene Manager Error: this format is not supported. %s"%
 				"Every scene item has to have 'value' and 'sections' field inside them.'"
 			)
 		if typeof(data[key]) == TYPE_DICTIONARY:
@@ -271,7 +272,7 @@ func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
 func _save_all(address: String, data: Dictionary) -> void:
 	var file = File.new()
 	file.open(address, File.WRITE)
-	var write_data: String = comment + prefile + to_json(data) + "\n"
+	var write_data: String = comment + extend_part + var_part + to_json(data) + "\n"
 	file.store_string(write_data)
 	file.close()
 
@@ -282,14 +283,11 @@ func _load_all(address: String) -> Dictionary:
 		var file: File = File.new()
 		file.open(address, File.READ)
 		var string: String = file.get_as_text()
-		string = string.replace(comment, "").replace(prefile, "").strip_escapes()
+		string = string.substr(string.find("var"), len(string)).replace(var_part, "").strip_escapes()
 
 		assert (
 			validate_json(string) == "",
-			"Scene Manager Error: `scenes.json` File is corrupted or you are comming from a lower %s"%
-			"version.\nIf you are comming from a lower version than 1.2.0, clean your %s"%
-			"`scenes.json` file to look like a clean, valid json file(like: `{data}`) %s"%
-			"and then run tool again."
+			"Scene Manager Error: `scenes.gd` File is corrupted."
 		)
 		data = parse_json(string)
 		file.close()
