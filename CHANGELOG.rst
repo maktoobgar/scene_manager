@@ -4,8 +4,13 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: demo updated based on new updated patterns
-* 🐛 fix: some patterns updated with new ones
+
+2.0.1 (2022-04-02)
+------------------
+
+* fix: demo updated based on new updated patterns
+* fix: some patterns updated with new ones
+* refactor: based on godot documentation for `https://godotengine.org/asset-library` some changes happened
 
 2.0.0 (2022-03-29)
 ------------------
