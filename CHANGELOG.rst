@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🐛 fix: some patterns updated with new ones
 
 2.0.0 (2022-03-29)
 ------------------
