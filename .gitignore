@@ -5,6 +5,7 @@ venv
 
 # godot
 .tmp
+.import
 
 # vscode
 .vscode
