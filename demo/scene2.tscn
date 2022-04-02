@@ -44,8 +44,9 @@ script = ExtResource( 1 )
 scene = "scene3"
 fade_out_pattern = "dirt"
 fade_in_pattern = "squares"
-fade_out_smoothness = 0.5
-fade_in_smoothness = 0.5
+fade_out_smoothness = 0.0
+fade_in_smoothness = 0.2
+fade_out_inverted = true
 color = Color( 0.172549, 0.176471, 0.129412, 1 )
 timeout = 0.5
 

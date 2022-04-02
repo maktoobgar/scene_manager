@@ -43,9 +43,11 @@ text = "SCENE 3"
 script = ExtResource( 1 )
 scene = "scene1"
 fade_out_pattern = "vertical"
-fade_in_pattern = "curtains"
+fade_in_pattern = "pixel"
 fade_out_smoothness = 0.5
 fade_in_smoothness = 0.5
+fade_in_inverted = true
+timeout = 0.5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 margin_left = 215.0

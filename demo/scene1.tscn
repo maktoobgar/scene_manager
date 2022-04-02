@@ -43,10 +43,12 @@ custom_fonts/font = SubResource( 2 )
 text = "SCENE 1"
 script = ExtResource( 1 )
 scene = "scene2"
-fade_out_pattern = "diagonal"
-fade_in_pattern = "scribbles"
+fade_in_speed = 2.0
+fade_out_pattern = "scribbles"
+fade_in_pattern = "crooked_tiles"
 fade_out_smoothness = 0.2
 fade_in_smoothness = 0.3
+fade_out_inverted = true
 color = Color( 0.752941, 0.584314, 0.290196, 1 )
 timeout = 0.2
 
