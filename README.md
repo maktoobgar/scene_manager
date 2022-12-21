@@ -4,7 +4,9 @@
 <img src="icon.png"/>
 </p>
 
-A tool to manage transition between different scenes.
+A tool to manage transition between different scenes.\
+Scene Manager v1.X.X and v2.X.X is compatible with Godot 3.\
+Scene Manager v3.X.X is compatible with Godot 4.
 
 ## Features
 
@@ -27,6 +29,7 @@ A tool to manage transition between different scenes.
 * [X] You can create instance of a scene just by calling the scene with a key
 * [X] Transition is so much customizable
 * [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file inside them
+
 ## How To Use?
 
 1. Copy and paste `scene_manager` folder which is inside `addons` folder. (don't change the `scene_manager` folder name)
@@ -39,6 +42,7 @@ A tool to manage transition between different scenes.
 
 ## Tool View
 
+**Note**: All demo pictures are taken from Godot3.
 This is the tool that you will see on your right side of the godot editor after activating `scene_manager` plugin. By **Add Category** button under scenes categories you can create new categories to manage your scenes.
 
 <p align="center">
@@ -46,6 +50,7 @@ This is the tool that you will see on your right side of the godot editor after 
 </p>
 
 ### Double key checker:
+
 If editing of a scene key causes at least two keys of another scene match, both of them will get red color and you have to fix the duplication, otherwise the plugin does not work properly as you expect it to work.
 
 <p align="center">
@@ -85,8 +90,8 @@ Just a simple demo to show some abilities of this addon:
 extends Button
 
 export(String) var scene
-export(float) var fade_out_speed = 1
-export(float) var fade_in_speed = 1
+export(float) var fade_out_speed = 1.0
+export(float) var fade_in_speed = 1.0
 export(String) var fade_out_pattern = "fade"
 export(String) var fade_in_pattern = "_fade"
 export(float, 0, 1) var fade_out_smoothness = 0.1
@@ -94,7 +99,7 @@ export(float, 0, 1) var fade_in_smoothness = 0.1
 export(bool) var fade_out_inverted = false
 export(bool) var fade_in_inverted = false
 export(Color) var color = Color(0, 0, 0)
-export(float) var timeout = 0
+export(float) var timeout = 0.0
 export(bool) var clickable = false
 
 onready var fade_out_options = SceneManager.create_options(fade_out_speed, fade_out_pattern, fade_out_smoothness, fade_out_inverted)

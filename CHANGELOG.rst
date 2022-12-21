@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: godot3 to godot4 conversion
+
+3.0.0 (2022-12-21)
+------------------
+
+* feat: godot3 to godot4 conversion
 
 2.0.1 (2022-04-02)
 ------------------
