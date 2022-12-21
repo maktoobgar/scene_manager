@@ -1,198 +1,141 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://cct4i14xi3jn1"]
 
-[ext_resource path="res://addons/scene_manager/icons/GuiChecked.svg" type="Texture" id=1]
-[ext_resource path="res://addons/scene_manager/label.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/scene_manager/icons/FileDialog.svg" type="Texture" id=3]
-[ext_resource path="res://addons/scene_manager/manager.gd" type="Script" id=6]
+[ext_resource type="Texture2D" uid="uid://dtdbx26h20nr" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
+[ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="2"]
+[ext_resource type="Texture2D" uid="uid://dci7nx6dnosoc" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
+[ext_resource type="Script" path="res://addons/scene_manager/manager.gd" id="6"]
 
 [node name="root_container" type="MarginContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_constants/margin_right = 10
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 10
-script = ExtResource( 6 )
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6")
 
 [node name="main_container" type="VBoxContainer" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 1014.0
-margin_bottom = 590.0
+layout_mode = 2
 
 [node name="scenes" type="ScrollContainer" parent="main_container"]
-margin_right = 1004.0
-margin_bottom = 359.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="tab_container" type="TabContainer" parent="main_container/scenes"]
-margin_right = 1004.0
-margin_bottom = 359.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-tab_align = 0
 drag_to_rearrange_enabled = true
 
 [node name="add_category_container" type="MarginContainer" parent="main_container"]
-margin_top = 363.0
-margin_right = 1004.0
-margin_bottom = 392.0
+layout_mode = 2
 size_flags_vertical = 8
-custom_constants/margin_bottom = 5
 
 [node name="add_category_container" type="HBoxContainer" parent="main_container/add_category_container"]
-margin_right = 1004.0
-margin_bottom = 24.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="category_name" type="LineEdit" parent="main_container/add_category_container/add_category_container"]
-margin_right = 497.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="add_category" type="Button" parent="main_container/add_category_container/add_category_container"]
-margin_left = 507.0
-margin_right = 1004.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Add Category"
 
 [node name="separator" type="HSeparator" parent="main_container"]
-margin_top = 396.0
-margin_right = 1004.0
-margin_bottom = 400.0
+layout_mode = 2
 
 [node name="ignores" type="ScrollContainer" parent="main_container"]
-margin_top = 404.0
-margin_right = 1004.0
-margin_bottom = 512.0
+layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
 
 [node name="container" type="VBoxContainer" parent="main_container/ignores"]
-margin_right = 1004.0
-margin_bottom = 108.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ignore_list" type="VBoxContainer" parent="main_container/ignores/container"]
-margin_right = 1004.0
-margin_bottom = 108.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/separation = 5
 
 [node name="_title" type="HBoxContainer" parent="main_container/ignores/container/ignore_list"]
-margin_right = 1004.0
-margin_bottom = 22.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="delete_list" type="Button" parent="main_container/ignores/container/ignore_list/_title"]
-margin_right = 28.0
-margin_bottom = 22.0
-rect_min_size = Vector2( 28, 22 )
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
 disabled = true
 
-[node name="scenes" parent="main_container/ignores/container/ignore_list/_title" instance=ExtResource( 2 )]
-margin_left = 38.0
-margin_right = 1004.0
-margin_bottom = 22.0
+[node name="scenes" parent="main_container/ignores/container/ignore_list/_title" instance=ExtResource("2")]
+layout_mode = 2
 text = "Ignores:"
 
 [node name="interactive_section_container" type="VBoxContainer" parent="main_container"]
-margin_top = 516.0
-margin_right = 1004.0
-margin_bottom = 580.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="ignore_interactive_section_container" type="MarginContainer" parent="main_container/interactive_section_container"]
-margin_right = 1004.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_vertical = 8
 
 [node name="add_ignore_container" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container"]
-margin_right = 1004.0
-margin_bottom = 24.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="dialog_add_ignore_container" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container"]
-margin_right = 497.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="file_dialog" type="FileDialog" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
-margin_right = 315.0
-margin_bottom = 130.0
-window_title = "Open a Directory"
+title = "Open a Directory"
 mode = 2
-filters = PoolStringArray( "*.tscn" )
+ok_button_text = "Select Current Folder"
+file_mode = 2
 
 [node name="file_dialog_button" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
-margin_right = 28.0
-margin_bottom = 24.0
-rect_min_size = Vector2( 20, 20 )
-icon = ExtResource( 3 )
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+icon = ExtResource("3")
 
 [node name="address" type="LineEdit" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
-margin_left = 32.0
-margin_right = 497.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="dialog_add_ignore_container2" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container"]
-margin_left = 507.0
-margin_right = 1004.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="add" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
-margin_right = 465.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Add"
 
 [node name="hide" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
-margin_left = 469.0
-margin_right = 497.0
-margin_bottom = 24.0
-rect_min_size = Vector2( 20, 20 )
+layout_mode = 2
 focus_mode = 0
-enabled_focus_mode = 0
-icon = ExtResource( 1 )
+icon = ExtResource("1")
 
 [node name="margin_refresh_save_container" type="MarginContainer" parent="main_container/interactive_section_container"]
-margin_top = 34.0
-margin_right = 1004.0
-margin_bottom = 64.0
+layout_mode = 2
 size_flags_vertical = 0
 
 [node name="refresh_save_container" type="HBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container"]
-margin_right = 1004.0
-margin_bottom = 30.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="refresh" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
-margin_right = 497.0
-margin_bottom = 30.0
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Refresh"
 
 [node name="save" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
-margin_left = 507.0
-margin_right = 1004.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 0, 30 )
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 2
 text = "Save"
 
 [node name="accept_dialog" type="AcceptDialog" parent="."]
-margin_left = 10.0
-margin_top = 10.0
-margin_right = 1014.0
-margin_bottom = 590.0
 dialog_autowrap = true
 
 [connection signal="text_changed" from="main_container/add_category_container/add_category_container/category_name" to="." method="_on_category_name_text_changed"]

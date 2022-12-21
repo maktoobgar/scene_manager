@@ -1,7 +1,7 @@
-tool
+@tool
 extends HBoxContainer
 
-onready var _root: Node = self
+@onready var _root: Node = self
 
 func _ready() -> void:
 	while true:

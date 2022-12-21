@@ -1,25 +1,25 @@
-tool
+@tool
 extends ScrollContainer
 
-onready var _container: VBoxContainer = find_node("container")
-onready var _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
-onready var _root: Node = self
-onready var _delete_list_button: Button = self.find_node("delete_list")
-onready var _duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
-onready var _normal_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
+@onready var _container: VBoxContainer = find_child("container")
+@onready var _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
+@onready var _root: Node = self
+@onready var _delete_list_button: Button = self.find_child("delete_list")
+@onready var _duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
+@onready var _normal_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
 
 func _ready() -> void:
 	if self.name == "All":
 		_delete_list_button.icon = null
 		_delete_list_button.disabled = true
-		_delete_list_button.enabled_focus_mode = Control.FOCUS_NONE
+		_delete_list_button.focus_mode = Control.FOCUS_NONE
 	while true:
 		if _root != null && _root.name == "Scene Manager" || _root.name == "root_container":
 			break
 		_root = _root.get_parent()
 
 func add_item(key: String, value: String) -> void:
-	var item = _scene_item.instance()
+	var item = _scene_item.instantiate()
 	item.set_key(key)
 	item.set_value(value)
 	_container.add_child(item)

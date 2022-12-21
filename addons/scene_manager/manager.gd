@@ -1,4 +1,4 @@
-tool
+@tool
 extends MarginContainer
 
 # paths
@@ -11,31 +11,31 @@ const extend_part: String = "extends Node\n\n"
 const var_part: String = "var scenes: Dictionary = "
 
 # scene item, ignore item
-onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
-onready var _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
+@onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
+@onready var _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
 # icons
-onready var _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
-onready var _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
-onready var _ignore_list: Node = self.find_node("ignore_list")
+@onready var _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
+@onready var _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
+@onready var _ignore_list: Node = self.find_child("ignore_list")
 # add save, refresh
-onready var _save_button: Button = self.find_node("save")
-onready var _refresh_button: Button = self.find_node("refresh")
+@onready var _save_button: Button = self.find_child("save")
+@onready var _refresh_button: Button = self.find_child("refresh")
 # add category
-onready var _add_category_button: Button = self.find_node("add_category")
-onready var _category_name_line_edit: LineEdit = self.find_node("category_name")
+@onready var _add_category_button: Button = self.find_child("add_category")
+@onready var _category_name_line_edit: LineEdit = self.find_child("category_name")
 # add section
-onready var _add_section_button: Button = self.find_node("add_section")
-onready var _section_name_line_edit: LineEdit = self.find_node("section_name")
+@onready var _add_section_button: Button = self.find_child("add_section")
+@onready var _section_name_line_edit: LineEdit = self.find_child("section_name")
 # add ignore
-onready var _address_line_edit: LineEdit = self.find_node("address")
-onready var _file_dialog: FileDialog = self.find_node("file_dialog")
-onready var _hide_button: Button = self.find_node("hide")
-onready var _add_button: Button = self.find_node("add")
+@onready var _address_line_edit: LineEdit = self.find_child("address")
+@onready var _file_dialog: FileDialog = self.find_child("file_dialog")
+@onready var _hide_button: Button = self.find_child("hide")
+@onready var _add_button: Button = self.find_child("add")
 # containers
-onready var _tab_container: TabContainer = self.find_node("tab_container")
-onready var _ignores_container: Node = self.find_node("ignores")
+@onready var _tab_container: TabContainer = self.find_child("tab_container")
+@onready var _ignores_container: Node = self.find_child("ignores")
 # generals
-onready var _accept_dialog: AcceptDialog = self.find_node("accept_dialog")
+@onready var _accept_dialog: AcceptDialog = self.find_child("accept_dialog")
 
 var _sections: Dictionary = {}
 var reserved_keys: Array = ["back", "null", "ignore", "refresh",
@@ -45,10 +45,10 @@ signal delete_ignore_child(node)
 
 func _ready() -> void:
 	_on_refresh_button_up()
-	self.connect("delete_ignore_child", self, "_on_delete_ignore_child")
+	self.connect("delete_ignore_child",Callable(self,"_on_delete_ignore_child"))
 
 func _absolute_current_working_directory() -> String:
-	return ProjectSettings.globalize_path(Directory.new().get_current_dir())
+	return ProjectSettings.globalize_path(EditorInterface.new().get_current_directory())
 
 func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 	for key in source:
@@ -81,11 +81,11 @@ func show_message(title: String, description: String) -> void:
 func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 	var files: Dictionary = {}
 	var folders: Array = []
-	var dir = Directory.new()
+	var dir = DirAccess.open(root_path)
 	if root_path[len(root_path) - 1] != "/":
 		root_path = root_path + "/"
-	if !(root_path.substr(0, len(root_path) - 1) in ignores) && dir.open(root_path) == OK:
-		dir.list_dir_begin(true, true)
+	if !(root_path.substr(0, len(root_path) - 1) in ignores) && dir:
+		dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
 		if dir.file_exists(root_path + ".gdignore"):
 			return files
@@ -148,7 +148,7 @@ func add_scene_to_list(name: String, key: String, value: String) -> void:
 	_section_add(name, value)
 
 func _add_ignore_item(address: String) -> void:
-	var item = _ignore_item.instance()
+	var item = _ignore_item.instantiate()
 	item.set_address(address)
 	_ignore_list.add_child(item)
 
@@ -172,11 +172,7 @@ func _reload_scenes() -> void:
 	for i in range(len(scenes_dics)):
 		scenes_values.append(scenes_dics[i])
 	for key in data:
-		assert (
-			("value" in data[key].keys()) && ("sections" in data[key].keys()),
-			"Scene Manager Error: this format is not supported. %s"%
-			"Every scene item has to have 'value' and 'sections' field inside them.'"
-		)
+		assert (("value" in data[key].keys()) && ("sections" in data[key].keys()), "Scene Manager Error: this format is not supported. %s"%"Every scene item has to have 'value' and 'sections' field inside them.'")
 		if !(data[key]["value"] in scenes_values):
 			continue
 		for section in data[key]["sections"]:
@@ -258,27 +254,22 @@ func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
 	return dic
 
 func _save_all(address: String, data: Dictionary) -> void:
-	var file = File.new()
-	file.open(address, File.WRITE)
-	var write_data: String = comment + extend_part + var_part + to_json(data) + "\n"
+	var file := FileAccess.open(address, FileAccess.WRITE)
+	var write_data: String = comment + extend_part + var_part + JSON.new().stringify(data) + "\n"
 	file.store_string(write_data)
-	file.close()
 
 func _load_all(address: String) -> Dictionary:
 	var data: Dictionary = {}
 
 	if _file_exists(address):
-		var file: File = File.new()
-		file.open(address, File.READ)
+		var file := FileAccess.open(address, FileAccess.READ)
 		var string: String = file.get_as_text()
 		string = string.substr(string.find("var"), len(string)).replace(var_part, "").strip_escapes()
 
-		assert (
-			validate_json(string) == "",
-			"Scene Manager Error: `scenes.gd` File is corrupted."
-		)
-		data = parse_json(string)
-		file.close()
+		var json = JSON.new()
+		var err = json.parse(string)
+		assert (err == OK, "Scene Manager Error: `scenes.gd` File is corrupted.")
+		data = json.data
 	return data
 
 func _load_scenes(address: String) -> Dictionary:
@@ -297,7 +288,7 @@ func _load_sections(address: String) -> Array:
 	return []
 
 func _file_exists(address: String) -> bool:
-	return Directory.new().file_exists(address)
+	return FileAccess.file_exists(address)
 
 func _get_scenes_from_view() -> Dictionary:
 	var list: Node = _get_list_by_name("All")
@@ -386,8 +377,7 @@ func _on_delete_ignore_child(node: Node) -> void:
 
 func _on_address_text_changed(new_text: String) -> void:
 	if new_text != "":
-		var dir = Directory.new()
-		if dir.dir_exists(new_text) || dir.file_exists(new_text) && new_text.begins_with("res://"):
+		if DirAccess.dir_exists_absolute(new_text) || FileAccess.file_exists(new_text) && new_text.begins_with("res://"):
 			_add_button.disabled = false
 		else:
 			_add_button.disabled = true
@@ -395,7 +385,7 @@ func _on_address_text_changed(new_text: String) -> void:
 		_add_button.disabled = true
 
 func _add_scene_list(text: String) -> void:
-	var list = _scene_list_item.instance()
+	var list = _scene_list_item.instantiate()
 	list.name = text.capitalize()
 	_tab_container.add_child(list)
 

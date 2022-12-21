@@ -1,9 +1,9 @@
-tool
+@tool
 extends HBoxContainer
 
-onready var _root: Node = self
-onready var _popup_menu: PopupMenu = find_node("popup_menu")
-onready var _key: String = get_node("key").text
+@onready var _root: Node = self
+@onready var _popup_menu: PopupMenu = find_child("popup_menu")
+@onready var _key: String = get_node("key").text
 
 func _ready() -> void:
 	while true:
@@ -29,8 +29,8 @@ func get_key_node() -> Node:
 	return get_node("key")
 
 func custom_set_theme(theme: StyleBox) -> void:
-	get_key_node().add_stylebox_override("normal", theme)
-	get_key_node().add_stylebox_override("focus", theme)
+	get_key_node().add_theme_stylebox_override("normal", theme)
+	get_key_node().add_theme_stylebox_override("focus", theme)
 
 func _on_popup_button_button_up():
 	var i: int = 0
@@ -44,7 +44,7 @@ func _on_popup_button_button_up():
 		i += 1
 	if i == 0:
 		return
-	_popup_menu.popup(Rect2(get_global_mouse_position(), _popup_menu.rect_size))
+	_popup_menu.popup(Rect2(get_global_mouse_position(), _popup_menu.size))
 
 func _on_popup_menu_index_pressed(index: int):
 	_popup_menu.set_item_checked(index, !_popup_menu.is_item_checked(index))
@@ -63,12 +63,12 @@ func _show_message() -> void:
 		"to avoid seeing weird reaction from Scene Manager tool.")
 
 func _check_reserved_keys() -> void:
-	if !get_key() || get_key().begins_with("_") || get_key() in _root.reserved_keys:
+	if get_key() == "" || get_key().begins_with("_") || get_key() in _root.reserved_keys:
 		_show_message()
 
 func _on_key_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey && event.is_pressed():
-		if !get_key():
+		if get_key() == "":
 			_show_message()
 		elif get_key() != _key:
 			_check_reserved_keys()

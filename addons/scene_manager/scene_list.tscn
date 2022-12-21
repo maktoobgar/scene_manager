@@ -1,42 +1,34 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://7r0ywsv3ga6g"]
 
-[ext_resource path="res://addons/scene_manager/label.tscn" type="PackedScene" id=1]
-[ext_resource path="res://addons/scene_manager/scene_list.gd" type="Script" id=2]
-[ext_resource path="res://addons/scene_manager/icons/ImportFail.svg" type="Texture" id=3]
+[ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="1"]
+[ext_resource type="Script" path="res://addons/scene_manager/scene_list.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dvb4ayacs7ohl" path="res://addons/scene_manager/icons/ImportFail.svg" id="3"]
 
 [node name="scenes" type="ScrollContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="container" type="VBoxContainer" parent="."]
-margin_right = 1024.0
-margin_bottom = 22.0
+layout_mode = 2
 size_flags_horizontal = 3
-custom_constants/separation = 10
 
 [node name="_title" type="HBoxContainer" parent="container"]
-margin_right = 1024.0
-margin_bottom = 22.0
-custom_constants/separation = 10
+layout_mode = 2
 
 [node name="delete_list" type="Button" parent="container/_title"]
-margin_right = 28.0
-margin_bottom = 22.0
-rect_min_size = Vector2( 28, 22 )
-icon = ExtResource( 3 )
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+icon = ExtResource("3")
 
-[node name="key" parent="container/_title" instance=ExtResource( 1 )]
-margin_left = 38.0
-margin_right = 526.0
-margin_bottom = 22.0
+[node name="key" parent="container/_title" instance=ExtResource("1")]
+layout_mode = 2
 text = "Key:"
 
-[node name="value" parent="container/_title" instance=ExtResource( 1 )]
-margin_left = 536.0
-margin_right = 1024.0
-margin_bottom = 22.0
+[node name="value" parent="container/_title" instance=ExtResource("1")]
+layout_mode = 2
 
 [connection signal="button_up" from="container/_title/delete_list" to="." method="_on_delete_list_button_up"]
