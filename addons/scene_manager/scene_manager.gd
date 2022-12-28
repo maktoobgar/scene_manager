@@ -222,7 +222,7 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 		_set_out_transition()
 
 # changes current scene to the next scene
-func change_scene_to_file(key: String, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
+func change_scene(key: String, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
 	if (Scenes.scenes.has(key) || key in _reserved_keys || key == "") && !_in_transition && !key.begins_with("_"):
 		_first_time = false
 		_set_in_transition()

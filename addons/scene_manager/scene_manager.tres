@@ -1,11 +1,11 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://0q7ifty8us3v"]
 
-[ext_resource path="res://addons/scene_manager/scene_manager.gdshader" type="Shader" id=2]
+[ext_resource type="Shader" path="res://addons/scene_manager/scene_manager.gdshader" id="2"]
 
 [resource]
-shader = ExtResource( 2 )
-shader_param/cutoff = 1.0
-shader_param/smoothness = 0.1
-shader_param/color = Vector3( 0, 0, 0 )
-shader_param/inverted = false
-shader_param/linear_fade = true
+shader = ExtResource("2")
+shader_parameter/cutoff = 1.0
+shader_parameter/smoothness = 0.1
+shader_parameter/color = Vector3(0, 0, 0)
+shader_parameter/inverted = false
+shader_parameter/linear_fade = true

@@ -1,82 +1,90 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://2iy8wfgenjka"]
 
-[ext_resource path="res://addons/scene_manager/scene_manager.gd" type="Script" id=1]
-[ext_resource path="res://addons/scene_manager/scene_manager.tres" type="Material" id=2]
+[ext_resource type="Script" path="res://addons/scene_manager/scene_manager.gd" id="1"]
+[ext_resource type="Material" uid="uid://0q7ifty8us3v" path="res://addons/scene_manager/scene_manager.tres" id="2"]
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id="8"]
 length = 0.001
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath("canvas/fade:material:shader_param/cutoff")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ 1.0 ]
+"values": [1.0]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id="9"]
 resource_name = "color"
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath("canvas/fade:material:shader_param/cutoff")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ 0.0 ]
+"values": [0.0]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id="7"]
 resource_name = "fade"
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath("canvas/fade:material:shader_param/cutoff")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0, 1 ),
-"transitions": PackedFloat32Array( 1, 1 ),
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [ 0.0, 1.0 ]
+"values": [0.0, 1.0]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id="10"]
 resource_name = "no_color"
 tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
 tracks/0/path = NodePath("canvas/fade:material:shader_param/cutoff")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
 tracks/0/keys = {
-"times": PackedFloat32Array( 0 ),
-"transitions": PackedFloat32Array( 1 ),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [ 1.0 ]
+"values": [1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_p2st6"]
+_data = {
+"RESET": SubResource("8"),
+"color": SubResource("9"),
+"fade": SubResource("7"),
+"no_color": SubResource("10")
 }
 
 [node name="scene_manager" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="canvas" type="CanvasLayer" parent="."]
 
 [node name="fade" type="ColorRect" parent="canvas"]
-material = ExtResource( 2 )
+material = ExtResource("2")
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color( 0, 0, 0, 0 )
+color = Color(0, 0, 0, 0)
 
 [node name="animation_player" type="AnimationPlayer" parent="."]
-anims/RESET = SubResource( 8 )
-anims/color = SubResource( 9 )
-anims/fade = SubResource( 7 )
-anims/no_color = SubResource( 10 )
+libraries = {
+"": SubResource("AnimationLibrary_p2st6")
+}

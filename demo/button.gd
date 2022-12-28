@@ -28,7 +28,7 @@ func _ready() -> void:
 	SceneManager.validate_pattern(fade_in_pattern)
 
 func _on_button_button_up():
-	SceneManager.change_scene_to_file(scene, fade_out_options, fade_in_options, general_options)
+	SceneManager.change_scene(scene, fade_out_options, fade_in_options, general_options)
 
 func _on_reset_button_up():
 	SceneManager.reset_scene_manager()
