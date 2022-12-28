@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: fixed change_scene function which has changed to change_scene_to_file in conversion to godot4 process
+
+3.0.1 (2022-12-28)
+------------------
+
+* fix: fixed change_scene function which has changed to change_scene_to_file in conversion to godot4 process
 
 3.0.0 (2022-12-21)
 ------------------
