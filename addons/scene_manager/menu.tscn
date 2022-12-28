@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://cct4i14xi3jn1"]
+[gd_scene load_steps=7 format=3 uid="uid://crnf0w0s44hxx"]
 
 [ext_resource type="Texture2D" uid="uid://dtdbx26h20nr" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
 [ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="2"]
+[ext_resource type="StyleBox" uid="uid://bcnnmspvw570o" path="res://addons/scene_manager/themes/line_edit_normal.tres" id="2_tjrve"]
 [ext_resource type="Texture2D" uid="uid://dci7nx6dnosoc" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
 [ext_resource type="Script" path="res://addons/scene_manager/manager.gd" id="6"]
+
+[sub_resource type="Theme" id="Theme_g0lth"]
+LineEdit/styles/normal = ExtResource("2_tjrve")
 
 [node name="root_container" type="MarginContainer"]
 anchors_preset = 15
@@ -36,6 +40,7 @@ layout_mode = 2
 [node name="category_name" type="LineEdit" parent="main_container/add_category_container/add_category_container"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme = SubResource("Theme_g0lth")
 
 [node name="add_category" type="Button" parent="main_container/add_category_container/add_category_container"]
 layout_mode = 2
@@ -88,10 +93,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="file_dialog" type="FileDialog" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
-title = "Open a Directory"
+title = "Open a File or Directory"
 mode = 2
-ok_button_text = "Select Current Folder"
-file_mode = 2
+ok_button_text = "Open"
+file_mode = 3
 
 [node name="file_dialog_button" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
 custom_minimum_size = Vector2(28, 28)

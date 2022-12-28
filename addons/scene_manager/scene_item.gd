@@ -5,12 +5,14 @@ extends HBoxContainer
 @onready var _popup_menu: PopupMenu = find_child("popup_menu")
 @onready var _key: String = get_node("key").text
 
+# Fills `_root` variable properly
 func _ready() -> void:
 	while true:
 		if _root != null && _root.name == "Scene Manager" || _root.name == "root_container":
 			break
 		_root = _root.get_parent()
 
+# 
 func set_key(text: String) -> void:
 	get_node("key").text = text
 	name = text
@@ -34,7 +36,7 @@ func custom_set_theme(theme: StyleBox) -> void:
 
 func _on_popup_button_button_up():
 	var i: int = 0
-	var arr: Array = _root.get_all_lists_names()
+	var arr: Array = _root.get_all_lists_names_except()
 	_popup_menu.clear()
 	for value in arr:
 		if value == "All":
@@ -42,8 +44,7 @@ func _on_popup_button_button_up():
 		_popup_menu.add_check_item(value)
 		_popup_menu.set_item_checked(i, value in _root.get_section(get_value()))
 		i += 1
-	if i == 0:
-		return
+	if i == 0: return
 	_popup_menu.popup(Rect2(get_global_mouse_position(), _popup_menu.size))
 
 func _on_popup_menu_index_pressed(index: int):
@@ -57,10 +58,15 @@ func _on_key_value_text_changed() -> void:
 	_root.update_all_scene_with_key(_key, get_key(), get_value(), get_parent().get_parent())
 
 func _show_message() -> void:
+	var reserved_keys: String = ""
+	for i in range(len(_root.reserved_keys)):
+		if i == 0:
+			reserved_keys += "\"" + _root.reserved_keys[0] + "\""
+			continue
+		reserved_keys += ", \"" + _root.reserved_keys[i] + "\""
 	_root.show_message("Error", "\"%s\" and an empty string(\"\"), or every other word which will "%
-		String(_root.reserved_keys).replace("[", "").replace("]", "").replace(", ", "\", \"") +
-		"begin with an '_', are reserved or not allowed to be used as a scene key so please do not use them " +
-		"to avoid seeing weird reaction from Scene Manager tool.")
+		reserved_keys + "begin with an '_', are reserved or not allowed to be used as a scene " +
+		"key so please do not use them to avoid seeing weird reaction from Scene Manager tool.")
 
 func _check_reserved_keys() -> void:
 	if get_key() == "" || get_key().begins_with("_") || get_key() in _root.reserved_keys:

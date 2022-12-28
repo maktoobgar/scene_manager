@@ -41,8 +41,7 @@ func remove_items_begins_with(value: String) -> void:
 
 func clear_scene_list() -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0:
-			continue
+		if i == 0: continue
 		_container.get_child(i).queue_free()
 
 func append_scenes(nodes: Dictionary) -> void:

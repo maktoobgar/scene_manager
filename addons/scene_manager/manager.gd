@@ -37,19 +37,26 @@ const var_part: String = "var scenes: Dictionary = "
 # generals
 @onready var _accept_dialog: AcceptDialog = self.find_child("accept_dialog")
 
+# A dictionary which contains every scenes exact addresses as key and an array 
+# assigned as values which categories every category name the scene is part of
+#
+# Example: { "res://demo/scene3.tscn": ["Character", "Menu"] }
 var _sections: Dictionary = {}
 var reserved_keys: Array = ["back", "null", "ignore", "refresh",
 	"reload", "restart", "exit", "quit"]
 
 signal delete_ignore_child(node)
 
+# Refreshes the whole UI
 func _ready() -> void:
 	_on_refresh_button_up()
 	self.connect("delete_ignore_child",Callable(self,"_on_delete_ignore_child"))
 
+# Returns absolute current working directory
 func _absolute_current_working_directory() -> String:
 	return ProjectSettings.globalize_path(EditorInterface.new().get_current_directory())
 
+# Merges two dictionaries together
 func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 	for key in source:
 		if dest.has(key):
@@ -65,19 +72,24 @@ func _merge_dict(dest: Dictionary, source: Dictionary) -> void:
 		else:
 			dest[key] = source[key]
 
-func get_all_lists_names(except: String = "") -> Array:
+# Returns names of all lists from UI
+func get_all_lists_names_except(excepts: Array = [""]) -> Array:
 	var arr: Array = []
+	for i in range(len(excepts)):
+		excepts[i] = excepts[i].capitalize()
 	for node in _get_lists_nodes():
-		if node.name == except.capitalize():
+		if node.name in excepts:
 			continue
 		arr.append(node.name)
 	return arr
 
+# Shows a dialog message at the middle of screen
 func show_message(title: String, description: String) -> void:
-	_accept_dialog.window_title = title
+	_accept_dialog.title = title
 	_accept_dialog.dialog_text = description
 	_accept_dialog.popup_centered(Vector2(400, 100))
 
+# Returns all scenes in current and sub folders of `root_path` address
 func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 	var files: Dictionary = {}
 	var folders: Array = []
@@ -106,80 +118,97 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 				_merge_dict(files, new_files)
 	else:
 		if !(root_path.substr(0, len(root_path) - 1) in ignores):
-			print("Couldn't open ", root_path)
+			# If `root_path` was really a file and not a folder, we know the reason and
+			# propably this is comming from `_on_delete_ignore_child`, so just ignore
+			# and otherwise print error message
+			if (!FileAccess.file_exists(root_path.substr(0, len(root_path) - 1))):
+				print("Couldn't open ", root_path)
 
 	return files
 
+# Clears scenes inside a UI list
 func _clear_scenes_list(name: String) -> void:
-	var list: Node = _get_list_by_name(name)
-	list.clear_scene_list()
+	var list: Node = _get_one_list_node_by_name(name)
+	if list != null:
+		list.clear_scene_list()
 
+# Clears scenes inside all UI lists
 func _clear_all_lists() -> void:
 	_sections = {}
 	for node in _get_lists_nodes():
 		node.clear_scene_list()
 
+# Removes all tabs in scene manager
 func _delete_all_tabs() -> void:
 	for node in _get_lists_nodes():
 		if node.name == "All":
 			continue
 		node.free()
 
+# Returns nodes of all category lists from UI in `Scene Manager` tool
 func _get_lists_nodes() -> Array:
 	var arr: Array = []
 	for i in range(_tab_container.get_child_count()):
 		arr.append(_tab_container.get_child(i))
 	return arr
 
-func _get_list_by_name(name: String) -> Node:
+# Returns node of a specific list in UI
+func _get_one_list_node_by_name(name: String) -> Node:
 	for node in _get_lists_nodes():
 		if name.capitalize() == node.name:
 			return node
 	return null
 
-func remove_scene_from_list(name: String, key: String, value: String) -> void:
-	var list: Node = _get_list_by_name(name)
-	list.remove_item(key, value)
-	_section_remove(name, value)
+# Removes a scene from a specific list
+func remove_scene_from_list(section_name: String, scene_name: String, scene_address: String) -> void:
+	var list: Node = _get_one_list_node_by_name(section_name)
+	list.remove_item(scene_name, scene_address)
+	_section_remove(scene_address, section_name)
 
-func add_scene_to_list(name: String, key: String, value: String) -> void:
-	var list: Node = _get_list_by_name(name)
-	list.add_item(key, value)
-	_section_add(name, value)
+# Adds an item to a list
+func add_scene_to_list(list_name: String, scene_name: String, scene_address: String) -> void:
+	var list: Node = _get_one_list_node_by_name(list_name)
+	list.add_item(scene_name, scene_address)
+	_section_add(scene_address, list_name)
 
+# Adds an address to ignore list
 func _add_ignore_item(address: String) -> void:
 	var item = _ignore_item.instantiate()
 	item.set_address(address)
 	_ignore_list.add_child(item)
 
+# Appends all scenes into their assigned UI lists
 func _append_scenes(scenes: Dictionary) -> void:
-	_get_list_by_name("All").append_scenes(scenes)
+	_get_one_list_node_by_name("All").append_scenes(scenes)
 	for node in _get_lists_nodes():
+		if node.name == "All":
+			continue
 		for key in scenes:
 			if node.name in get_section(scenes[key]):
 				node.add_item(key, scenes[key])
 
+# Clears all tabs, UI lists and ignore list
 func _clear_all() -> void:
 	_delete_all_tabs()
 	_clear_all_lists()
 	_clear_ignore_list()
 
+# Reloads all scenes in UI and in this script
 func _reload_scenes() -> void:
-	var data: Dictionary = _load_scenes(PATH)
-	var scenes: Dictionary = _get_scenes(ROOT_ADDRESS, _load_ignores(PATH))
-	var scenes_dics: Array = scenes.values()
-	var scenes_values: Array = []
-	for i in range(len(scenes_dics)):
-		scenes_values.append(scenes_dics[i])
+	var data: Dictionary = _load_scenes()
+	var scenes: Dictionary = _get_scenes(ROOT_ADDRESS, _load_ignores())
+	var scenes_values: Array = scenes.values()
+	# Reloads all scenes in `Scenes` script in UI and in this script
 	for key in data:
-		assert (("value" in data[key].keys()) && ("sections" in data[key].keys()), "Scene Manager Error: this format is not supported. %s"%"Every scene item has to have 'value' and 'sections' field inside them.'")
+		assert (("value" in data[key].keys()) && ("sections" in data[key].keys()), "Scene Manager Error: this format is not supported. Every scene item has to have 'value' and 'sections' field inside them.'")
 		if !(data[key]["value"] in scenes_values):
 			continue
 		for section in data[key]["sections"]:
-			_section_add(section, data[key]["value"])
+			_section_add(data[key]["value"], section)
 			add_scene_to_list(section, key, data[key]["value"])
 		add_scene_to_list("All", key, data[key]["value"])
 
+	# Add scenes that are new and are not into `Scenes` script
 	var data_values: Array = []
 	if data:
 		var data_dics = data.values()
@@ -189,48 +218,55 @@ func _reload_scenes() -> void:
 		if !(scenes[key] in data_values):
 			add_scene_to_list("All", key, scenes[key])
 
+# Reloads ignores list in UI and in this script
 func _reload_ignores() -> void:
-	var ignores: Array = _load_ignores(PATH)
+	var ignores: Array = _load_ignores()
 	_set_ignores(ignores)
 
+# Reloads tabs in UI
 func _reload_tabs() -> void:
-	var sections: Array = _load_sections(PATH)
-	if _get_list_by_name("All") == null:
+	var sections: Array = _load_sections()
+	if _get_one_list_node_by_name("All") == null:
 		_add_scene_list("All")
 	for section in sections:
 		_add_scene_list(section)
 
+# Refresh button
 func _on_refresh_button_up() -> void:
 	_clear_all()
 	_reload_tabs()
 	_reload_scenes()
 	_reload_ignores()
 
-# _sections Manager
+# `_sections` variable Manager
 
-func _section_add(section: String, value: String) -> void:
-	if section == "All":
+# Adds passed `section_name` to array value of passed `scene_address` key
+func _section_add(scene_address: String, section_name: String) -> void:
+	if section_name == "All":
 		return
-	if !_sections.has(value):
-		_sections[value] = []
-	if !(section in _sections[value]):
-		_sections[value].append(section)
+	if !_sections.has(scene_address):
+		_sections[scene_address] = []
+	if !(section_name in _sections[scene_address]):
+		_sections[scene_address].append(section_name)
 
-func _section_remove(section: String, value: String) -> void:
-	if !_sections.has(value):
+# Removes passed `section_name` from array value of passed `scene_address` key
+func _section_remove(scene_address: String, section_name: String) -> void:
+	if !_sections.has(scene_address):
 		return
-	if section in _sections[value]:
-		_sections[value].erase(section)
-	if len(_sections[value]) == 0:
-		_sections.erase(value)
+	if section_name in _sections[scene_address]:
+		_sections[scene_address].erase(section_name)
+	if len(_sections[scene_address]) == 0:
+		_sections.erase(scene_address)
 
-func get_section(value: String) -> Array:
-	if !_sections.has(value):
+# Returns all sections of passed `scene_address`
+func get_section(scene_address: String) -> Array:
+	if !_sections.has(scene_address):
 		return []
-	return _sections[value]
+	return _sections[scene_address]
 
+# Cleans `_sections` variable from `All` category
 func _clean_sections() -> void:
-	var scenes: Array = get_all_lists_names("All")
+	var scenes: Array = get_all_lists_names_except(["All"])
 	for key in _sections:
 		var will_be_deleted: Array = []
 		for section in _sections[key]:
@@ -239,30 +275,35 @@ func _clean_sections() -> void:
 		for section in will_be_deleted:
 			_sections[key].erase(section)
 
-# End Of _sections Manager
+# End Of `_sections` variable Manager
 
-func update_all_scene_with_key(key: String, new_key: String, value: String, except: Node):
+# Gets called by other nodes in UI
+#
+# Updates name of all scene_key
+func update_all_scene_with_key(scene_key: String, scene_new_key: String, value: String, except_list: Node):
 	for node in _get_lists_nodes():
-		if node != except:
-			node.update_scene_with_key(key, new_key, value)
+		if node != except_list:
+			node.update_scene_with_key(scene_key, scene_new_key, value)
 
+# Removes `_ignore_list` and `_sections` keys from passed dictionary so that 
+# just scene names remain in returned dictionary
 func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
-	if dic.has("_ignore_list"):
-		dic.erase("_ignore_list")
-	if dic.has("_sections"):
-		dic.erase("_sections")
+	dic.erase("_ignore_list")
+	dic.erase("_sections")
 	return dic
 
+# Saves all data in `scenes` variable of `scenes.gd` file
 func _save_all(address: String, data: Dictionary) -> void:
 	var file := FileAccess.open(address, FileAccess.WRITE)
 	var write_data: String = comment + extend_part + var_part + JSON.new().stringify(data) + "\n"
 	file.store_string(write_data)
 
-func _load_all(address: String) -> Dictionary:
+# Returns all data in `scenes` variable of `scenes.gd` file
+func _load_all() -> Dictionary:
 	var data: Dictionary = {}
 
-	if _file_exists(address):
-		var file := FileAccess.open(address, FileAccess.READ)
+	if _file_exists(PATH):
+		var file := FileAccess.open(PATH, FileAccess.READ)
 		var string: String = file.get_as_text()
 		string = string.substr(string.find("var"), len(string)).replace(var_part, "").strip_escapes()
 
@@ -272,26 +313,31 @@ func _load_all(address: String) -> Dictionary:
 		data = json.data
 	return data
 
-func _load_scenes(address: String) -> Dictionary:
-	return _remove_ignore_list_and_sections_from_dic(_load_all(address))
+# Loads and returns just scenes from `scenes` variable of `scenes.gd` file
+func _load_scenes() -> Dictionary:
+	return _remove_ignore_list_and_sections_from_dic(_load_all())
 
-func _load_ignores(address: String) -> Array:
-	var dic: Dictionary = _load_all(address)
+# Loads and returns just array value of `_ignore_list` key from `scenes` variable of `scenes.gd` file
+func _load_ignores() -> Array:
+	var dic: Dictionary = _load_all()
 	if dic.has("_ignore_list"):
 		return dic["_ignore_list"]
 	return []
 
-func _load_sections(address: String) -> Array:
-	var dic: Dictionary = _load_all(address)
+# Loads and returns just array value of `_sections` key from `scenes` variable of `scenes.gd` file
+func _load_sections() -> Array:
+	var dic: Dictionary = _load_all()
 	if dic.has("_sections"):
 		return dic["_sections"]
 	return []
 
+# Returns true if a file in a specified address exist
 func _file_exists(address: String) -> bool:
 	return FileAccess.file_exists(address)
 
-func _get_scenes_from_view() -> Dictionary:
-	var list: Node = _get_list_by_name("All")
+# Returns all scenes data from UI view in a dictionary
+func _get_scenes_from_ui() -> Dictionary:
+	var list: Node = _get_one_list_node_by_name("All")
 	var data: Dictionary = {}
 	for node in list.get_scene_nodes():
 		data[node.get_key()] = {
@@ -300,8 +346,11 @@ func _get_scenes_from_view() -> Dictionary:
 		}
 	return data
 
+# Returns all scenes nodes from UI view in an array
+#
+# Unused method
 func _get_scene_nodes_from_view() -> Array:
-	var list: Node = _get_list_by_name("All")
+	var list: Node = _get_one_list_node_by_name("All")
 	var nodes: Array = []
 	for i in range(list.get_child_count()):
 		if i == 0: continue
@@ -309,49 +358,56 @@ func _get_scene_nodes_from_view() -> Array:
 		nodes.append(node)
 	return nodes
 
+# Save button
 func _on_save_button_up():
 	_clean_sections()
-	var dic: Dictionary = _get_scenes_from_view()
-	dic["_ignore_list"] = _get_ignores_in_ignore_view()
-	dic["_sections"] = get_all_lists_names("All")
+	var dic: Dictionary = _get_scenes_from_ui()
+	dic["_ignore_list"] = _get_ignores_in_ignore_ui()
+	dic["_sections"] = get_all_lists_names_except(["All"])
 	_save_all(PATH, dic)
 	_on_refresh_button_up()
 
-func _get_nodes_in_ignore_view() -> Array:
+# Returns array of ignore nodes from UI view
+func _get_nodes_in_ignore_ui() -> Array:
 	var arr: Array = []
 	for i in range(_ignore_list.get_child_count()):
-		if i == 0:
-			continue
+		if i == 0: continue
 		arr.append(_ignore_list.get_child(i))
 	return arr
 
-func _get_ignores_in_ignore_view() -> Array:
+# Returns array of addresses to ignore
+func _get_ignores_in_ignore_ui() -> Array:
 	var arr: Array = []
-	for node in _get_nodes_in_ignore_view():
+	for node in _get_nodes_in_ignore_ui():
 		arr.append(node.get_address())
 	return arr
 
+# Sets current passed list of ignores into UI instead of others
 func _set_ignores(list :Array) -> void:
 	_clear_ignore_list()
 	for text in list:
 		_add_ignore_item(text)
 
+# Clears ignores from UI
 func _clear_ignore_list() -> void:
-	for node in _get_nodes_in_ignore_view():
+	for node in _get_nodes_in_ignore_ui():
 		node.free()
 
-func _on_list_exists(address: String) -> bool:
-	for node in _get_nodes_in_ignore_view():
+# Returns true if passed address exists in ignore list
+func _ignore_exists_in_list(address: String) -> bool:
+	for node in _get_nodes_in_ignore_ui():
 		if node.get_address() == address:
 			return true
 	return false
 
+# Removes scenes begin with a specific text in all lists
 func _remove_scenes_begin_with(text: String):
 	for node in _get_lists_nodes():
 		node.remove_items_begins_with(text)
 
+# Ignore list Add button up
 func _on_add_button_up():
-	if _on_list_exists(_address_line_edit.text):
+	if _ignore_exists_in_list(_address_line_edit.text):
 		_address_line_edit.text = ""
 		return
 	_add_ignore_item(_address_line_edit.text)
@@ -359,22 +415,26 @@ func _on_add_button_up():
 	_address_line_edit.text = ""
 	_add_button.disabled = true
 
+# Pops up file dialog to select a ignore folder
 func _on_file_dialog_button_button_up():
 	_file_dialog.popup_centered(Vector2(600, 600))
 
+# When a file or a dir selects by file dialog
 func _on_file_dialog_dir_file_selected(path):
 	_address_line_edit.text = path
 	_on_address_text_changed(path)
 
+# When an ignore item remove button clicks
 func _on_delete_ignore_child(node: Node) -> void:
 	var address: String = node.get_address()
 	node.queue_free()
 	var ignores: Array = []
-	for ignore in _load_ignores(PATH):
+	for ignore in _load_ignores():
 		if ignore.begins_with(address) && ignore != address:
 			ignores.append(ignore)
 	_append_scenes(_get_scenes(address, ignores))
 
+# When ignore address bar text changes
 func _on_address_text_changed(new_text: String) -> void:
 	if new_text != "":
 		if DirAccess.dir_exists_absolute(new_text) || FileAccess.file_exists(new_text) && new_text.begins_with("res://"):
@@ -384,30 +444,35 @@ func _on_address_text_changed(new_text: String) -> void:
 	else:
 		_add_button.disabled = true
 
+# Adds a new list to other lists
 func _add_scene_list(text: String) -> void:
 	var list = _scene_list_item.instantiate()
 	list.name = text.capitalize()
 	_tab_container.add_child(list)
 
+# Add Category Button
 func _on_add_category_button_up():
 	if _category_name_line_edit.text != "":
 		_add_scene_list(_category_name_line_edit.text)
 		_category_name_line_edit.text = ""
 		_add_category_button.disabled = true
 
+# When category name text changes
 func _on_category_name_text_changed(new_text):
-	if new_text != "" && !(new_text.capitalize() in get_all_lists_names()):
+	if new_text != "" && !(new_text.capitalize() in get_all_lists_names_except()):
 		_add_category_button.disabled = false
 	else:
 		_add_category_button.disabled = true
 
+# Checks for duplications in scenes of lists
 func check_duplication():
-	var list: Array = _get_list_by_name("All").check_duplication()
+	var list: Array = _get_one_list_node_by_name("All").check_duplication()
 	for node in _get_lists_nodes():
 		node.set_reset_theme_for_all()
 		if list:
 			node.set_duplicate_theme(list)
 
+# Hide Button
 func _on_hide_button_up():
 	if _ignores_container.visible:
 		_hide_button.icon = _hide_button_unchecked
