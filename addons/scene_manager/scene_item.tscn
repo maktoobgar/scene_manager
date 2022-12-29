@@ -26,6 +26,8 @@ size_flags_horizontal = 3
 editable = false
 
 [node name="popup_menu" type="PopupMenu" parent="."]
+size = Vector2i(100, 28)
+hide_on_item_selection = false
 
 [connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]
 [connection signal="gui_input" from="key" to="." method="_on_key_gui_input"]

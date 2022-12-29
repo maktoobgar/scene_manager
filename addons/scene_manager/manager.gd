@@ -130,13 +130,13 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 func _clear_scenes_list(name: String) -> void:
 	var list: Node = _get_one_list_node_by_name(name)
 	if list != null:
-		list.clear_scene_list()
+		list.clear_list()
 
 # Clears scenes inside all UI lists
 func _clear_all_lists() -> void:
 	_sections = {}
-	for node in _get_lists_nodes():
-		node.clear_scene_list()
+	for list in _get_lists_nodes():
+		list.clear_list()
 
 # Removes all tabs in scene manager
 func _delete_all_tabs() -> void:
@@ -339,7 +339,7 @@ func _file_exists(address: String) -> bool:
 func _get_scenes_from_ui() -> Dictionary:
 	var list: Node = _get_one_list_node_by_name("All")
 	var data: Dictionary = {}
-	for node in list.get_scene_nodes():
+	for node in list.get_list_nodes():
 		data[node.get_key()] = {
 			"value": node.get_value(),
 			"sections": get_section(node.get_value()),

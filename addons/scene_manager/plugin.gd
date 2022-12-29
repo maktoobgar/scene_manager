@@ -3,6 +3,7 @@ extends EditorPlugin
 
 var menu: Node
 
+# Plugin installation
 func _enter_tree():
 	add_autoload_singleton("SceneManager", "res://addons/scene_manager/scene_manager.tscn")
 	add_autoload_singleton("Scenes", "res://addons/scene_manager/scenes.gd")
@@ -11,6 +12,7 @@ func _enter_tree():
 
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_UL, menu)
 
+# Plugin uninstallation
 func _exit_tree():
 	remove_autoload_singleton("SceneManager")
 	remove_autoload_singleton("Scenes")
