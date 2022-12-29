@@ -8,6 +8,16 @@
 
 config_version=5
 
+_global_script_classes=[{
+"base": "Node",
+"class": &"ItemSetting",
+"language": &"GDScript",
+"path": "res://addons/scene_manager/item_setting.gd"
+}]
+_global_script_class_icons={
+"ItemSetting": ""
+}
+
 [application]
 
 config/name="Scene Manager"

@@ -27,6 +27,7 @@ editable = false
 
 [node name="popup_menu" type="PopupMenu" parent="."]
 size = Vector2i(100, 28)
+visible = true
 hide_on_item_selection = false
 
 [connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]

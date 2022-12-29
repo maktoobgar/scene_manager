@@ -4,18 +4,16 @@ extends MarginContainer
 # paths
 const PATH: String = "res://addons/scene_manager/scenes.gd"
 const ROOT_ADDRESS = "res://"
-
 # prefile
 const comment: String = "#\n# Please do not edit anything in this script\n#\n# Just use the editor to change everything you want\n#\n"
 const extend_part: String = "extends Node\n\n"
 const var_part: String = "var scenes: Dictionary = "
-
 # scene item, ignore item
-@onready var _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
-@onready var _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
+const _ignore_item = preload("res://addons/scene_manager/ignore_item.tscn")
+const _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
 # icons
-@onready var _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
-@onready var _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
+const _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
+const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
 @onready var _ignore_list: Node = self.find_child("ignore_list")
 # add save, refresh
 @onready var _save_button: Button = self.find_child("save")
@@ -166,9 +164,9 @@ func remove_scene_from_list(section_name: String, scene_name: String, scene_addr
 	_section_remove(scene_address, section_name)
 
 # Adds an item to a list
-func add_scene_to_list(list_name: String, scene_name: String, scene_address: String) -> void:
+func add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
 	var list: Node = _get_one_list_node_by_name(list_name)
-	list.add_item(scene_name, scene_address)
+	list.add_item(scene_name, scene_address, setting)
 	_section_add(scene_address, list_name)
 
 # Adds an address to ignore list
@@ -178,14 +176,16 @@ func _add_ignore_item(address: String) -> void:
 	_ignore_list.add_child(item)
 
 # Appends all scenes into their assigned UI lists
+#
+# This function gets called just from `_on_delete_ignore_child`
 func _append_scenes(scenes: Dictionary) -> void:
 	_get_one_list_node_by_name("All").append_scenes(scenes)
-	for node in _get_lists_nodes():
-		if node.name == "All":
+	for list in _get_lists_nodes():
+		if list.name == "All":
 			continue
 		for key in scenes:
-			if node.name in get_section(scenes[key]):
-				node.add_item(key, scenes[key])
+			if list.name in get_section(scenes[key]):
+				list.add_item(key, scenes[key], ItemSetting.new(true))
 
 # Clears all tabs, UI lists and ignore list
 func _clear_all() -> void:
@@ -204,9 +204,13 @@ func _reload_scenes() -> void:
 		if !(data[key]["value"] in scenes_values):
 			continue
 		for section in data[key]["sections"]:
+			var visibility = data[key]["visibility"] if "visibility" in data[key].keys() else true
+			var setting = ItemSetting.new(visibility)
 			_section_add(data[key]["value"], section)
-			add_scene_to_list(section, key, data[key]["value"])
-		add_scene_to_list("All", key, data[key]["value"])
+			add_scene_to_list(section, key, data[key]["value"], setting)
+		var visibility = data[key]["visibility"] if "visibility" in data[key].keys() else true
+		var setting = ItemSetting.new(visibility)
+		add_scene_to_list("All", key, data[key]["value"], setting)
 
 	# Add scenes that are new and are not into `Scenes` script
 	var data_values: Array = []
@@ -216,7 +220,8 @@ func _reload_scenes() -> void:
 			data_values.append(data_dics[i]["value"])
 	for key in scenes:
 		if !(scenes[key] in data_values):
-			add_scene_to_list("All", key, scenes[key])
+			var setting = ItemSetting.new(true)
+			add_scene_to_list("All", key, scenes[key], setting)
 
 # Reloads ignores list in UI and in this script
 func _reload_ignores() -> void:
@@ -280,10 +285,10 @@ func _clean_sections() -> void:
 # Gets called by other nodes in UI
 #
 # Updates name of all scene_key
-func update_all_scene_with_key(scene_key: String, scene_new_key: String, value: String, except_list: Node):
-	for node in _get_lists_nodes():
-		if node != except_list:
-			node.update_scene_with_key(scene_key, scene_new_key, value)
+func update_all_scene_with_key(scene_key: String, scene_new_key: String, value: String, setting: ItemSetting, except_list: Array = []):
+	for list in _get_lists_nodes():
+		if list not in except_list:
+			list.update_scene_with_key(scene_key, scene_new_key, value, setting)
 
 # Removes `_ignore_list` and `_sections` keys from passed dictionary so that 
 # just scene names remain in returned dictionary
@@ -293,8 +298,8 @@ func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
 	return dic
 
 # Saves all data in `scenes` variable of `scenes.gd` file
-func _save_all(address: String, data: Dictionary) -> void:
-	var file := FileAccess.open(address, FileAccess.WRITE)
+func _save_all(data: Dictionary) -> void:
+	var file := FileAccess.open(PATH, FileAccess.WRITE)
 	var write_data: String = comment + extend_part + var_part + JSON.new().stringify(data) + "\n"
 	file.store_string(write_data)
 
@@ -336,6 +341,7 @@ func _file_exists(address: String) -> bool:
 	return FileAccess.file_exists(address)
 
 # Returns all scenes data from UI view in a dictionary
+#!! Here Needs A Way To Save Setting For Every Category Separately
 func _get_scenes_from_ui() -> Dictionary:
 	var list: Node = _get_one_list_node_by_name("All")
 	var data: Dictionary = {}
@@ -343,6 +349,7 @@ func _get_scenes_from_ui() -> Dictionary:
 		data[node.get_key()] = {
 			"value": node.get_value(),
 			"sections": get_section(node.get_value()),
+			"visibility": node.get_visibility(),
 		}
 	return data
 
@@ -364,7 +371,7 @@ func _on_save_button_up():
 	var dic: Dictionary = _get_scenes_from_ui()
 	dic["_ignore_list"] = _get_ignores_in_ignore_ui()
 	dic["_sections"] = get_all_lists_names_except(["All"])
-	_save_all(PATH, dic)
+	_save_all(dic)
 	_on_refresh_button_up()
 
 # Returns array of ignore nodes from UI view

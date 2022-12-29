@@ -5,4 +5,4 @@
 #
 extends Node
 
-var scenes: Dictionary = {"_ignore_list":["res://addons"],"_sections":["Character","Menu"],"scene1":{"sections":["Menu"],"value":"res://demo/scene1.tscn"},"scene2":{"sections":[],"value":"res://demo/scene2.tscn"},"scene3":{"sections":["Character","Menu"],"value":"res://demo/scene3.tscn"}}
+var scenes: Dictionary = {"_ignore_list":["res://addons"],"_sections":["Character","Menu"],"scene1":{"sections":[],"value":"res://demo/scene1.tscn","visibility":true},"scene2":{"sections":["Menu"],"value":"res://demo/scene2.tscn","visibility":true},"scene3":{"sections":["Character","Menu"],"value":"res://demo/scene3.tscn","visibility":false}}

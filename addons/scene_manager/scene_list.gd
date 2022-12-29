@@ -1,12 +1,19 @@
 @tool
 extends ScrollContainer
 
+# Scene item to instance and add in list
+const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
+# Duplicate + normal scene theme
+const _duplicate_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_duplicate.tres")
+const _normal_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_normal.tres")
+# Open close icons
+const _eye_open = preload("res://addons/scene_manager/icons/eye_open.png")
+const _eye_close = preload("res://addons/scene_manager/icons/eye_close.png")
+# variables
 @onready var _container: VBoxContainer = find_child("container")
-@onready var _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
 @onready var _root: Node = self
-@onready var _delete_list_button: Button = self.find_child("delete_list")
-@onready var _duplicate_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_duplicate.tres")
-@onready var _normal_line_edit: StyleBox = load("res://addons/scene_manager/themes/line_edit_normal.tres")
+@onready var _delete_list_button: Button = find_child("delete_list")
+@onready var _hidden_button: Button = find_child("hidden")
 
 # Finds and fills `_root` variable properly
 #
@@ -22,10 +29,11 @@ func _ready() -> void:
 		_root = _root.get_parent()
 
 # Adds an item to list
-func add_item(key: String, value: String) -> void:
+func add_item(key: String, value: String, setting: ItemSetting) -> void:
 	var item = _scene_item.instantiate()
 	item.set_key(key)
 	item.set_value(value)
+	item.set_setting(setting)
 	_container.add_child(item)
 
 # Removes an item from list
@@ -52,9 +60,12 @@ func clear_list() -> void:
 		_container.get_child(i).queue_free()
 
 # Appends all scenes into UI list
+#
+# This function is used for new items that are new in project directory and are
+# not saved before, so they have no settings
 func append_scenes(nodes: Dictionary) -> void:
 	for key in nodes:
-		add_item(key, nodes[key])
+		add_item(key, nodes[key], ItemSetting.new(true))
 
 # Return an array of record nodes from UI list
 func get_list_nodes() -> Array:
@@ -65,12 +76,13 @@ func get_list_nodes() -> Array:
 	return arr
 
 # Update a specific scene record with passed data in UI
-func update_scene_with_key(key: String, new_key: String, value: String) -> void:
+func update_scene_with_key(key: String, new_key: String, value: String, setting: ItemSetting) -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
 		var child: Node = _container.get_child(i)
 		if child.get_key() == key && child.get_value() == value:
 			child.set_key(new_key)
+			child.set_setting(setting)
 
 # Checks duplication in current list and return their scene addresses in an array from UI
 func check_duplication() -> Array:
@@ -107,3 +119,10 @@ func _on_delete_list_button_up() -> void:
 	if self.name == "All":
 		return
 	self.queue_free()
+
+# Hidden Button
+func _on_hidden_button_up():
+	if _hidden_button.icon == _eye_open:
+		_hidden_button.icon = _eye_close
+	elif _hidden_button.icon == _eye_close:
+		_hidden_button.icon = _eye_open

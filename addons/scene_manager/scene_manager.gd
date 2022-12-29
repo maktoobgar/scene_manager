@@ -1,10 +1,11 @@
 extends Node
 
+# consts
 const FADE: String = "fade"
 const COLOR: String = "color"
 const NO_COLOR: String = "no_color"
 const BLACK: Color = Color(0, 0, 0)
-
+# variables
 @onready var _fade_color_rect: ColorRect = find_child("fade")
 @onready var _animation_player: AnimationPlayer = find_child("animation_player")
 @onready var _in_transition: bool = false
