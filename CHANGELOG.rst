@@ -4,7 +4,9 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: bugs on duplication check fixed and documentation added for every function in manager.gd script
+* fix: change_scene function was changed to change_scene_to_file in conversion to godot4
+* docs: documentation added for every function in manager.gd script
+* fix: bugs on duplication check fixed
 
 3.0.1 (2022-12-28)
 ------------------

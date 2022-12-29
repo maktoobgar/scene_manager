@@ -73,7 +73,9 @@ func _check_reserved_keys() -> void:
 		_show_message()
 
 func _on_key_gui_input(event: InputEvent) -> void:
-	if event is InputEventKey && event.is_pressed():
+	if event is InputEventKey:
+		if event.is_pressed():
+			return
 		if get_key() == "":
 			_show_message()
 		elif get_key() != _key:
