@@ -8,7 +8,6 @@ UNRELEASED
 3.0.2 (2022-12-29)
 ------------------
 
-* fix: change_scene function was changed to change_scene_to_file in conversion to godot4
 * fix: bugs on duplication check fixed
 * docs: documentation added for all functions
 
