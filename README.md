@@ -10,25 +10,30 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 ## Features
 
+**Recently Added**:
+
+* [X] Ability to hide scenes in a list (Just Godot4)
+* [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
+
+**All**:
+
 * [X] A fully responsive tool menu structure to manage and categorize your scene
 * [X] Save button that saves all scenes in a dictionary
 * [X] Refresh button that refreshes the tool with latest saved status of the scenes
 * [X] List duplication check for keys
 * [X] Smooth transition between scenes
-* [X] Demo
-* [X] Memory performance
-* [X] Ignore folder feature which ignores some folders you said to ignore in `Scene Manager` addon tool
+* [X] Ignore folder feature in UI ignores all scenes inside that specific folder that you added in the ignore list
 * [X] Categorization for scenes
 * [X] Ignore folder section can hide optionally
-* [X] Change to previous scenes is allowed and possible and handled
+* [X] Change to previous scenes is possible
 * [X] Fully customizable transitions
-* [X] Customizable entering the first scene of the game transition
+* [X] Customizable way of entering the first scene of the game
 * [X] Reset `Scene Manager` function to assume the current scene as the first ever seen scene (to ignore previous scenes and don't go back to them by changing scene to the previous scene)
-* [X] Arrangeable scene categories(they will reset to alphabetic order after refresh or save button)
+* [X] Arrangeable scene categories(they will reset to alphabetic order after refresh or save button pressed)
 * [X] Fade in and fade out with different desired patterns
 * [X] You can create instance of a scene just by calling the scene with a key
 * [X] Transition is so much customizable
-* [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file inside them
+* [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file beside them
 
 ## How To Use?
 
@@ -42,7 +47,7 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 ## Tool View
 
-**Note**: All demo pictures are taken from Godot3.
+**Note**: All demo pictures and gifs are from Godot4 UI.
 This is the tool that you will see on your right side of the godot editor after activating `scene_manager` plugin. By **Add Category** button under scenes categories you can create new categories to manage your scenes.
 
 <p align="center">
@@ -63,6 +68,22 @@ Every folder that is added inside this section will be ignored and scenes inside
 
 <p align="center">
 <img src="images/ignore.png"/>
+</p>
+
+## Scene Menu
+
+Every scene has a button beside them which will open up a menu to configure settings of that specific scene.
+
+<p align="center">
+<img src="./images/menu.png"/>
+</p>
+
+## Hide (Just Godot4)
+
+From menu of every scene, you can visible or hide scenes and see just hidden or visible scenes in lists by clicking on eye icon at the top of list categories.
+
+<p align="center">
+<img src="./images/tool_hidden.png"/>
 </p>
 
 ## Demo

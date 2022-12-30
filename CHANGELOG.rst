@@ -4,7 +4,12 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: visible/hidden feature added
+
+3.1.0 (2022-12-30)
+------------------
+
+* feat: visible/hidden feature added
+* feat: hiding a specific scene in ignores section is possible
 
 3.0.2 (2022-12-29)
 ------------------
