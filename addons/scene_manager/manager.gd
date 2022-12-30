@@ -92,21 +92,23 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 	var files: Dictionary = {}
 	var folders: Array = []
 	var dir = DirAccess.open(root_path)
+	var original_root_path = root_path
 	if root_path[len(root_path) - 1] != "/":
 		root_path = root_path + "/"
-	if !(root_path.substr(0, len(root_path) - 1) in ignores) && dir:
+	if !(original_root_path in ignores) && dir:
 		dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
 		if dir.file_exists(root_path + ".gdignore"):
 			return files
 		while true:
 			var file_folder = dir.get_next()
+			var exact_address = root_path + file_folder
 			if file_folder == "":
 				break
 			elif dir.current_is_dir():
 				folders.append(file_folder)
-			elif file_folder.get_extension() == "tscn":
-				files[file_folder.replace("."+file_folder.get_extension(), "")] = root_path + file_folder
+			elif file_folder.get_extension() == "tscn" && !(exact_address in ignores):
+				files[file_folder.replace("."+file_folder.get_extension(), "")] = exact_address
 
 		dir.list_dir_end()
 
@@ -115,12 +117,16 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 			if len(new_files) != 0:
 				_merge_dict(files, new_files)
 	else:
-		if !(root_path.substr(0, len(root_path) - 1) in ignores):
+		if !(original_root_path in ignores):
 			# If `root_path` was really a file and not a folder, we know the reason and
-			# propably this is comming from `_on_delete_ignore_child`, so just ignore
-			# and otherwise print error message
-			if (!FileAccess.file_exists(root_path.substr(0, len(root_path) - 1))):
-				print("Couldn't open ", root_path)
+			# propably this is comming from `_on_delete_ignore_child`, so just add it to list
+			if (!FileAccess.file_exists(original_root_path)):
+				print("Couldn't open ", original_root_path)
+			else:
+				var splits = original_root_path.split("/", false)
+				var file = splits[len(splits) - 1]
+				if file.get_extension() == "tscn":
+					files[file.replace("."+file.get_extension(), "")] = original_root_path
 
 	return files
 
@@ -167,7 +173,7 @@ func remove_scene_from_list(section_name: String, scene_name: String, scene_addr
 func add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
 	var list: Node = _get_one_list_node_by_name(list_name)
 	list.add_item(scene_name, scene_address, setting)
-	_section_add(scene_address, list_name)
+	_sections_add(scene_address, list_name)
 
 # Adds an address to ignore list
 func _add_ignore_item(address: String) -> void:
@@ -184,8 +190,8 @@ func _append_scenes(scenes: Dictionary) -> void:
 		if list.name == "All":
 			continue
 		for key in scenes:
-			if list.name in get_section(scenes[key]):
-				list.add_item(key, scenes[key], ItemSetting.new(true))
+			if list.name in get_sections(scenes[key]):
+				list.add_item(key, scenes[key], ItemSetting.default())
 
 # Clears all tabs, UI lists and ignore list
 func _clear_all() -> void:
@@ -200,17 +206,25 @@ func _reload_scenes() -> void:
 	var scenes_values: Array = scenes.values()
 	# Reloads all scenes in `Scenes` script in UI and in this script
 	for key in data:
-		assert (("value" in data[key].keys()) && ("sections" in data[key].keys()), "Scene Manager Error: this format is not supported. Every scene item has to have 'value' and 'sections' field inside them.'")
-		if !(data[key]["value"] in scenes_values):
+		var scene = data[key]
+		var keys = scene.keys()
+		assert (("value" in keys) && ("sections" in keys), "Scene Manager Error: this format is not supported. Every scene item has to have 'value' and 'sections' field inside them.'")
+		if !(scene["value"] in scenes_values):
 			continue
-		for section in data[key]["sections"]:
-			var visibility = data[key]["visibility"] if "visibility" in data[key].keys() else true
-			var setting = ItemSetting.new(visibility)
-			_section_add(data[key]["value"], section)
-			add_scene_to_list(section, key, data[key]["value"], setting)
-		var visibility = data[key]["visibility"] if "visibility" in data[key].keys() else true
-		var setting = ItemSetting.new(visibility)
-		add_scene_to_list("All", key, data[key]["value"], setting)
+		for section in scene["sections"]:
+			var setting: ItemSetting = null
+			if "settings" in keys && section in scene["settings"].keys():
+				setting = ItemSetting.dictionary_to_item_setting(scene["settings"][section])
+			else:
+				setting = ItemSetting.default()
+			_sections_add(scene["value"], section)
+			add_scene_to_list(section, key, scene["value"], setting)
+		var setting: ItemSetting = null
+		if "settings" in keys && "All" in scene["settings"].keys():
+			setting = ItemSetting.dictionary_to_item_setting(scene["settings"]["All"])
+		else:
+			setting = ItemSetting.default()
+		add_scene_to_list("All", key, scene["value"], setting)
 
 	# Add scenes that are new and are not into `Scenes` script
 	var data_values: Array = []
@@ -220,7 +234,7 @@ func _reload_scenes() -> void:
 			data_values.append(data_dics[i]["value"])
 	for key in scenes:
 		if !(scenes[key] in data_values):
-			var setting = ItemSetting.new(true)
+			var setting = ItemSetting.default()
 			add_scene_to_list("All", key, scenes[key], setting)
 
 # Reloads ignores list in UI and in this script
@@ -245,8 +259,8 @@ func _on_refresh_button_up() -> void:
 
 # `_sections` variable Manager
 
-# Adds passed `section_name` to array value of passed `scene_address` key
-func _section_add(scene_address: String, section_name: String) -> void:
+# Adds passed `section_name` to array value of passed `scene_address` key in `_sections` variable
+func _sections_add(scene_address: String, section_name: String) -> void:
 	if section_name == "All":
 		return
 	if !_sections.has(scene_address):
@@ -264,7 +278,7 @@ func _section_remove(scene_address: String, section_name: String) -> void:
 		_sections.erase(scene_address)
 
 # Returns all sections of passed `scene_address`
-func get_section(scene_address: String) -> Array:
+func get_sections(scene_address: String) -> Array:
 	if !_sections.has(scene_address):
 		return []
 	return _sections[scene_address]
@@ -341,19 +355,28 @@ func _file_exists(address: String) -> bool:
 	return FileAccess.file_exists(address)
 
 # Returns all scenes data from UI view in a dictionary
-#!! Here Needs A Way To Save Setting For Every Category Separately
 func _get_scenes_from_ui() -> Dictionary:
 	var list: Node = _get_one_list_node_by_name("All")
 	var data: Dictionary = {}
 	for node in list.get_list_nodes():
+		var value = node.get_value()
+		var sections = get_sections(value)
+		var settings = {}
+		for section in sections:
+			var li = _get_one_list_node_by_name(section)
+			var specific_node = li.get_node_by_scene_address(value)
+			var setting = specific_node.get_setting()
+			settings[section] = setting.as_dictionary()
+		var setting = node.get_setting()
+		settings["All"] = setting.as_dictionary()
 		data[node.get_key()] = {
-			"value": node.get_value(),
-			"sections": get_section(node.get_value()),
-			"visibility": node.get_visibility(),
+			"value": value,
+			"sections": sections,
+			"settings": settings,
 		}
 	return data
 
-# Returns all scenes nodes from UI view in an array
+# Returns all scenes nodes from `All` UI list and returns in an array
 #
 # Unused method
 func _get_scene_nodes_from_view() -> Array:

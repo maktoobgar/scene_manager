@@ -28,12 +28,17 @@ func _ready() -> void:
 			break
 		_root = _root.get_parent()
 
+# Determines item can be visible with current settings or not
+func determine_item_visibility(setting: ItemSetting) -> bool:
+	return true if _hidden_button.icon == _eye_close && !setting.visibility else true if _hidden_button.icon == _eye_open && setting.visibility else false
+
 # Adds an item to list
 func add_item(key: String, value: String, setting: ItemSetting) -> void:
 	var item = _scene_item.instantiate()
 	item.set_key(key)
 	item.set_value(value)
 	item.set_setting(setting)
+	item.visible = determine_item_visibility(setting)
 	_container.add_child(item)
 
 # Removes an item from list
@@ -65,7 +70,7 @@ func clear_list() -> void:
 # not saved before, so they have no settings
 func append_scenes(nodes: Dictionary) -> void:
 	for key in nodes:
-		add_item(key, nodes[key], ItemSetting.new(true))
+		add_item(key, nodes[key], ItemSetting.default())
 
 # Return an array of record nodes from UI list
 func get_list_nodes() -> Array:
@@ -74,6 +79,24 @@ func get_list_nodes() -> Array:
 		if i == 0: continue
 		arr.append(_container.get_child(i))
 	return arr
+
+# Returns a specific node from passed scene name
+func get_node_by_scene_name(scene_name: String) -> Node:
+	for i in range(_container.get_child_count()):
+		if i == 0: continue
+		var element = _container.get_child(i)
+		if element.get_key() == scene_name:
+			return element
+	return null
+
+# Returns a specific node from passed scene address
+func get_node_by_scene_address(scene_address: String) -> Node:
+	for i in range(_container.get_child_count()):
+		if i == 0: continue
+		var element = _container.get_child(i)
+		if element.get_value() == scene_address:
+			return element
+	return null
 
 # Update a specific scene record with passed data in UI
 func update_scene_with_key(key: String, new_key: String, value: String, setting: ItemSetting) -> void:
@@ -120,9 +143,18 @@ func _on_delete_list_button_up() -> void:
 		return
 	self.queue_free()
 
+# Refreshes `visible` of all items in list
+func _refresh_visible_of_all_items() -> void:
+	for i in range(_container.get_child_count()):
+		if i == 0: continue
+		var element = _container.get_child(i)
+		element.visible = determine_item_visibility(element.get_setting())
+
 # Hidden Button
 func _on_hidden_button_up():
 	if _hidden_button.icon == _eye_open:
 		_hidden_button.icon = _eye_close
+		_refresh_visible_of_all_items()
 	elif _hidden_button.icon == _eye_close:
 		_hidden_button.icon = _eye_open
+		_refresh_visible_of_all_items()

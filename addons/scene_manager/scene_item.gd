@@ -44,6 +44,7 @@ func get_visibility() -> bool:
 # Sets value of `_setting.visibility`
 func set_visibility(input: bool) -> void:
 	_setting.visibility = input
+	self.visible = get_parent().get_parent().determine_item_visibility(_setting)
 
 # Returns `_setting`
 func get_setting() -> ItemSetting:
@@ -70,7 +71,7 @@ func _on_popup_button_button_up():
 			continue
 		_popup_menu.add_check_item(value)
 		_popup_menu.set_item_id(i, 0)
-		_popup_menu.set_item_checked(i, value in _root.get_section(get_value()))
+		_popup_menu.set_item_checked(i, value in _root.get_sections(get_value()))
 		i += 1
 	_popup_menu.add_separator("General")
 	i += 1

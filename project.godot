@@ -9,7 +9,7 @@
 config_version=5
 
 _global_script_classes=[{
-"base": "Node",
+"base": "Object",
 "class": &"ItemSetting",
 "language": &"GDScript",
 "path": "res://addons/scene_manager/item_setting.gd"
