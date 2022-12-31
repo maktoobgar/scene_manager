@@ -12,6 +12,7 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 **Recently Added**:
 
+* [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
 * [X] Ability to hide scenes in a list (Just Godot4)
 * [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
 
@@ -183,3 +184,9 @@ This is the node you use inside your game code and it has these functions:
    * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
 10. `create_scene_instance`(**key**: String) -> Node:
    * Creates an instance of the passed scene **key** variable. (if **key** is not right, code breaks)
+11. `set_back_limit`(input: int) -> void:
+   * Limits how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality.
+   * Allowed `input` values:
+      1. input = -1 => unlimited (default)
+      2. input =  0 => we can not go back to any previous scenes
+      3. input >  0 => we can go back to `input` or less previous scenes
