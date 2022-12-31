@@ -10,6 +10,7 @@ const BLACK: Color = Color(0, 0, 0)
 @onready var _animation_player: AnimationPlayer = find_child("animation_player")
 @onready var _in_transition: bool = false
 @onready var _stack: Array = []
+@onready var _stack_limit: int = -1
 @onready var _current_scene: String = ""
 @onready var _first_time: bool = true
 @onready var _patterns: Dictionary = {}
@@ -83,7 +84,15 @@ func _set_out_transition() -> void:
 
 # adds current scene to `_stack`
 func _append_stack(key: String) -> void:
-	_stack.append(_current_scene)
+	if _stack_limit == -1:
+		_stack.append(_current_scene)
+	elif _stack_limit > 0:
+		if _stack_limit <= len(_stack):
+			for i in range(len(_stack) - _stack_limit + 1):
+				_stack.pop_front()
+			_stack.append(_current_scene)
+		else:
+			_stack.append(_current_scene)
 	_current_scene = key
 
 # pops latest added scene
@@ -154,6 +163,23 @@ func _set_pattern(options: Options, general_options: GeneralOptions) -> void:
 		_fade_color_rect.material.set_shader_parameter("inverted", options.inverted)
 		_fade_color_rect.material.set_shader_parameter("smoothness", options.smoothness)
 		_fade_color_rect.material.set_shader_parameter("color", Vector3(general_options.color.r, general_options.color.g, general_options.color.b))
+
+# limits how much deep scene manager is allowed to record previous scenes which 
+# affects in changing scene to `back`(previous scene) functionality
+#
+# allowed `input` values:
+# input = -1 => unlimited (default)
+# input =  0 => we can not go back to any previos scenes
+# input >  0 => we can go back to `input` or less previous scenes
+func set_back_limit(input: int) -> void:
+	assert(input >= -1, "input must to >= -1")
+	_stack_limit = input
+	if input == 0:
+		_stack.clear()
+	elif input > 0:
+		if input <= len(_stack):
+			for i in range(len(_stack) - input):
+				_stack.pop_front()
 
 # creates scene instance for in code usage
 func create_scene_instance(key: String) -> Node:

@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: #1 added a feature to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
 
 3.1.0 (2022-12-30)
 ------------------
