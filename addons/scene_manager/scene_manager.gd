@@ -166,7 +166,9 @@ func _set_pattern(options: Options, general_options: GeneralOptions) -> void:
 		_fade_color_rect.material.set_shader_param("smoothness", options.smoothness)
 		_fade_color_rect.material.set_shader_param("color", Vector3(general_options.color.r, general_options.color.g, general_options.color.b))
 
-# assigns a new limit for how many scenes we can go back to
+# limits how much deep scene manager is allowed to record previous scenes which 
+# affects in changing scene to `back`(previous scene) functionality
+#
 # allowed `input` values:
 # input = -1 => unlimited (default)
 # input =  0 => we can not go back to any previos scenes
