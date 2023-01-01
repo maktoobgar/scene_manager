@@ -17,3 +17,6 @@ static func dictionary_to_item_setting(input: Dictionary) -> ItemSetting:
 
 static func default() -> ItemSetting:
 	return ItemSetting.new(true)
+
+func duplicate() -> ItemSetting:
+	return new(self.visibility)

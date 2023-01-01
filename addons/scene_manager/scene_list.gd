@@ -5,7 +5,6 @@ extends ScrollContainer
 const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
 # Duplicate + normal scene theme
 const _duplicate_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_duplicate.tres")
-const _normal_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_normal.tres")
 # Open close icons
 const _eye_open = preload("res://addons/scene_manager/icons/eye_open.png")
 const _eye_close = preload("res://addons/scene_manager/icons/eye_close.png")
@@ -127,7 +126,7 @@ func set_reset_theme_for_all() -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
 		var child: Node = _container.get_child(i)
-		child.custom_set_theme(_normal_line_edit)
+		child.remove_custom_theme()
 
 # Sets duplicate theme for children in passed list in UI
 func set_duplicate_theme(list: Array) -> void:

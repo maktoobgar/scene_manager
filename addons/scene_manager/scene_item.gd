@@ -58,6 +58,10 @@ func set_setting(setting: ItemSetting) -> void:
 func custom_set_theme(theme: StyleBox) -> void:
 	get_key_node().add_theme_stylebox_override("normal", theme)
 
+# Removes added custom theme for `key` LineEdit
+func remove_custom_theme() -> void:
+	get_key_node().remove_theme_stylebox_override("normal")
+
 # Popup Button
 func _on_popup_button_button_up():
 	var i: int = 0
@@ -80,10 +84,8 @@ func _on_popup_button_button_up():
 	_popup_menu.set_item_checked(i, _setting.visibility)
 	_popup_menu.set_item_id(i, 1)
 	i += 1
-	var size = Vector2i(100, i*28)
-	var mouse_position = get_global_mouse_position()
-	mouse_position.y = mouse_position.y + size.y / 2
-	_popup_menu.popup(Rect2(mouse_position, size))
+	var popup_size = _popup_menu.size
+	_popup_menu.popup(Rect2(get_global_mouse_position(), popup_size))
 
 # Heppends when an item is selected
 func _on_popup_menu_index_pressed(index: int):
@@ -93,7 +95,7 @@ func _on_popup_menu_index_pressed(index: int):
 	_popup_menu.set_item_checked(index, !checked)
 	if id == 0:
 		if !checked:
-			_root.add_scene_to_list(text, get_key(), get_value())
+			_root.add_scene_to_list(text, get_key(), get_value(), ItemSetting.default())
 		else:
 			_root.remove_scene_from_list(text, get_key(), get_value())
 	elif id == 1:

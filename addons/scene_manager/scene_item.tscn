@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://hh0sw1g7upfc"]
+[gd_scene load_steps=3 format=3 uid="uid://hh0sw1g7upfc"]
 
 [ext_resource type="Script" path="res://addons/scene_manager/scene_item.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://8336mcj402s5" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
-[ext_resource type="StyleBox" uid="uid://bcnnmspvw570o" path="res://addons/scene_manager/themes/line_edit_normal.tres" id="3_v2u85"]
 
 [node name="item" type="HBoxContainer"]
 offset_right = 280.0
@@ -12,21 +11,15 @@ script = ExtResource("2")
 
 [node name="popup_button" type="Button" parent="."]
 custom_minimum_size = Vector2(28, 28)
-offset_right = 28.0
-offset_bottom = 31.0
+layout_mode = 2
 icon = ExtResource("3")
 
 [node name="key" type="LineEdit" parent="."]
-offset_left = 32.0
-offset_right = 154.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/normal = ExtResource("3_v2u85")
 
 [node name="value" type="LineEdit" parent="."]
-offset_left = 158.0
-offset_right = 280.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
 editable = false
 
