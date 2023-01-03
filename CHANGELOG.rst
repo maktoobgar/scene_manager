@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: UX experience on duplicate rows updated, bug on adding to other lists fixed,
+
+3.2.1 (2023-01-03)
+------------------
+
+* fix: UX on duplicate rows updated, bug on adding to other lists fixed
 
 3.2.0 (2022-12-31)
 ------------------
