@@ -1,0 +1,134 @@
+[gd_scene load_steps=19 format=3 uid="uid://cy1bqj2yvxknr"]
+
+[ext_resource type="Texture2D" uid="uid://x3d0ui81rgd" path="res://demo/loading_sprite_sheet.png" id="1_a4tky"]
+[ext_resource type="Script" path="res://demo/loading.gd" id="1_pxy56"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jf28a"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dd3is"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jvn0q"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_efm7h"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6clc4"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gnbdr"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hdkdb"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1pitr"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 112, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ot3c6"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bugdx"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 144, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c18fr"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 160, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hwcbt"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 176, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bsknd"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 192, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0rimh"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 208, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x4rg0"]
+atlas = ExtResource("1_a4tky")
+region = Rect2(0, 224, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lmmu3"]
+animations = [{
+"frames": [SubResource("AtlasTexture_jf28a"), SubResource("AtlasTexture_dd3is"), SubResource("AtlasTexture_jvn0q"), SubResource("AtlasTexture_efm7h"), SubResource("AtlasTexture_6clc4"), SubResource("AtlasTexture_gnbdr"), SubResource("AtlasTexture_hdkdb"), SubResource("AtlasTexture_1pitr"), SubResource("AtlasTexture_ot3c6"), SubResource("AtlasTexture_bugdx"), SubResource("AtlasTexture_c18fr"), SubResource("AtlasTexture_hwcbt"), SubResource("AtlasTexture_bsknd"), SubResource("AtlasTexture_0rimh"), SubResource("AtlasTexture_x4rg0")],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="loading" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pxy56")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.831373, 0.458824, 0, 1)
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Next" type="Button" parent="VBoxContainer2/HBoxContainer/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+text = "Go To Next Scene"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer2"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Progress" type="ProgressBar" parent="VBoxContainer2/MarginContainer"]
+layout_mode = 2
+
+[node name="Loading" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(15, 435)
+scale = Vector2(10.375, 10.375)
+frames = SubResource("SpriteFrames_lmmu3")
+speed_scale = 2.0
+playing = true
+centered = false
+
+[connection signal="button_up" from="VBoxContainer2/HBoxContainer/MarginContainer/Next" to="." method="_on_next_button_up"]

@@ -1,4 +1,3 @@
-extends Object
 class_name ItemSetting
 
 var visibility: bool = true
