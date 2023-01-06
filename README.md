@@ -10,6 +10,7 @@ A tool to manage transition between different scenes.
 
 **Recently Added**:
 
+* [X] Loading scenes interactive is possible. (Loading scene code example added)
 * [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
 
 **All**:
@@ -91,21 +92,22 @@ Just a simple demo to show some abilities of this addon:
 extends Button
 
 export(String) var scene
-export(float) var fade_out_speed = 1
-export(float) var fade_in_speed = 1
+export(float) var fade_out_speed = 1.0
+export(float) var fade_in_speed = 1.0
 export(String) var fade_out_pattern = "fade"
-export(String) var fade_in_pattern = "_fade"
+export(String) var fade_in_pattern = "fade"
 export(float, 0, 1) var fade_out_smoothness = 0.1
 export(float, 0, 1) var fade_in_smoothness = 0.1
 export(bool) var fade_out_inverted = false
 export(bool) var fade_in_inverted = false
 export(Color) var color = Color(0, 0, 0)
-export(float) var timeout = 0
+export(float) var timeout = 0.0
 export(bool) var clickable = false
+export(bool) var add_to_back = true
 
 onready var fade_out_options = SceneManager.create_options(fade_out_speed, fade_out_pattern, fade_out_smoothness, fade_out_inverted)
 onready var fade_in_options = SceneManager.create_options(fade_in_speed, fade_in_pattern, fade_in_smoothness, fade_in_inverted)
-onready var general_options = SceneManager.create_general_options(color, timeout, clickable)
+onready var general_options = SceneManager.create_general_options(color, timeout, clickable, add_to_back)
 
 func _ready() -> void:
 	var fade_in_first_scene_options = SceneManager.create_options(1, "fade")
@@ -122,6 +124,39 @@ func _on_button_button_up():
 
 func _on_reset_button_up():
 	SceneManager.reset_scene_manager()
+
+func _on_loading_scene_button_up():
+	SceneManager.set_recorded_scene(scene)
+	SceneManager.change_scene("loading", fade_out_options, fade_in_options, general_options)
+```
+
+Loading Scene Code Example:
+
+```gdscript
+extends Control
+
+# Nodes
+onready var progress: ProgressBar = find_node("Progress")
+onready var loading: AnimatedSprite = find_node("Loading")
+onready var next: Button = find_node("Next")
+
+func _ready():
+	SceneManager.connect("load_percent_changed", self, "percent_changed")
+	SceneManager.connect("load_finished", self, "loading_finished")
+	SceneManager.load_scene_interactive(SceneManager.get_recorded_scene())
+
+func percent_changed(number: int) -> void:
+	progress.value = number
+
+func loading_finished() -> void:
+	loading.visible = false
+	next.visible = true
+
+func _on_next_button_up():
+	var fade_out_options = SceneManager.create_options(1.0, "scribbles", 0.2, true)
+	var fade_in_options = SceneManager.create_options(1.0, "crooked_tiles", 0.2, true)
+	var general_options = SceneManager.create_general_options(Color(0, 0, 0), 0, false, true)
+	SceneManager.change_scene_to_loaded_scene(fade_out_options, fade_in_options, general_options)
 ```
 
 ## SceneManager
@@ -150,10 +185,11 @@ This is the node you use inside your game code and it has these functions:
    * **fade_pattern** = name of a shader pattern which is in `addons/scene_manager/shader_patterns` folder for fading out or fading into the scene. (if you use `fade` or an empty string, it causes a simple fade screen transition)
    * **smoothness** = defines roughness of pattern's edges. (this value is between 0-1 and more near to 1, softer edges and more near to 0, harder edges)
    * **inverted** = inverts the pattern.
-7. `create_general_options`(**color**: Color = Color(0, 0, 0), **timeout**: float = 0, **clickable**: bool = true) -> GeneralOptions:
+7. `create_general_options`(**color**: Color = Color(0, 0, 0), **timeout**: float = 0, **clickable**: bool = true, **add_to_back**: bool = true) -> GeneralOptions:
    * **color** = color for the whole transition.
    * **timeout** = between this scene and next scene, there would be a gap which can take much longer that usual(default is 0) by your choice by changing this option.
    * **clickable** = makes the scene behind the transition visuals clickable or not.
+   * **add_to_back** = if true, you can go back to current scene after changing scene to next scene by going to "back" scene which means previous scene.
 8. `show_first_scene`(**fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
    * Call this method inside `_ready` function of a node with a script which that node is inside the first scene that game jumps into it and this causes to have a smooth transition into the first game scene.
    * This function works just once at the beginning of the first game scene. After that, if you call this function again, nothing happens.
@@ -162,10 +198,33 @@ This is the node you use inside your game code and it has these functions:
 9. `reset_scene_manager`() -> void:
    * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
 10. `create_scene_instance`(**key**: String) -> Node:
-   * Creates an instance of the passed scene **key** variable. (if **key** is not right, code breaks)
-11. `set_back_limit`(input: int) -> void:
-   * Limits how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality.
-   * Allowed `input` values:
-      1. input = -1 => unlimited (default)
-      2. input =  0 => we can not go back to any previous scenes
-      3. input >  0 => we can go back to `input` or less previous scenes
+    * Returns scene instance of passed scene key (blocking)
+11. `set_back_limit`(**input**: int) -> void:
+    * Limits how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality.
+    * Allowed `input` values:
+      1.  input = -1 => unlimited (default)
+      2.  input =  0 => we can not go back to any previous scenes
+      3.  input >  0 => we can go back to `input` or less previous scenes
+12. `get_scene`(**key**: String) -> PackedScene:
+    * Returns PackedScene of passed scene key (blocking)
+13. `load_scene_interactive`(**key**: String) -> void:
+    * Loads scene interactive.
+    * **Note**: Connect to `load_percent_changed(value: int)` and `load_finished` signals to listen to updates on your scene loading status.
+14. `get_loaded_scene`() -> PackedScene:
+    * Returns loaded scene.
+    * **Note**: If scene is not loaded, blocks and waits until scene is ready. (acts blocking in code and may freeze your game, make sure scene is ready to get)
+15. `change_scene_to_loaded_scene`(**fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+    * Changes scene to interactively loaded scene.
+    * Checkout function number 5 (`change_scene`) to understand what **fade_out_options**, **fade_in_options** and **general_options** are.
+16. `get_previous_scene`() -> String:
+    * Returns previous scene. (the scene before current scene)
+17. `get_previous_scene_at`(**index**: int) -> String:
+    * Returns a specific previous scene at an exact index position
+18. `pop_previous_scene`() -> String:
+    * Returns previous scene and removes it from list of previous scenes.
+19. `previous_scenes_length`() -> int:
+    * Returns how many scenes there are in list of previous scenes.
+20. `set_recorded_scene`(**key**: String) -> void:
+    * Records a scene key to be used for loading scenes to know where to go after getting loaded into loading scene or just for next scene to know where to go next.
+21. `get_recorded_scene`() -> String:
+    * Returns recorded scene by `set_recorded_scene` function.

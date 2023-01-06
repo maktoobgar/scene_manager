@@ -4,7 +4,13 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: added ability to load scenes interactively + some more useful functions added
+
+2.2.0 (2023-01-06)
+------------------
+
+* feat: added ability to load scenes interactive
+* feat: some more useful functions added for more complex implementations
+* fix: just some debugging to fix some odd behaviors
 
 2.1.0 (2022-12-31)
 ------------------
