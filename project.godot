@@ -21,6 +21,7 @@ Scenes="*res://addons/scene_manager/scenes.gd"
 
 [display]
 
+window/size/height=720
 window/size/resizable=false
 
 [editor_plugins]
