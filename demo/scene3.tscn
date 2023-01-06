@@ -33,7 +33,7 @@ offset_right = 755.0
 offset_bottom = 581.0
 theme_override_constants/separation = 15
 
-[node name="loadings_scene" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 150)
 offset_right = 358.0
 offset_bottom = 150.0
@@ -50,6 +50,7 @@ fade_in_smoothness = 0.3
 fade_out_inverted = true
 color = Color(0, 0.498039, 0, 1)
 timeout = 0.2
+add_to_back = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 offset_top = 165.0
@@ -147,7 +148,7 @@ offset_top = 490.0
 offset_right = 358.0
 offset_bottom = 514.0
 
-[connection signal="button_up" from="CenterContainer/VBoxContainer/loadings_scene" to="CenterContainer/VBoxContainer/loadings_scene" method="_on_loading_scene_button_up"]
+[connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene" to="CenterContainer/VBoxContainer/loading_scene" method="_on_loading_scene_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/next_scene" to="CenterContainer/VBoxContainer/HBoxContainer/next_scene" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" method="_on_reset_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" method="_on_button_button_up"]

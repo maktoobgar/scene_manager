@@ -81,7 +81,6 @@ grow_vertical = 2
 script = ExtResource("1_pxy56")
 
 [node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -90,7 +89,6 @@ grow_vertical = 2
 color = Color(0.831373, 0.458824, 0, 1)
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -99,28 +97,35 @@ grow_vertical = 2
 alignment = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
-layout_mode = 2
+offset_top = 597.0
+offset_right = 1152.0
+offset_bottom = 607.0
 alignment = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer2/HBoxContainer"]
-layout_mode = 2
+offset_left = 1142.0
+offset_right = 1152.0
+offset_bottom = 10.0
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="Next" type="Button" parent="VBoxContainer2/HBoxContainer/MarginContainer"]
 visible = false
 custom_minimum_size = Vector2(150, 50)
-layout_mode = 2
 text = "Go To Next Scene"
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer2"]
-layout_mode = 2
+offset_top = 611.0
+offset_right = 1152.0
+offset_bottom = 648.0
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="Progress" type="ProgressBar" parent="VBoxContainer2/MarginContainer"]
-layout_mode = 2
+offset_left = 10.0
+offset_right = 1142.0
+offset_bottom = 27.0
 
 [node name="Loading" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

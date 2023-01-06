@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🐛 fix: just some debuging to fix some odd behavior
 * 🎉 feat: added ability to load scenes interactively + some more useful functions added
 
 3.2.1 (2023-01-03)

@@ -328,16 +328,17 @@ func load_scene_interactive(key: String) -> void:
 
 # returns loaded scene
 func get_loaded_scene() -> PackedScene:
-	if _load_scene != null:
+	if _load_scene != "":
 		return ResourceLoader.load_threaded_get(_load_scene) as PackedScene
 	return null
 
 # changes scene to loaded scene
 func change_scene_to_loaded_scene(fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
-	var scene = ResourceLoader.load_threaded_get(_load_scene) as PackedScene
-	if scene:
-		_load_scene = ""
-		change_scene(scene, fade_out_options, fade_in_options, general_options)
+	if _load_scene != "":
+		var scene = ResourceLoader.load_threaded_get(_load_scene) as PackedScene
+		if scene:
+			_load_scene = ""
+			change_scene(scene, fade_out_options, fade_in_options, general_options)
 
 # returns previous scene (scene before current scene)
 func get_previous_scene() -> String:
