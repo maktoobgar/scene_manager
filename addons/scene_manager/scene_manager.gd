@@ -15,6 +15,13 @@ onready var _first_time: bool = true
 onready var _patterns: Dictionary = {}
 onready var _reserved_keys: Array = ["back", "null", "ignore", "refresh",
 	"reload", "restart", "exit", "quit"]
+var queue = preload("res://addons/scene_manager/resource_queue.gd").new()
+var _load_scene: String = ""
+var _load_progress: int = 0
+var _recorded_scene: String = ""
+# signals
+signal load_finished
+signal load_percent_changed(value)
 
 class Options:
 	# based on seconds
@@ -27,6 +34,7 @@ class GeneralOptions:
 	var color: Color = Color(0, 0, 0)
 	var timeout: float = 0
 	var clickable: bool = true
+	var add_to_back: bool = true
 
 # sets current scene to starting point (used for `back` functionality)
 func _set_current_scene() -> void:
@@ -58,9 +66,12 @@ func _get_patterns() -> void:
 		dir.list_dir_end()
 
 # set current scene and get patterns from `addons/scene_manager/shader_patterns` folder
+# initializes queue to interactively load scenes
 func _ready() -> void:
+	set_process(false)
 	_set_current_scene()
 	_get_patterns()
+	queue.start()
 
 # `speed` unit is in seconds
 func _fade_in(speed: float) -> bool:
@@ -97,7 +108,7 @@ func _append_stack(key: String) -> void:
 			_stack.append(_current_scene)
 	_current_scene = key
 
-# pops latest added scene
+# pops most recent added scene to `_stack`
 func _pop_stack() -> String:
 	var pop = _stack.pop_back()
 	if pop:
@@ -117,23 +128,37 @@ func _refresh() -> bool:
 	get_tree().change_scene(Scenes.scenes[_current_scene]["value"])
 	return true
 
-# checks different states of key and make actual transitions happen
-func _change_scene(key: String) -> bool:
-	if key == "back":
+# checks different states of scene and make actual transitions happen
+func _change_scene(scene, add_to_back: bool) -> bool:
+	if scene is PackedScene:
+		get_tree().change_scene_to(scene)
+		var path: String = scene.resource_path
+		var found_key: String = ""
+		for key in Scenes.scenes:
+			if key.begins_with("_"):
+				continue
+			if Scenes.scenes[key]["value"] == path:
+				found_key = key
+		if add_to_back && found_key != "":
+			_append_stack(found_key)
+		return true
+
+	if scene == "back":
 		return _back()
 
-	elif key == "null" || key == "ignore" || !key:
+	elif scene == "null" || scene == "ignore" || !scene:
 		return false
 
-	elif key == "reload" || key == "refresh" || key == "restart":
+	elif scene == "reload" || scene == "refresh" || scene == "restart":
 		return _refresh()
 
-	elif key == "exit" || key == "quit":
+	elif scene == "exit" || scene == "quit":
 		get_tree().quit(0)
 
 	else:
-		get_tree().change_scene(Scenes.scenes[key]["value"])
-		_append_stack(key)
+		get_tree().change_scene(Scenes.scenes[scene]["value"])
+		if add_to_back:
+			_append_stack(scene)
 		return true
 	return false
 
@@ -166,6 +191,17 @@ func _set_pattern(options: Options, general_options: GeneralOptions) -> void:
 		_fade_color_rect.material.set_shader_param("smoothness", options.smoothness)
 		_fade_color_rect.material.set_shader_param("color", Vector3(general_options.color.r, general_options.color.g, general_options.color.b))
 
+# used for interactive change scene
+func _process(_delta: float):
+	var nextPercent: int = int(queue.get_progress(_load_scene) * 100)
+	var done = queue.is_ready(_load_scene)
+	if _load_progress != nextPercent:
+		emit_signal("load_percent_changed", nextPercent)
+	if done:
+		set_process(false)
+		_load_progress = 0
+		emit_signal("load_finished")
+
 # limits how much deep scene manager is allowed to record previous scenes which 
 # affects in changing scene to `back`(previous scene) functionality
 #
@@ -183,11 +219,6 @@ func set_back_limit(input: int) -> void:
 			for i in range(len(_stack) - input):
 				_stack.pop_front()
 
-# creates scene instance for in code usage
-func create_scene_instance(key: String) -> Node:
-	validate_scene(key)
-	return load(Scenes.scenes[key]["value"]).instance()
-
 # resets the `_current_scene` and clears `_stack`
 func reset_scene_manager() -> void:
 	_set_current_scene()
@@ -202,12 +233,14 @@ func create_options(fade_speed: float = 1, fade_pattern: String = "fade", smooth
 	options.inverted = inverted
 	return options
 
-# creates options for common properties in transition
-func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0, clickable: bool = true) -> GeneralOptions:
+# add_to_back means that you can go back to the scene if you
+# change scene to `back` scene
+func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0.0, clickable: bool = true, add_to_back: bool = true) -> GeneralOptions:
 	var options: GeneralOptions = GeneralOptions.new()
 	options.color = color
 	options.timeout = timeout
 	options.clickable = clickable
+	options.add_to_back = add_to_back
 	return options
 
 # validates passed scene key
@@ -248,16 +281,28 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 		_set_clickable(true)
 		_set_out_transition()
 
+# creates scene instance for in code usage
+func create_scene_instance(key: String) -> Node:
+	validate_scene(key)
+	return load(Scenes.scenes[key]["value"]).instance()
+
+# returns PackedScene of passed scene key blockingly
+func get_scene(key: String) -> PackedScene:
+	validate_scene(key)
+	var address = Scenes.scenes[key]["value"]
+	queue.queue_resource(address, true)
+	return queue.get_resource(address)
+
 # changes current scene to the next scene
-func change_scene(key: String, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
-	if (Scenes.scenes.has(key) || key in _reserved_keys || !key) && !_in_transition && !key.begins_with("_"):
+func change_scene(scene, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
+	if (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition && !scene.begins_with("_")) || (scene is PackedScene):
 		_first_time = false
 		_set_in_transition()
 		_set_clickable(general_options.clickable)
 		_set_pattern(fade_out_options, general_options)
 		if _fade_out(fade_out_options.fade_speed):
 			yield(_animation_player, "animation_finished")
-		if _change_scene(key):
+		if _change_scene(scene, general_options.add_to_back):
 			yield(get_tree(), "node_added")
 		if _timeout(general_options.timeout):
 			yield(get_tree().create_timer(general_options.timeout), "timeout")
@@ -267,3 +312,54 @@ func change_scene(key: String, fade_out_options: Options, fade_in_options: Optio
 			yield(_animation_player, "animation_finished")
 		_set_clickable(true)
 		_set_out_transition()
+
+# loads scene interactively
+# connect to `load_percent_changed(value: int)` and `load_finished` signals
+# to interactively check updates on your scene loading
+func load_scene_interactive(key: String) -> void:
+	if safe_validate_scene(key) && !key.begins_with("_"):
+		set_process(true)
+		_load_scene = Scenes.scenes[key]["value"]
+		queue.queue_resource(_load_scene, true)
+
+# returns loaded scene
+func get_loaded_scene() -> PackedScene:
+	if _load_scene != "" && queue.is_ready(_load_scene):
+		return queue.get_resource(_load_scene) as PackedScene
+	return null
+
+# changes scene to loaded scene
+func change_scene_to_loaded_scene(fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
+	if _load_scene != "" && queue.is_ready(_load_scene):
+		var scene = queue.get_resource(_load_scene) as PackedScene
+		if scene:
+			_load_scene = ""
+			change_scene(scene, fade_out_options, fade_in_options, general_options)
+
+# returns previous scene (scene before current scene)
+func get_previous_scene() -> String:
+	return _stack[len(_stack) - 1]
+
+# returns a specific previous scene at an exact index position
+func get_previous_scene_at(index: int) -> String:
+	if index < len(_stack):
+		return _stack[index]
+	return ""
+
+# pops from the back stack and returns previous scene (scene before current scene)
+func pop_previous_scene() -> String:
+	return _pop_stack()
+
+# returns length of all previous scenes
+func previous_scenes_length() -> int:
+	return len(_stack)
+
+# records a scene key to be used for loading scenes to know where to go after getting loaded
+# or just for next scene to know where to go next
+func set_recorded_scene(key: String) -> void:
+	if safe_validate_scene(key) && !key.begins_with("_"):
+		_recorded_scene = key
+
+# returns recorded scene
+func get_recorded_scene() -> String:
+	return _recorded_scene

@@ -25,14 +25,33 @@ anchor_bottom = 1.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
 margin_left = 331.0
-margin_top = 117.0
+margin_top = 35.0
 margin_right = 693.0
-margin_bottom = 482.0
+margin_bottom = 565.0
 custom_constants/separation = 15
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+[node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
 margin_right = 362.0
-margin_bottom = 180.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 200, 150 )
+custom_fonts/font = SubResource( 2 )
+text = "LOADING SCREEN"
+script = ExtResource( 1 )
+scene = "scene2"
+fade_in_speed = 2.0
+fade_out_pattern = "scribbles"
+fade_in_pattern = "crooked_tiles"
+fade_out_smoothness = 0.2
+fade_in_smoothness = 0.3
+fade_out_inverted = true
+color = Color( 0.745098, 0.411765, 0.388235, 1 )
+timeout = 0.2
+add_to_back = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+margin_top = 165.0
+margin_right = 362.0
+margin_bottom = 345.0
 custom_constants/separation = 15
 
 [node name="next_scene" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
@@ -94,9 +113,9 @@ color = Color( 0.564706, 0.376471, 0.584314, 1 )
 timeout = 0.5
 
 [node name="nothing" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 195.0
+margin_top = 360.0
 margin_right = 362.0
-margin_bottom = 245.0
+margin_bottom = 410.0
 rect_min_size = Vector2( 100, 50 )
 custom_fonts/font = SubResource( 2 )
 text = "NOTHING"
@@ -107,9 +126,9 @@ color = Color( 0.564706, 0.376471, 0.584314, 1 )
 timeout = 0.5
 
 [node name="exit" type="Button" parent="CenterContainer/VBoxContainer"]
-margin_top = 260.0
+margin_top = 425.0
 margin_right = 362.0
-margin_bottom = 310.0
+margin_bottom = 475.0
 rect_min_size = Vector2( 100, 50 )
 custom_fonts/font = SubResource( 2 )
 text = "EXIT"
@@ -118,10 +137,11 @@ scene = "exit"
 fade_out_speed = 0.3
 
 [node name="check" type="CheckButton" parent="CenterContainer/VBoxContainer"]
-margin_top = 325.0
+margin_top = 490.0
 margin_right = 362.0
-margin_bottom = 365.0
+margin_bottom = 530.0
 
+[connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene" to="CenterContainer/VBoxContainer/loading_scene" method="_on_loading_scene_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/next_scene" to="CenterContainer/VBoxContainer/HBoxContainer/next_scene" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" method="_on_reset_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" method="_on_button_button_up"]

@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 SceneManager="*res://addons/scene_manager/scene_manager.tscn"
 Scenes="*res://addons/scene_manager/scenes.gd"
 
+[display]
+
+window/size/resizable=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/scene_manager/plugin.cfg" )

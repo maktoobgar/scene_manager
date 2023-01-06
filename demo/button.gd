@@ -12,10 +12,11 @@ export(bool) var fade_in_inverted = false
 export(Color) var color = Color(0, 0, 0)
 export(float) var timeout = 0.0
 export(bool) var clickable = false
+export(bool) var add_to_back = true
 
 onready var fade_out_options = SceneManager.create_options(fade_out_speed, fade_out_pattern, fade_out_smoothness, fade_out_inverted)
 onready var fade_in_options = SceneManager.create_options(fade_in_speed, fade_in_pattern, fade_in_smoothness, fade_in_inverted)
-onready var general_options = SceneManager.create_general_options(color, timeout, clickable)
+onready var general_options = SceneManager.create_general_options(color, timeout, clickable, add_to_back)
 
 func _ready() -> void:
 	var fade_in_first_scene_options = SceneManager.create_options(1, "fade")
@@ -32,3 +33,7 @@ func _on_button_button_up():
 
 func _on_reset_button_up():
 	SceneManager.reset_scene_manager()
+
+func _on_loading_scene_button_up():
+	SceneManager.set_recorded_scene(scene)
+	SceneManager.change_scene("loading", fade_out_options, fade_in_options, general_options)
