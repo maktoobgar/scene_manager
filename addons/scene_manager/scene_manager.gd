@@ -248,11 +248,11 @@ func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0.0,
 
 # validates passed scene key
 func validate_scene(key: String) -> void:
-	assert(key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true, "Scene Manager Error: `%s` key for scene is not recognized, please double check."% key)
+	assert((key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true) && !key.begins_with("_"), "Scene Manager Error: `%s` key for scene is not recognized, please double check."% key)
 
 # validates passed scene key
 func safe_validate_scene(key: String) -> bool:
-	return key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true
+	return (key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true) && !key.begins_with("_")
 
 # validates passed pattern key
 func validate_pattern(key: String) -> void:
@@ -286,11 +286,11 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 		_set_clickable(true)
 		_set_out_transition()
 
-# returns scene instance of passed scene key blockingly
+# returns scene instance of passed scene key (blocking)
 func create_scene_instance(key: String) -> Node:
 	return get_scene(key).instantiate()
 
-# returns PackedScene of passed scene key blockingly
+# returns PackedScene of passed scene key (blocking)
 func get_scene(key: String) -> PackedScene:
 	validate_scene(key)
 	var address = Scenes.scenes[key]["value"]
@@ -299,7 +299,7 @@ func get_scene(key: String) -> PackedScene:
 
 # changes current scene to the next scene
 func change_scene(scene, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
-	if (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition && !scene.begins_with("_")) || (scene is PackedScene):
+	if (scene is PackedScene || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
 		_first_time = false
 		_set_in_transition()
 		_set_clickable(general_options.clickable)
@@ -317,16 +317,19 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 		_set_clickable(true)
 		_set_out_transition()
 
-# loads scene interactively
+# loads scene interactive
 # connect to `load_percent_changed(value: int)` and `load_finished` signals
-# to interactively check updates on your scene loading
+# to listen to updates on your scene loading status
 func load_scene_interactive(key: String) -> void:
-	if safe_validate_scene(key) && !key.begins_with("_"):
+	if safe_validate_scene(key):
 		set_process(true)
 		_load_scene = Scenes.scenes[key]["value"]
 		ResourceLoader.load_threaded_request(_load_scene, "", true, ResourceLoader.CACHE_MODE_IGNORE)
 
 # returns loaded scene
+#
+# If scene is not loaded, blocks and waits until scene is ready. (acts blocking in code
+# and may freeze your game, make sure scene is ready to get)
 func get_loaded_scene() -> PackedScene:
 	if _load_scene != "":
 		return ResourceLoader.load_threaded_get(_load_scene) as PackedScene
@@ -354,15 +357,15 @@ func get_previous_scene_at(index: int) -> String:
 func pop_previous_scene() -> String:
 	return _pop_stack()
 
-# returns length of all previous scenes
+# returns how many scenes there are in list of previous scenes.
 func previous_scenes_length() -> int:
 	return len(_stack)
 
-# records a scene key to be used for loading scenes to know where to go after getting loaded
-# or just for next scene to know where to go next
+# records a scene key to be used for loading scenes to know where to go after getting loaded 
+# into loading scene or just for next scene to know where to go next
 func set_recorded_scene(key: String) -> void:
-	if safe_validate_scene(key) && !key.begins_with("_"):
-		_recorded_scene = key
+	validate_scene(key)
+	_recorded_scene = key
 
 # returns recorded scene
 func get_recorded_scene() -> String:
