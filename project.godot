@@ -32,6 +32,8 @@ Scenes="*res://addons/scene_manager/scenes.gd"
 
 [display]
 
+window/size/viewport_width=1024
+window/size/viewport_height=720
 window/size/resizable=false
 
 [editor_plugins]
