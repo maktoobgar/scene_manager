@@ -193,15 +193,15 @@ This is the node you use inside your game code and it has these functions:
    * Safely validates the scene key and does not break the game.
 4. `safe_validate_pattern`(**key**: String) -> bool:
     * Safely validates the pattern key and does not break the game.
-5. `change_scene`(**key**: String, **fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
-   * Changes scene if key is valid, otherwise nothing happens.
+5. `change_scene`(**scene**: String or PackedScene, **fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+   * Changes scene if scene is valid, otherwise nothing happens.
    * **fade_out_options** and **fade_in_options** are some configurations you can put in the function to customize your fade_in to the scene or fade_out of the current scene and you can create `Options` objects by calling `create_options` function.
    * **general_options** are common configurations that effect transition in both fade_in and fade_out transitions and you can create `GeneralOptions` by calling `create_general_options` functions.
    * **Note**: `back` as value of scene variable, causes going back to previous scene.
    * **Note**: `null`, `ignore` or an empty string as value of scene variable, causes nothing but just showing scene transition and does not change scenes at all.
    * **Note**: `refresh`, `reload` or `restart` as value of scene variable, causes refreshing the current scene.
    * **Note**: `exit` or `quit` as value of scene variable, causes exiting out of the game.
-   * **Note**: Any value as **key** variable which starts with an `_` will be ignored.
+   * **Note**: Any String value as **scene** variable which starts with an `_` will be ignored.
 6. `create_options`(**fade_speed**: float = 1, **fade_pattern**: String = "fade", **smoothness**: float = 0.1, **inverted**: bool = false) -> Options:
    * Creates `Options` object for `change_scene` function.
    * **fade_speed** = speed of fading out of the scene or fading into the scene in seconds.
