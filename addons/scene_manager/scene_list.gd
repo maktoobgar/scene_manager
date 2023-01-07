@@ -1,8 +1,9 @@
 @tool
 extends ScrollContainer
 
-# Scene item to instance and add in list
+# Scene itema and sub_section to instance and add in list
 const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
+const _sub_section = preload("res://addons/scene_manager/sub_section.tscn")
 # Duplicate + normal scene theme
 const _duplicate_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_duplicate.tres")
 # Open close icons
@@ -22,6 +23,16 @@ func _ready() -> void:
 		_delete_list_button.icon = null
 		_delete_list_button.disabled = true
 		_delete_list_button.focus_mode = Control.FOCUS_NONE
+		
+		var sub = _sub_section.instantiate()
+		sub.name = "Uncategorized"
+		_container.add_child(sub)
+		sub.open()
+	else:
+		var sub = _sub_section.instantiate()
+		sub.name = "All"
+		_container.add_child(sub)
+		sub.open()
 	while true:
 		if _root != null && _root.name == "Scene Manager" || _root.name == "menu":
 			break
@@ -38,24 +49,26 @@ func add_item(key: String, value: String, setting: ItemSetting) -> void:
 	item.set_value(value)
 	item.set_setting(setting)
 	item.visible = determine_item_visibility(setting)
-	_container.add_child(item)
+	_container.get_child(1).add_item(item)
 
 # Removes an item from list
 func remove_item(key: String, value: String) -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var child: Node = _container.get_child(i)
-		if child.get_key() == key && child.get_value() == value:
-			child.queue_free()
-			return
+		var children: Array = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			if children[j].get_key() == key && children[j].get_value() == value:
+				children[j].queue_free()
+				return
 
 # Removes items that their value begins with passed value
 func remove_items_begins_with(value: String) -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var child: Node = _container.get_child(i)
-		if child.get_value().begins_with(value):
-			child.queue_free()
+		var children: Array = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			if children[j].get_value().begins_with(value):
+				children[j].queue_free()
 
 # Clear all scene records from UI list
 func clear_list() -> void:
@@ -73,48 +86,52 @@ func append_scenes(nodes: Dictionary) -> void:
 
 # Return an array of record nodes from UI list
 func get_list_nodes() -> Array:
-	var arr: Array = []
+	var arr: Array[Node] = []
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		arr.append(_container.get_child(i))
+		var nodes = _container.get_child(i).get_items()
+		arr.append_array(nodes)
 	return arr
 
 # Returns a specific node from passed scene name
 func get_node_by_scene_name(scene_name: String) -> Node:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var element = _container.get_child(i)
-		if element.get_key() == scene_name:
-			return element
+		var items = _container.get_child(i).get_items()
+		for j in range(len(items)):
+			if items[j].get_key() == scene_name:
+				return items[j]
 	return null
 
 # Returns a specific node from passed scene address
 func get_node_by_scene_address(scene_address: String) -> Node:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var element = _container.get_child(i)
-		if element.get_value() == scene_address:
-			return element
+		var items = _container.get_child(i).get_items()
+		for j in range(len(items)):
+			if items[j].get_value() == scene_address:
+				return items[j]
 	return null
 
 # Update a specific scene record with passed data in UI
 func update_scene_with_key(key: String, new_key: String, value: String, setting: ItemSetting) -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var child: Node = _container.get_child(i)
-		if child.get_key() == key && child.get_value() == value:
-			child.set_key(new_key)
-			child.set_setting(setting)
+		var children: Array[Node] = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			if children[j].get_key() == key && children[j].get_value() == value:
+				children[j].set_key(new_key)
+				children[j].set_setting(setting)
 
 # Checks duplication in current list and return their scene addresses in an array from UI
 func check_duplication() -> Array:
-	var arr: Array = []
-	for i in range(_container.get_child_count()):
-		if i == 0: continue
+	var all: Array[Node] = get_list_nodes()
+	var arr: Array[String] = []
+	for i in range(len(all)):
 		var j: int = i + 1
-		while j < _container.get_child_count():
-			var child1: Node = _container.get_child(i)
-			var child2: Node = _container.get_child(j)
+		while j < len(all):
+			var child1: Node = all[i]
+			var child2: Node = all[j]
 			if child1.get_key() == child2.get_key():
 				if !(child1.get_key() in arr):
 					arr.append(child1.get_key())
@@ -125,16 +142,18 @@ func check_duplication() -> Array:
 func set_reset_theme_for_all() -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var child: Node = _container.get_child(i)
-		child.remove_custom_theme()
+		var children: Array[Node] = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			children[j].remove_custom_theme()
 
 # Sets duplicate theme for children in passed list in UI
 func set_duplicate_theme(list: Array) -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var child: Node = _container.get_child(i)
-		if child.get_key() in list:
-			child.custom_set_theme(_duplicate_line_edit)
+		var children: Array[Node] = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			if children[j].get_key() in list:
+				children[j].custom_set_theme(_duplicate_line_edit)
 
 # List deletion
 func _on_delete_list_button_up() -> void:
@@ -146,8 +165,9 @@ func _on_delete_list_button_up() -> void:
 func _refresh_visible_of_all_items() -> void:
 	for i in range(_container.get_child_count()):
 		if i == 0: continue
-		var element = _container.get_child(i)
-		element.visible = determine_item_visibility(element.get_setting())
+		var children: Array[Node] = _container.get_child(i).get_items()
+		for j in range(len(children)):
+			children[j].visible = determine_item_visibility(children[j].get_setting())
 
 # Hidden Button
 func _on_hidden_button_up():

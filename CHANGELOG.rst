@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: basics of sub_section added
 
 3.3.0 (2023-01-06)
 ------------------
