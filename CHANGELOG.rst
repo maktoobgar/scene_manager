@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: added sub section basic functionality but not full functionality
 * 🎉 feat: basics of sub_section added
 
 3.3.0 (2023-01-06)

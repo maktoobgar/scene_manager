@@ -14,6 +14,8 @@ const _eye_close = preload("res://addons/scene_manager/icons/eye_close.png")
 @onready var _root: Node = self
 @onready var _delete_list_button: Button = find_child("delete_list")
 @onready var _hidden_button: Button = find_child("hidden")
+var _main_subsection: Node = null
+var _secondary_subsection: Node = null
 
 # Finds and fills `_root` variable properly
 #
@@ -23,16 +25,23 @@ func _ready() -> void:
 		_delete_list_button.icon = null
 		_delete_list_button.disabled = true
 		_delete_list_button.focus_mode = Control.FOCUS_NONE
-		
+
 		var sub = _sub_section.instantiate()
 		sub.name = "Uncategorized"
 		_container.add_child(sub)
 		sub.open()
+		_main_subsection = sub
+
+		var sub2 = _sub_section.instantiate()
+		sub2.name = "Categorized"
+		_container.add_child(sub2)
+		_secondary_subsection = sub2
 	else:
 		var sub = _sub_section.instantiate()
 		sub.name = "All"
 		_container.add_child(sub)
 		sub.open()
+		_main_subsection = sub
 	while true:
 		if _root != null && _root.name == "Scene Manager" || _root.name == "menu":
 			break
@@ -49,7 +58,23 @@ func add_item(key: String, value: String, setting: ItemSetting) -> void:
 	item.set_value(value)
 	item.set_setting(setting)
 	item.visible = determine_item_visibility(setting)
-	_container.get_child(1).add_item(item)
+	item._list = self
+	if name == "All":
+		if !setting.categorized:
+			_main_subsection.add_item(item)
+		else:
+			_secondary_subsection.add_item(item)
+	else:
+		_main_subsection.add_item(item)
+
+# Finds and returns a sub_section in the list
+func find_subsection(key: String) -> Node:
+	for i in range(_container.get_child_count()):
+		if i == 0: continue
+		var element = _container.get_child(i)
+		if element.name == key:
+			return element
+	return null
 
 # Removes an item from list
 func remove_item(key: String, value: String) -> void:
@@ -80,9 +105,17 @@ func clear_list() -> void:
 #
 # This function is used for new items that are new in project directory and are
 # not saved before, so they have no settings
+#
+# Input example:
+# {"scene_key": "scene_address", "scene_key": "scene_address", ...}
 func append_scenes(nodes: Dictionary) -> void:
-	for key in nodes:
-		add_item(key, nodes[key], ItemSetting.default())
+	print(_root.call("has_sections", "scene3"))
+	if name == "All":
+		for key in nodes:
+			add_item(key, nodes[key], ItemSetting.new(true, _root.has_sections(nodes[key])))
+	else:
+		for key in nodes:
+			add_item(key, nodes[key], ItemSetting.default())
 
 # Return an array of record nodes from UI list
 func get_list_nodes() -> Array:
@@ -154,6 +187,20 @@ func set_duplicate_theme(list: Array) -> void:
 		for j in range(len(children)):
 			if children[j].get_key() in list:
 				children[j].custom_set_theme(_duplicate_line_edit)
+
+# Returns all names of sublist
+func get_all_sublists() -> Array:
+	var arr: Array[String] = []
+	for i in range(_container.get_child_count()):
+		if i == 0: continue
+		arr.append(_container.get_child(i).name)
+	return arr
+
+# Adds a subsection
+func add_subsection(text: String) -> void:
+	var sub = _sub_section.instantiate()
+	sub.name = text.capitalize()
+	_container.add_child(sub)
 
 # List deletion
 func _on_delete_list_button_up() -> void:

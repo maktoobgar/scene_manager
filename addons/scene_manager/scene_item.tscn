@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://hh0sw1g7upfc"]
 
 [ext_resource type="Script" path="res://addons/scene_manager/scene_item.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://8336mcj402s5" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://bjmufqgg61f7j" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
 
 [node name="item" type="HBoxContainer"]
 offset_right = 280.0
@@ -28,6 +28,8 @@ size = Vector2i(100, 28)
 visible = true
 hide_on_item_selection = false
 
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
 [connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]
 [connection signal="gui_input" from="key" to="." method="_on_key_gui_input"]
 [connection signal="index_pressed" from="popup_menu" to="." method="_on_popup_menu_index_pressed"]

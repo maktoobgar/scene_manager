@@ -3,16 +3,16 @@
 [ext_resource type="Script" path="res://addons/scene_manager/sub_section.gd" id="1_kgwwp"]
 [ext_resource type="Texture2D" uid="uid://dme1lg33nbnnh" path="res://addons/scene_manager/icons/GuiOptionArrowRight.png" id="1_yyg5g"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n15k3"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7q1ek"]
 bg_color = Color(0.156863, 0.176471, 0.207843, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l4n41"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kdkml"]
 bg_color = Color(0.219608, 0.239216, 0.266667, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xadnp"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6o5y8"]
 bg_color = Color(0.129412, 0.14902, 0.180392, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gs36f"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bin8o"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [node name="All" type="VBoxContainer"]
@@ -22,10 +22,10 @@ script = ExtResource("1_kgwwp")
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_n15k3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_l4n41")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_xadnp")
-theme_override_styles/focus = SubResource("StyleBoxFlat_gs36f")
+theme_override_styles/normal = SubResource("StyleBoxFlat_7q1ek")
+theme_override_styles/hover = SubResource("StyleBoxFlat_kdkml")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_6o5y8")
+theme_override_styles/focus = SubResource("StyleBoxFlat_bin8o")
 text = "All"
 icon = ExtResource("1_yyg5g")
 alignment = 0

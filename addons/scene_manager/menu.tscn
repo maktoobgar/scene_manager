@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://crnf0w0s44hxx"]
 
-[ext_resource type="Texture2D" uid="uid://dtdbx26h20nr" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://b72ilejlbbo6v" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
 [ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://dci7nx6dnosoc" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://cpgpxp006i0e7" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
 [ext_resource type="Script" path="res://addons/scene_manager/manager.gd" id="6"]
 
 [node name="root_container" type="MarginContainer"]
@@ -33,15 +33,25 @@ size_flags_vertical = 8
 [node name="add_category_container" type="HBoxContainer" parent="main_container/add_category_container"]
 layout_mode = 2
 
-[node name="category_name" type="LineEdit" parent="main_container/add_category_container/add_category_container"]
+[node name="section_name" type="LineEdit" parent="main_container/add_category_container/add_category_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="add_category" type="Button" parent="main_container/add_category_container/add_category_container"]
+[node name="HBoxContainer" type="HBoxContainer" parent="main_container/add_category_container/add_category_container"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="add_subsection" type="Button" parent="main_container/add_category_container/add_category_container/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
-text = "Add Category"
+text = "+ SubList"
+
+[node name="add_section" type="Button" parent="main_container/add_category_container/add_category_container/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "+ List"
 
 [node name="separator" type="HSeparator" parent="main_container"]
 layout_mode = 2
@@ -138,8 +148,10 @@ text = "Save"
 [node name="accept_dialog" type="AcceptDialog" parent="."]
 dialog_autowrap = true
 
-[connection signal="text_changed" from="main_container/add_category_container/add_category_container/category_name" to="." method="_on_category_name_text_changed"]
-[connection signal="button_up" from="main_container/add_category_container/add_category_container/add_category" to="." method="_on_add_category_button_up"]
+[connection signal="tab_changed" from="main_container/scenes/tab_container" to="." method="_on_tab_container_tab_changed"]
+[connection signal="text_changed" from="main_container/add_category_container/add_category_container/section_name" to="." method="_on_section_name_text_changed"]
+[connection signal="button_up" from="main_container/add_category_container/add_category_container/HBoxContainer/add_subsection" to="." method="_on_add_subsection_button_up"]
+[connection signal="button_up" from="main_container/add_category_container/add_category_container/HBoxContainer/add_section" to="." method="_on_add_section_button_up"]
 [connection signal="dir_selected" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
 [connection signal="file_selected" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
 [connection signal="button_up" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog_button" to="." method="_on_file_dialog_button_button_up"]

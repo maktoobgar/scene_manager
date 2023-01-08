@@ -7,6 +7,8 @@ extends HBoxContainer
 @onready var _key: String = get_node("key").text
 # Variables
 var _setting: ItemSetting
+var _sub_section: Control
+var _list: Control
 
 # Finds and fills `_root` variable properly
 func _ready() -> void:
@@ -44,7 +46,7 @@ func get_visibility() -> bool:
 # Sets value of `_setting.visibility`
 func set_visibility(input: bool) -> void:
 	_setting.visibility = input
-	self.visible = get_parent().get_parent().determine_item_visibility(_setting)
+	self.visible = _list.determine_item_visibility(_setting)
 
 # Returns `_setting`
 func get_setting() -> ItemSetting:
@@ -65,17 +67,17 @@ func remove_custom_theme() -> void:
 # Popup Button
 func _on_popup_button_button_up():
 	var i: int = 0
-	var arr: Array = _root.get_all_lists_names_except()
+	var sections: Array = _root.get_all_lists_names_except()
 	_popup_menu.clear()
 	_popup_menu.add_separator("Categories")
 	i += 1
 	# Categories have id of 0
-	for value in arr:
-		if value == "All":
+	for section in sections:
+		if section == "All":
 			continue
-		_popup_menu.add_check_item(value)
+		_popup_menu.add_check_item(section)
 		_popup_menu.set_item_id(i, 0)
-		_popup_menu.set_item_checked(i, value in _root.get_sections(get_value()))
+		_popup_menu.set_item_checked(i, section in _root.get_sections(get_value()))
 		i += 1
 	_popup_menu.add_separator("General")
 	i += 1
@@ -137,3 +139,11 @@ func _on_key_gui_input(event: InputEvent) -> void:
 			_on_key_value_text_changed()
 			_key = get_key()
 			_root.check_duplication()
+
+# When added
+func _on_tree_entered():
+	get_parent().get_parent().child_entered()
+
+# When deleted
+func _on_tree_exiting():
+	get_parent().get_parent().child_exiting()

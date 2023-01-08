@@ -18,10 +18,8 @@ const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiChec
 # add save, refresh
 @onready var _save_button: Button = self.find_child("save")
 @onready var _refresh_button: Button = self.find_child("refresh")
-# add category
-@onready var _add_category_button: Button = self.find_child("add_category")
-@onready var _category_name_line_edit: LineEdit = self.find_child("category_name")
-# add section
+# add list
+@onready var _add_subsection_button: Button = self.find_child("add_subsection")
 @onready var _add_section_button: Button = self.find_child("add_section")
 @onready var _section_name_line_edit: LineEdit = self.find_child("section_name")
 # add ignore
@@ -36,7 +34,7 @@ const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiChec
 @onready var _accept_dialog: AcceptDialog = self.find_child("accept_dialog")
 
 # A dictionary which contains every scenes exact addresses as key and an array 
-# assigned as values which categories every category name the scene is part of
+# assigned as values which categories every section name the scene is part of
 #
 # Example: { "res://demo/scene3.tscn": ["Character", "Menu"] }
 var _sections: Dictionary = {}
@@ -80,6 +78,11 @@ func get_all_lists_names_except(excepts: Array = [""]) -> Array:
 			continue
 		arr.append(node.name)
 	return arr
+
+# Returns names of all sublists from UI and active tab
+func get_all_sublists_names_except(excepts: Array = [""]) -> Array:
+	var section = _tab_container.get_child(_tab_container.current_tab)
+	return section.get_all_sublists()
 
 # Shows a dialog message at the middle of screen
 func show_message(title: String, description: String) -> void:
@@ -145,11 +148,9 @@ func _clear_all_lists() -> void:
 # Removes all tabs in scene manager
 func _delete_all_tabs() -> void:
 	for node in _get_lists_nodes():
-		if node.name == "All":
-			continue
 		node.free()
 
-# Returns nodes of all category lists from UI in `Scene Manager` tool
+# Returns nodes of all section lists from UI in `Scene Manager` tool
 func _get_lists_nodes() -> Array:
 	var arr: Array = []
 	for i in range(_tab_container.get_child_count()):
@@ -169,11 +170,35 @@ func remove_scene_from_list(section_name: String, scene_name: String, scene_addr
 	list.remove_item(scene_name, scene_address)
 	_section_remove(scene_address, section_name)
 
+	# Removes and add in `All` section too so that it updates its place in list
+	var all_list = _get_one_list_node_by_name("All")
+	var setting = all_list.get_node_by_scene_address(scene_address).get_setting()
+	all_list.remove_item(scene_name, scene_address)
+	setting.categorized = has_sections(scene_address)
+	all_list.add_item(scene_name, scene_address, setting)
+
 # Adds an item to a list
-func add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
+#
+# Used mainly in this script
+func _add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
 	var list: Node = _get_one_list_node_by_name(list_name)
 	list.add_item(scene_name, scene_address, setting)
 	_sections_add(scene_address, list_name)
+
+# Adds an item to a list
+#
+# This function is used in `scene_item.gd` script and plus doing what is supposed
+# to do, removes and again adds the item in `All` section so that it can be placed
+# in currect place in currect section
+func add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
+	_add_scene_to_list(list_name, scene_name, scene_address, setting)
+
+	# Removes and add in `All` section too so that it updates its place in list
+	var all_list = _get_one_list_node_by_name("All")
+	setting = all_list.get_node_by_scene_address(scene_address).get_setting()
+	all_list.remove_item(scene_name, scene_address)
+	setting.categorized = has_sections(scene_address)
+	all_list.add_item(scene_name, scene_address, setting)
 
 # Adds an address to ignore list
 func _add_ignore_item(address: String) -> void:
@@ -218,13 +243,14 @@ func _reload_scenes() -> void:
 			else:
 				setting = ItemSetting.default()
 			_sections_add(scene["value"], section)
-			add_scene_to_list(section, key, scene["value"], setting)
+			_add_scene_to_list(section, key, scene["value"], setting)
 		var setting: ItemSetting = null
 		if "settings" in keys && "All" in scene["settings"].keys():
 			setting = ItemSetting.dictionary_to_item_setting(scene["settings"]["All"])
 		else:
 			setting = ItemSetting.default()
-		add_scene_to_list("All", key, scene["value"], setting)
+		setting.categorized = has_sections(scene["value"])
+		_add_scene_to_list("All", key, scene["value"], setting)
 
 	# Add scenes that are new and are not into `Scenes` script
 	var data_values: Array = []
@@ -235,7 +261,7 @@ func _reload_scenes() -> void:
 	for key in scenes:
 		if !(scenes[key] in data_values):
 			var setting = ItemSetting.default()
-			add_scene_to_list("All", key, scenes[key], setting)
+			_add_scene_to_list("All", key, scenes[key], setting)
 
 # Reloads ignores list in UI and in this script
 func _reload_ignores() -> void:
@@ -283,7 +309,11 @@ func get_sections(scene_address: String) -> Array:
 		return []
 	return _sections[scene_address]
 
-# Cleans `_sections` variable from `All` category
+# Returns true or false if passed `scene_address` has sections
+func has_sections(scene_address: String) -> bool:
+	return _sections.keys().has(scene_address) && _sections[scene_address] != []
+
+# Cleans `_sections` variable from `All` section
 func _clean_sections() -> void:
 	var scenes: Array = get_all_lists_names_except(["All"])
 	for key in _sections:
@@ -303,6 +333,14 @@ func update_all_scene_with_key(scene_key: String, scene_new_key: String, value: 
 	for list in _get_lists_nodes():
 		if list not in except_list:
 			list.update_scene_with_key(scene_key, scene_new_key, value, setting)
+
+# Checks for duplications in scenes of lists
+func check_duplication():
+	var list: Array = _get_one_list_node_by_name("All").check_duplication()
+	for node in _get_lists_nodes():
+		node.set_reset_theme_for_all()
+		if list:
+			node.set_duplicate_theme(list)
 
 # Removes `_ignore_list` and `_sections` keys from passed dictionary so that 
 # just scene names remain in returned dictionary
@@ -480,27 +518,25 @@ func _add_scene_list(text: String) -> void:
 	list.name = text.capitalize()
 	_tab_container.add_child(list)
 
-# Add Category Button
-func _on_add_category_button_up():
-	if _category_name_line_edit.text != "":
-		_add_scene_list(_category_name_line_edit.text)
-		_category_name_line_edit.text = ""
-		_add_category_button.disabled = true
+# Add section Button
+func _on_add_section_button_up():
+	if _section_name_line_edit.text != "":
+		_add_scene_list(_section_name_line_edit.text)
+		_section_name_line_edit.text = ""
+		_add_subsection_button.disabled = true
+		_add_section_button.disabled = true
 
-# When category name text changes
-func _on_category_name_text_changed(new_text):
+# When section name text changes
+func _on_section_name_text_changed(new_text):
 	if new_text != "" && !(new_text.capitalize() in get_all_lists_names_except()):
-		_add_category_button.disabled = false
+		_add_section_button.disabled = false
 	else:
-		_add_category_button.disabled = true
+		_add_section_button.disabled = true
 
-# Checks for duplications in scenes of lists
-func check_duplication():
-	var list: Array = _get_one_list_node_by_name("All").check_duplication()
-	for node in _get_lists_nodes():
-		node.set_reset_theme_for_all()
-		if list:
-			node.set_duplicate_theme(list)
+	if new_text != "" && _tab_container.get_child(_tab_container.current_tab).name != "All" && !(new_text.capitalize() in get_all_sublists_names_except()):
+		_add_subsection_button.disabled = false
+	else:
+		_add_subsection_button.disabled = true
 
 # Hide Button
 func _on_hide_button_up():
@@ -510,3 +546,16 @@ func _on_hide_button_up():
 	else:
 		_hide_button.icon = _hide_button_checked
 		_ignores_container.visible = true
+
+# Tab changes
+func _on_tab_container_tab_changed(tab: int):
+	_on_section_name_text_changed(_section_name_line_edit.text)
+
+# Add SubSection Button
+func _on_add_subsection_button_up():
+	if _section_name_line_edit.text != "":
+		var section = _tab_container.get_child(_tab_container.current_tab)
+		section.add_subsection(_section_name_line_edit.text)
+		_section_name_line_edit.text = ""
+		_add_subsection_button.disabled = true
+		_add_section_button.disabled = true
