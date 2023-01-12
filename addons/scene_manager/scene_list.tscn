@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://bwd8fj0tm23qi" path="res://addons/scene_manager/icons/eye_open.png" id="4_u7g41"]
 
 [node name="scenes" type="ScrollContainer"]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2

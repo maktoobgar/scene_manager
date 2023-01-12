@@ -187,7 +187,7 @@ func _add_scene_to_list(list_name: String, scene_name: String, scene_address: St
 
 # Adds an item to a list
 #
-# This function is used in `scene_item.gd` script and plus doing what is supposed
+# This function is used in `scene_item.gd` script and plus doing what it is supposed
 # to do, removes and again adds the item in `All` section so that it can be placed
 # in currect place in currect section
 func add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
@@ -254,8 +254,8 @@ func _reload_scenes() -> void:
 
 	# Add scenes that are new and are not into `Scenes` script
 	var data_values: Array = []
+	var data_dics = data.values()
 	if data:
-		var data_dics = data.values()
 		for i in range(len(data_dics)):
 			data_values.append(data_dics[i]["value"])
 	for key in scenes:

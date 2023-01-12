@@ -30,17 +30,21 @@ func _ready() -> void:
 		sub.name = "Uncategorized"
 		_container.add_child(sub)
 		sub.open()
+		sub.hide_delete_button()
 		_main_subsection = sub
 
 		var sub2 = _sub_section.instantiate()
 		sub2.name = "Categorized"
 		_container.add_child(sub2)
+		sub2.hide_delete_button()
 		_secondary_subsection = sub2
 	else:
 		var sub = _sub_section.instantiate()
 		sub.name = "All"
+		sub.visible = false
 		_container.add_child(sub)
 		sub.open()
+		sub.hide_delete_button()
 		_main_subsection = sub
 	while true:
 		if _root != null && _root.name == "Scene Manager" || _root.name == "menu":
@@ -65,7 +69,14 @@ func add_item(key: String, value: String, setting: ItemSetting) -> void:
 		else:
 			_secondary_subsection.add_item(item)
 	else:
-		_main_subsection.add_item(item)
+		if setting.subsection != "":
+			var subsection = find_subsection(setting.subsection)
+			if subsection:
+				subsection.add_item(item)
+			else:
+				add_subsection(setting.subsection).add_item(item)
+		else:
+			_main_subsection.add_item(item)
 
 # Finds and returns a sub_section in the list
 func find_subsection(key: String) -> Node:
@@ -109,7 +120,6 @@ func clear_list() -> void:
 # Input example:
 # {"scene_key": "scene_address", "scene_key": "scene_address", ...}
 func append_scenes(nodes: Dictionary) -> void:
-	print(_root.call("has_sections", "scene3"))
 	if name == "All":
 		for key in nodes:
 			add_item(key, nodes[key], ItemSetting.new(true, _root.has_sections(nodes[key])))
@@ -197,10 +207,11 @@ func get_all_sublists() -> Array:
 	return arr
 
 # Adds a subsection
-func add_subsection(text: String) -> void:
+func add_subsection(text: String) -> Control:
 	var sub = _sub_section.instantiate()
 	sub.name = text.capitalize()
 	_container.add_child(sub)
+	return sub
 
 # List deletion
 func _on_delete_list_button_up() -> void:

@@ -56,6 +56,10 @@ func get_setting() -> ItemSetting:
 func set_setting(setting: ItemSetting) -> void:
 	_setting = setting
 
+# Sets subsection for current item
+func set_subsection(node: Control) -> void:
+	_sub_section = node
+
 # Sets passed theme to normal theme of `key` LineEdit
 func custom_set_theme(theme: StyleBox) -> void:
 	get_key_node().add_theme_stylebox_override("normal", theme)
@@ -142,8 +146,15 @@ func _on_key_gui_input(event: InputEvent) -> void:
 
 # When added
 func _on_tree_entered():
-	get_parent().get_parent().child_entered()
+	_sub_section.child_entered()
 
 # When deleted
-func _on_tree_exiting():
-	get_parent().get_parent().child_exiting()
+func _on_tree_exited():
+	_sub_section.child_exited()
+
+# Returns grab data
+func _get_drag_data(at_position: Vector2) -> Variant:
+	return {
+		"node": self,
+		"parent": _sub_section,
+	}

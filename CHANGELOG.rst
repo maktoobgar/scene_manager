@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: sublist in lists is now possible
 * 🎉 feat: added sub section basic functionality but not full functionality
 * 🎉 feat: basics of sub_section added
 
