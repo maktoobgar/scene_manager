@@ -138,6 +138,22 @@ func _change_scene(scene, add_to_back: bool) -> bool:
 			_append_stack(found_key)
 		return true
 
+	if scene is Node:
+		var root = get_tree().get_root()
+		root.get_child(root.get_child_count() - 1).free()
+		root.add_child(scene)
+		get_tree().set_current_scene(scene)
+		var path: String = scene.scene_file_path
+		var found_key: String = ""
+		for key in Scenes.scenes:
+			if key.begins_with("_"):
+				continue
+			if Scenes.scenes[key]["value"] == path:
+				found_key = key
+		if add_to_back && found_key != "":
+			_append_stack(found_key)
+		return true
+
 	if scene == "back":
 		return _back()
 
@@ -299,7 +315,7 @@ func get_scene(key: String) -> PackedScene:
 
 # changes current scene to the next scene
 func change_scene(scene, fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
-	if (scene is PackedScene || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
+	if (scene is PackedScene || scene is Node || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
 		_first_time = false
 		_set_in_transition()
 		_set_clickable(general_options.clickable)
@@ -307,7 +323,8 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 		if _fade_out(fade_out_options.fade_speed):
 			await _animation_player.animation_finished
 		if _change_scene(scene, general_options.add_to_back):
-			await get_tree().node_added
+			if !(scene is Node):
+				await get_tree().node_added
 		if _timeout(general_options.timeout):
 			await get_tree().create_timer(general_options.timeout).timeout
 		_animation_player.play(NO_COLOR, -1, 1, false)
@@ -319,12 +336,13 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 
 # Change scene with no effect
 func no_effect_change_scene(scene, hold_timeout: float = 0.0, add_to_back: bool = true):
-	if (scene is PackedScene || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
+	if (scene is PackedScene || scene is Node || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
 		_first_time = false
 		_set_in_transition()
 		await get_tree().create_timer(hold_timeout).timeout
 		if _change_scene(scene, add_to_back):
-			await get_tree().node_added
+			if !(scene is Node):
+				await get_tree().node_added
 		_set_out_transition()
 
 # loads scene interactive
