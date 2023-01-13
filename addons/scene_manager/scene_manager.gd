@@ -317,6 +317,16 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 		_set_clickable(true)
 		_set_out_transition()
 
+# Change scene with no effect
+func no_effect_change_scene(scene, hold_timeout: float = 0.0, add_to_back: bool = true):
+	if (scene is PackedScene || (typeof(scene) == TYPE_STRING && safe_validate_scene(scene) && !_in_transition)):
+		_first_time = false
+		_set_in_transition()
+		await get_tree().create_timer(hold_timeout).timeout
+		if _change_scene(scene, add_to_back):
+			await get_tree().node_added
+		_set_out_transition()
+
 # loads scene interactive
 # connect to `load_percent_changed(value: int)` and `load_finished` signals
 # to listen to updates on your scene loading status

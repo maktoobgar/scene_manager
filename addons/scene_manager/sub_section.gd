@@ -22,6 +22,7 @@ func add_item(item: Node) -> void:
 	item._sub_section = self
 	list.add_child(item)
 
+# Removes an item from list
 func remove_item(item: Node) -> void:
 	list.remove_child(item)
 
@@ -46,6 +47,7 @@ func _on_button_up():
 	else:
 		open()
 
+# Action on child counting
 func _check_count():
 	if list.get_child_count() == 0:
 		if name == "All":
