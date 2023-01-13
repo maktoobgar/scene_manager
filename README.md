@@ -228,10 +228,10 @@ This is the node you use inside your game code and it has these functions:
    * **clickable** = makes the scene behind the transition visuals clickable or not.
    * **add_to_back** = if true, you can go back to current scene after changing scene to next scene by going to "back" scene which means previous scene.
 9.  `show_first_scene`(**fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
-   * Call this method inside `_ready` function of a node with a script which that node is inside the first scene that game jumps into it and this causes to have a smooth transition into the first game scene.
-   * This function works just once at the beginning of the first game scene. After that, if you call this function again, nothing happens.
-   * **fade_in_options** = creates it by calling `create_options` function.
-   * **general_options** = creates it by calling `create_general_options` function.
+    * Call this method inside `_ready` function of a node with a script which that node is inside the first scene that game jumps into it and this causes to have a smooth transition into the first game scene.
+    * This function works just once at the beginning of the first game scene. After that, if you call this function again, nothing happens.
+    * **fade_in_options** = creates it by calling `create_options` function.
+    * **general_options** = creates it by calling `create_general_options` function.
 10. `reset_scene_manager`() -> void:
     * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
 11. `create_scene_instance`(**key**: String) -> Node:
