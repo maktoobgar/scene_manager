@@ -4,13 +4,13 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: Node can be added to `change_scene` and `no_effect_change_scene` functions
 
 3.4.0 (2023-01-13)
 ------------------
 
+* feat: Node can be added to `change_scene` and `no_effect_change_scene` functions
 * feat: `no_effect_change_scene` function added
-* feat: sublist in lists is now possible
+* feat: sublist in lists of scene manager UI is now possible
 
 3.3.0 (2023-01-06)
 ------------------

@@ -12,10 +12,9 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 **Recently Added**:
 
-* [X] Loading scenes interactive is possible. (Loading scene code example added)
-* [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
-* [X] Ability to hide scenes in a list (Just Godot4)
-* [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
+* [X] sublist in lists of scene manager UI is now possible (Just Godot4)
+* [X] `no_effect_change_scene` function added (Just Godot4)
+* [X] Node can be added to `change_scene` and `no_effect_change_scene` functions (Just Godot4)
 
 **All**:
 
@@ -36,6 +35,10 @@ Scene Manager v3.X.X is compatible with Godot 4.
 * [X] You can create instance of a scene just by calling the scene with a key
 * [X] Transition is so much customizable
 * [X] `SceneManager` tool will ignore scenes inside folders with `.gdignore` file beside them
+* [X] Loading scenes interactive is possible. (Loading scene code example added)
+* [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
+* [X] Ability to hide scenes in a list (Just Godot4)
+* [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
 
 ## How To Use?
 
@@ -87,6 +90,12 @@ From menu of every scene, you can visible or hide scenes and see just hidden or 
 <p align="center">
 <img src="./images/tool_hidden.png"/>
 </p>
+
+## SubList (Just Godot4)
+
+As it is visible on previous pictures, it is possible to add sublists in lists and categorize different scenes in different sublists.
+
+All you have to do is drag scenes by their buttons on the left and drop them on other sublists.
 
 ## Demo
 
@@ -193,7 +202,7 @@ This is the node you use inside your game code and it has these functions:
    * Safely validates the scene key and does not break the game.
 4. `safe_validate_pattern`(**key**: String) -> bool:
     * Safely validates the pattern key and does not break the game.
-5. `change_scene`(**scene**: String or PackedScene, **fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+5. `change_scene`(**scene**: String or PackedScene or Node, **fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
    * Changes scene if scene is valid, otherwise nothing happens.
    * **fade_out_options** and **fade_in_options** are some configurations you can put in the function to customize your fade_in to the scene or fade_out of the current scene and you can create `Options` objects by calling `create_options` function.
    * **general_options** are common configurations that effect transition in both fade_in and fade_out transitions and you can create `GeneralOptions` by calling `create_general_options` functions.
@@ -202,52 +211,57 @@ This is the node you use inside your game code and it has these functions:
    * **Note**: `refresh`, `reload` or `restart` as value of scene variable, causes refreshing the current scene.
    * **Note**: `exit` or `quit` as value of scene variable, causes exiting out of the game.
    * **Note**: Any String value as **scene** variable which starts with an `_` will be ignored.
-6. `create_options`(**fade_speed**: float = 1, **fade_pattern**: String = "fade", **smoothness**: float = 0.1, **inverted**: bool = false) -> Options:
+6. `no_effect_change_scene`(**scene**: String or PackedScene or Node, **hold_timeout**: float = 0.0, **add_to_back**: bool = true) -> void:
+   * Changes scene if scene is valid without effects, otherwise nothing happens.
+   * **hold_timeout** is the timeout before changing to the scene.
+   * **add_to_back** determines if we can go back to this scene or not.
+   * **Note**: This method is for advanced users to actually apply their own effects and just change scenes with scene manager.
+7. `create_options`(**fade_speed**: float = 1, **fade_pattern**: String = "fade", **smoothness**: float = 0.1, **inverted**: bool = false) -> Options:
    * Creates `Options` object for `change_scene` function.
    * **fade_speed** = speed of fading out of the scene or fading into the scene in seconds.
    * **fade_pattern** = name of a shader pattern which is in `addons/scene_manager/shader_patterns` folder for fading out or fading into the scene. (if you use `fade` or an empty string, it causes a simple fade screen transition)
    * **smoothness** = defines roughness of pattern's edges. (this value is between 0-1 and more near to 1, softer edges and more near to 0, harder edges)
    * **inverted** = inverts the pattern.
-7. `create_general_options`(**color**: Color = Color(0, 0, 0), **timeout**: float = 0, **clickable**: bool = true, **add_to_back**: bool = true) -> GeneralOptions:
+8. `create_general_options`(**color**: Color = Color(0, 0, 0), **timeout**: float = 0, **clickable**: bool = true, **add_to_back**: bool = true) -> GeneralOptions:
    * **color** = color for the whole transition.
    * **timeout** = between this scene and next scene, there would be a gap which can take much longer that usual(default is 0) by your choice by changing this option.
    * **clickable** = makes the scene behind the transition visuals clickable or not.
    * **add_to_back** = if true, you can go back to current scene after changing scene to next scene by going to "back" scene which means previous scene.
-8. `show_first_scene`(**fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+9.  `show_first_scene`(**fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
    * Call this method inside `_ready` function of a node with a script which that node is inside the first scene that game jumps into it and this causes to have a smooth transition into the first game scene.
    * This function works just once at the beginning of the first game scene. After that, if you call this function again, nothing happens.
    * **fade_in_options** = creates it by calling `create_options` function.
    * **general_options** = creates it by calling `create_general_options` function.
-9. `reset_scene_manager`() -> void:
-   * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
-10. `create_scene_instance`(**key**: String) -> Node:
+10. `reset_scene_manager`() -> void:
+    * Sets current active scene as a starting point so that we can't go back to previous scenes with changing scene to `back` scene.
+11. `create_scene_instance`(**key**: String) -> Node:
     * Returns scene instance of passed scene key (blocking)
-11. `set_back_limit`(**input**: int) -> void:
+12. `set_back_limit`(**input**: int) -> void:
     * Limits how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality.
     * Allowed `input` values:
       1.  input = -1 => unlimited (default)
       2.  input =  0 => we can not go back to any previous scenes
       3.  input >  0 => we can go back to `input` or less previous scenes
-12. `get_scene`(**key**: String) -> PackedScene:
+13. `get_scene`(**key**: String) -> PackedScene:
     * Returns PackedScene of passed scene key (blocking)
-13. `load_scene_interactive`(**key**: String) -> void:
+14. `load_scene_interactive`(**key**: String) -> void:
     * Loads scene interactive.
     * **Note**: Connect to `load_percent_changed(value: int)` and `load_finished` signals to listen to updates on your scene loading status.
-14. `get_loaded_scene`() -> PackedScene:
+15. `get_loaded_scene`() -> PackedScene:
     * Returns loaded scene.
     * **Note**: If scene is not loaded, blocks and waits until scene is ready. (acts blocking in code and may freeze your game, make sure scene is ready to get)
-15. `change_scene_to_loaded_scene`(**fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+16. `change_scene_to_loaded_scene`(**fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
     * Changes scene to interactively loaded scene.
     * Checkout function number 5 (`change_scene`) to understand what **fade_out_options**, **fade_in_options** and **general_options** are.
-16. `get_previous_scene`() -> String:
+17. `get_previous_scene`() -> String:
     * Returns previous scene. (the scene before current scene)
-17. `get_previous_scene_at`(**index**: int) -> String:
+18. `get_previous_scene_at`(**index**: int) -> String:
     * Returns a specific previous scene at an exact index position
-18. `pop_previous_scene`() -> String:
+19. `pop_previous_scene`() -> String:
     * Returns previous scene and removes it from list of previous scenes.
-19. `previous_scenes_length`() -> int:
+20. `previous_scenes_length`() -> int:
     * Returns how many scenes there are in list of previous scenes.
-20. `set_recorded_scene`(**key**: String) -> void:
+21. `set_recorded_scene`(**key**: String) -> void:
     * Records a scene key to be used for loading scenes to know where to go after getting loaded into loading scene or just for next scene to know where to go next.
-21. `get_recorded_scene`() -> String:
+22. `get_recorded_scene`() -> String:
     * Returns recorded scene by `set_recorded_scene` function.
