@@ -50,7 +50,7 @@ func _ready() -> void:
 
 # Returns absolute current working directory
 func _absolute_current_working_directory() -> String:
-	return ProjectSettings.globalize_path(EditorInterface.new().get_current_directory())
+	return ProjectSettings.globalize_path(EditorPlugin.new().get_current_directory())
 
 # Merges two dictionaries together
 func _merge_dict(dest: Dictionary, source: Dictionary) -> void:

@@ -5,16 +5,16 @@
 [ext_resource type="Script" path="res://addons/scene_manager/sub_section_button.gd" id="3_smgrs"]
 [ext_resource type="Texture2D" uid="uid://bhejhahjk1yaa" path="res://addons/scene_manager/icons/ImportFail.svg" id="4_chjuj"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nrcyw"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6qci"]
 bg_color = Color(0.156863, 0.176471, 0.207843, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ie52c"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yqp47"]
 bg_color = Color(0.219608, 0.239216, 0.266667, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l26s1"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kx1we"]
 bg_color = Color(0.129412, 0.14902, 0.180392, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n24xb"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uvnds"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [node name="All" type="VBoxContainer"]
@@ -29,10 +29,10 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/normal = SubResource("StyleBoxFlat_nrcyw")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ie52c")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_l26s1")
-theme_override_styles/focus = SubResource("StyleBoxFlat_n24xb")
+theme_override_styles/normal = SubResource("StyleBoxFlat_u6qci")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yqp47")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kx1we")
+theme_override_styles/focus = SubResource("StyleBoxFlat_uvnds")
 text = "All"
 icon = ExtResource("1_yyg5g")
 alignment = 0

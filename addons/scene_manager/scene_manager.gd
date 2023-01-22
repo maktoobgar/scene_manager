@@ -57,8 +57,12 @@ func _get_patterns() -> void:
 			var file_folder: String = dir.get_next()
 			if file_folder == "":
 				break
+			elif file_folder.get_extension() == "import":
+				file_folder = file_folder.replace(".import", "")
 			if file_folder.get_extension() == "png":
-				_patterns[file_folder.replace("."+file_folder.get_extension(), "")] = load(root_path + file_folder)
+				var key = file_folder.replace("."+file_folder.get_extension(), "")
+				if !(key in _patterns.keys()):
+					_patterns[key] = load(root_path + file_folder)
 
 		dir.list_dir_end()
 

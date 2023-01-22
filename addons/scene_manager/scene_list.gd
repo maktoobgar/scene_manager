@@ -11,9 +11,9 @@ const _eye_open = preload("res://addons/scene_manager/icons/eye_open.png")
 const _eye_close = preload("res://addons/scene_manager/icons/eye_close.png")
 # variables
 @onready var _container: VBoxContainer = find_child("container")
-@onready var _root: Node = self
 @onready var _delete_list_button: Button = find_child("delete_list")
 @onready var _hidden_button: Button = find_child("hidden")
+var _root: Node = self
 var _main_subsection: Node = null
 var _secondary_subsection: Node = null
 

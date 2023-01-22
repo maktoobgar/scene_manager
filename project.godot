@@ -8,16 +8,6 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "RefCounted",
-"class": &"ItemSetting",
-"language": &"GDScript",
-"path": "res://addons/scene_manager/item_setting.gd"
-}]
-_global_script_class_icons={
-"ItemSetting": ""
-}
-
 [application]
 
 config/name="Scene Manager"
@@ -35,6 +25,10 @@ Scenes="*res://addons/scene_manager/scenes.gd"
 window/size/viewport_width=1024
 window/size/viewport_height=720
 window/size/resizable=false
+
+[editor]
+
+export/convert_text_resources_to_binary=true
 
 [editor_plugins]
 
