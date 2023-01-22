@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: #2
+
+3.4.1 (2023-01-22)
+------------------
+
+* 🐛 fix: #2, fixed problem in exporting game with scene manager
 
 3.4.0 (2023-01-13)
 ------------------
