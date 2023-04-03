@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: #5
+
+3.4.2 (2023-04-03)
+------------------
+
+* 🐛 fix: #5, fixed a weird warning message that was popping up when doing a `transition` between different scenes
 
 3.4.1 (2023-01-22)
 ------------------
