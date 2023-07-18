@@ -15,6 +15,7 @@ Scene Manager v3.X.X is compatible with Godot 4.
 * [X] sublist in lists of scene manager UI is now possible (Just Godot4)
 * [X] `no_effect_change_scene` function added (Just Godot4)
 * [X] Node can be added to `change_scene` and `no_effect_change_scene` functions (Just Godot4)
+* [X] Possibility to specify path scenes.db via Project/Settings
 
 **All**:
 
@@ -39,6 +40,7 @@ Scene Manager v3.X.X is compatible with Godot 4.
 * [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
 * [X] Ability to hide scenes in a list (Just Godot4)
 * [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
+
 
 ## How To Use?
 

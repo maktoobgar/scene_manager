@@ -1,6 +1,8 @@
 @tool
 extends MarginContainer
 
+# Project Settings property name
+const SETTINGS_PROPERTY_NAME := "scene_manager/scenes_path"
 # paths
 const PATH: String = "res://addons/scene_manager/scenes.gd"
 const ROOT_ADDRESS = "res://"
@@ -351,7 +353,7 @@ func _remove_ignore_list_and_sections_from_dic(dic: Dictionary) -> Dictionary:
 
 # Saves all data in `scenes` variable of `scenes.gd` file
 func _save_all(data: Dictionary) -> void:
-	var file := FileAccess.open(PATH, FileAccess.WRITE)
+	var file := FileAccess.open(ProjectSettings.get_setting(SETTINGS_PROPERTY_NAME, PATH), FileAccess.WRITE)
 	var write_data: String = comment + extend_part + var_part + JSON.new().stringify(data) + "\n"
 	file.store_string(write_data)
 
@@ -359,8 +361,8 @@ func _save_all(data: Dictionary) -> void:
 func _load_all() -> Dictionary:
 	var data: Dictionary = {}
 
-	if _file_exists(PATH):
-		var file := FileAccess.open(PATH, FileAccess.READ)
+	if _file_exists(ProjectSettings.get_setting(SETTINGS_PROPERTY_NAME, PATH)):
+		var file := FileAccess.open(ProjectSettings.get_setting(SETTINGS_PROPERTY_NAME, PATH), FileAccess.READ)
 		var string: String = file.get_as_text()
 		string = string.substr(string.find("var"), len(string)).replace(var_part, "").strip_escapes()
 
