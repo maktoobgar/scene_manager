@@ -4,17 +4,22 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: extra annoying error messages fixed
+
+3.5.0 (2023-07-20)
+------------------
+
+* feat: scenes file path can change in Project>Project Settings
+* fix: extra annoying error messages fixed
 
 3.4.2 (2023-04-03)
 ------------------
 
-* 🐛 fix: #5, fixed a weird warning message that was popping up when doing a `transition` between different scenes
+* fix: #5, fixed a weird warning message that was popping up when doing a `transition` between different scenes
 
 3.4.1 (2023-01-22)
 ------------------
 
-* 🐛 fix: #2, fixed problem in exporting game with scene manager
+* fix: #2, fixed problem in exporting game with scene manager
 
 3.4.0 (2023-01-13)
 ------------------
