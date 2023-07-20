@@ -1,9 +1,9 @@
 [gd_scene load_steps=9 format=3 uid="uid://b4edho3whn67t"]
 
 [ext_resource type="Script" path="res://addons/scene_manager/sub_section.gd" id="1_kgwwp"]
-[ext_resource type="Texture2D" uid="uid://dme1lg33nbnnh" path="res://addons/scene_manager/icons/GuiOptionArrowRight.png" id="1_yyg5g"]
+[ext_resource type="Texture2D" uid="uid://dsgnkxtiko66g" path="res://addons/scene_manager/icons/GuiOptionArrowRight.png" id="1_yyg5g"]
 [ext_resource type="Script" path="res://addons/scene_manager/sub_section_button.gd" id="3_smgrs"]
-[ext_resource type="Texture2D" uid="uid://bhejhahjk1yaa" path="res://addons/scene_manager/icons/ImportFail.svg" id="4_chjuj"]
+[ext_resource type="Texture2D" uid="uid://dw322nmqpqwfq" path="res://addons/scene_manager/icons/ImportFail.svg" id="4_chjuj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6qci"]
 bg_color = Color(0.156863, 0.176471, 0.207843, 1)

@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🐛 fix: extra annoying error messages fixed
 
 3.4.2 (2023-04-03)
 ------------------

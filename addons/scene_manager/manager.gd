@@ -2,7 +2,7 @@
 extends MarginContainer
 
 # Project Settings property name
-const SETTINGS_PROPERTY_NAME := "scene_manager/scenes_path"
+const SETTINGS_PROPERTY_NAME := "scene_manager/scenes/scenes_path"
 # paths
 const PATH: String = "res://addons/scene_manager/scenes.gd"
 const ROOT_ADDRESS = "res://"

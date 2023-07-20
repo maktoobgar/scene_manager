@@ -6,7 +6,10 @@ extends HBoxContainer
 # Finds and fills `_root` variable properly
 func _ready() -> void:
 	while true:
-		if _root.name == "Scene Manager" || _root.name == "menu":
+		if _root == null:
+			## If we are here, we are running in editor, so get out
+			break
+		elif _root.name == "Scene Manager" || _root.name == "menu":
 			break
 		_root = _root.get_parent()
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://hh0sw1g7upfc"]
 
 [ext_resource type="Script" path="res://addons/scene_manager/scene_item.gd" id="2"]
-[ext_resource type="Texture2D" uid="uid://bjmufqgg61f7j" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://brxxaey30q7uk" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
 [ext_resource type="Script" path="res://addons/scene_manager/popup_button.gd" id="3_nwus0"]
 
 [node name="item" type="HBoxContainer"]

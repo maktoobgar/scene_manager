@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ciaqe7l3hugns"]
 
-[ext_resource type="Texture2D" uid="uid://dvb4ayacs7ohl" path="res://addons/scene_manager/icons/ImportFail.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://dw322nmqpqwfq" path="res://addons/scene_manager/icons/ImportFail.svg" id="1"]
 [ext_resource type="Script" path="res://addons/scene_manager/ignore_item.gd" id="2"]
 
 [node name="item" type="HBoxContainer"]

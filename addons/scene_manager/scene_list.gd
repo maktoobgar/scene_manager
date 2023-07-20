@@ -47,7 +47,10 @@ func _ready() -> void:
 		sub.hide_delete_button()
 		_main_subsection = sub
 	while true:
-		if _root != null && _root.name == "Scene Manager" || _root.name == "menu":
+		if _root == null:
+			## If we are here, we are running in editor, so get out
+			break
+		elif _root.name == "Scene Manager" || _root.name == "menu":
 			break
 		_root = _root.get_parent()
 

@@ -13,7 +13,10 @@ var _list: Control
 # Finds and fills `_root` variable properly
 func _ready() -> void:
 	while true:
-		if _root != null && _root.name == "Scene Manager" || _root.name == "menu":
+		if _root == null:
+			## If we are here, we are running in editor, so get out
+			break
+		elif _root.name == "Scene Manager" || _root.name == "menu":
 			break
 		_root = _root.get_parent()
 
@@ -146,11 +149,13 @@ func _on_key_gui_input(event: InputEvent) -> void:
 
 # When added
 func _on_tree_entered():
-	_sub_section.child_entered()
+	if _sub_section:
+		_sub_section.child_entered()
 
 # When deleted
 func _on_tree_exited():
-	_sub_section.child_exited()
+	if _sub_section:
+		_sub_section.child_exited()
 
 # Returns grab data
 func _get_drag_data(at_position: Vector2) -> Variant:

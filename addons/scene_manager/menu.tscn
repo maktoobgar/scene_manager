@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://crnf0w0s44hxx"]
 
-[ext_resource type="Texture2D" uid="uid://b72ilejlbbo6v" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://cnhtsuf78gsy7" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
 [ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="2"]
-[ext_resource type="Texture2D" uid="uid://cpgpxp006i0e7" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://bt1mtu3gbmwqc" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
 [ext_resource type="Script" path="res://addons/scene_manager/manager.gd" id="6"]
 
 [node name="root_container" type="MarginContainer"]
@@ -98,8 +98,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="file_dialog" type="FileDialog" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
-title = "Open a File or Directory"
 mode = 2
+title = "Open a File or Directory"
 ok_button_text = "Open"
 file_mode = 3
 
