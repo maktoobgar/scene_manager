@@ -12,10 +12,13 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 **Recently Added**:
 
-* [X] sublist in lists of scene manager UI is now possible (Just Godot4)
-* [X] `no_effect_change_scene` function added (Just Godot4)
-* [X] Node can be added to `change_scene` and `no_effect_change_scene` functions (Just Godot4)
-* [X] Possibility to specify path scenes.db via Project/Settings
+* [X] Possibility to specify path scenes.db via Project/Settings (Just Godot4)
+* [X] 5 new signals added:
+    - scene_changed
+    - fade_in_started
+    - fade_out_started
+    - fade_in_finished
+    - fade_out_finished
 
 **All**:
 
@@ -40,6 +43,9 @@ Scene Manager v3.X.X is compatible with Godot 4.
 * [X] Ability to limit how much deep scene manager is allowed to record previous scenes which affects in changing scene to `back`(previous scene) functionality
 * [X] Ability to hide scenes in a list (Just Godot4)
 * [X] Ignoring a specific scene in ignores list section is possible (Just Godot4)
+* [X] sublist in lists of scene manager UI is now possible (Just Godot4)
+* [X] `no_effect_change_scene` function added (Just Godot4)
+* [X] Node can be added to `change_scene` and `no_effect_change_scene` functions (Just Godot4)
 
 
 ## How To Use?
@@ -194,6 +200,18 @@ func _on_next_button_up():
 ```
 
 ## SceneManager
+
+### Signals:
+
+1. load_finished => signal fires when interactively loading a scene finishes
+2. load_percent_changed(value: int) => signal fires when interactively loading a scene progress percentage updates
+3. scene_changed => signal fires when scene changes
+4. fade_in_started => signal fires when fade in starts
+5. fade_out_started => signal fires when fade out starts
+6. fade_in_finished => signal fires when fade in finishes
+7. fade_out_finished => signal fires when fade out finishes
+
+### Methods:
 
 This is the node you use inside your game code and it has these functions:
 1. `validate_scene`(**key**: String) -> void:

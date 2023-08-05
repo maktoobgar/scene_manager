@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: scene_changed + fade_in_started + fade_out_started + fade_in_finished + fade_out_finished signals added
+
+3.6.0 (2023-08-05)
+------------------
+
+* feat: scene_changed + fade_in_started + fade_out_started + fade_in_finished + fade_out_finished signals added
 
 3.5.0 (2023-07-20)
 ------------------
