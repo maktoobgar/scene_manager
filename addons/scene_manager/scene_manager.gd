@@ -22,6 +22,11 @@ var _recorded_scene: String = ""
 # signals
 signal load_finished
 signal load_percent_changed(value: int)
+signal scene_changed
+signal fade_in_started
+signal fade_out_started
+signal fade_in_finished
+signal fade_out_finished
 
 class Options:
 	# based checked seconds
@@ -76,6 +81,7 @@ func _ready() -> void:
 func _fade_in(speed: float) -> bool:
 	if speed == 0:
 		return false
+	fade_in_started.emit()
 	_animation_player.play(FADE, -1, 1 / speed, false)
 	return true
 
@@ -83,6 +89,7 @@ func _fade_in(speed: float) -> bool:
 func _fade_out(speed: float) -> bool:
 	if speed == 0:
 		return false
+	fade_out_started.emit()
 	_animation_player.play(FADE, -1, -1 / speed, true)
 	return true
 
@@ -303,6 +310,7 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 			await get_tree().create_timer(general_options.timeout).timeout
 		if _fade_in(fade_in_options.fade_speed):
 			await _animation_player.animation_finished
+			fade_in_finished.emit()
 		_set_clickable(true)
 		_set_out_transition()
 
@@ -326,15 +334,18 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 		_set_pattern(fade_out_options, general_options)
 		if _fade_out(fade_out_options.fade_speed):
 			await _animation_player.animation_finished
+			fade_out_finished.emit()
 		if _change_scene(scene, general_options.add_to_back):
 			if !(scene is Node):
 				await get_tree().node_added
+			scene_changed.emit()
 		if _timeout(general_options.timeout):
 			await get_tree().create_timer(general_options.timeout).timeout
 		_animation_player.play(NO_COLOR, -1, 1, false)
 		_set_pattern(fade_in_options, general_options)
 		if _fade_in(fade_in_options.fade_speed):
 			await _animation_player.animation_finished
+			fade_in_finished.emit()
 		_set_clickable(true)
 		_set_out_transition()
 
