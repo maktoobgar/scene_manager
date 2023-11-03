@@ -4,7 +4,12 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: added a feature to open the path of a scene in editor
+
+3.7.0 (2023-11-03)
+------------------
+
+* feat: added a feature to open the path of a scene in FileSystem of the editor
+* feat: added a feature to open the desired scene in godot editor
 
 3.6.0 (2023-08-05)
 ------------------

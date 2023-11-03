@@ -19,6 +19,8 @@ Scene Manager v3.X.X is compatible with Godot 4.
     - fade_out_started
     - fade_in_finished
     - fade_out_finished
+* [X] added a feature to navigate to the scene path in filesystem on godot when clicked on scene address in Scene Manager tool
+* [X] added a feature to open a the desired scene from Scene Manager tab
 
 **All**:
 
