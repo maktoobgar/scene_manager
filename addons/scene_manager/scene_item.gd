@@ -9,6 +9,7 @@ extends HBoxContainer
 var _setting: ItemSetting
 var _sub_section: Control
 var _list: Control
+var _mouse_is_over_value: bool
 
 # Finds and fills `_root` variable properly
 func _ready() -> void:
@@ -96,10 +97,22 @@ func _on_popup_button_button_up():
 	var popup_size = _popup_menu.size
 	_popup_menu.popup(Rect2(get_global_mouse_position(), popup_size))
 
-# Open scene
+# Happens when open scene button clicks
 func _on_open_scene_button_up():
-	var scenePath = get_value()
-	EditorPlugin.new().get_editor_interface().open_scene_from_path(scenePath)
+	EditorPlugin.new().get_editor_interface().open_scene_from_path(get_value())
+
+# Happens on input on the value element
+func _on_value_gui_input(event: InputEvent):
+	if event is InputEventMouseButton and event.is_released() and event.button_index == MOUSE_BUTTON_LEFT and _mouse_is_over_value:
+		EditorPlugin.new().get_editor_interface().get_file_system_dock().navigate_to_path(get_value())
+
+# Happens when mouse is over value input
+func _on_value_mouse_entered():
+	_mouse_is_over_value = true
+
+# Happens when mouse is out of value input
+func _on_value_mouse_exited():
+	_mouse_is_over_value = false
 
 # Happens when an item is selected
 func _on_popup_menu_index_pressed(index: int):

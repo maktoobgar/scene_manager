@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: added a feature to open the path of a scene in editor
 
 3.6.0 (2023-08-05)
 ------------------

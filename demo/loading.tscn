@@ -65,7 +65,52 @@ region = Rect2(0, 224, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_lmmu3"]
 animations = [{
-"frames": [SubResource("AtlasTexture_jf28a"), SubResource("AtlasTexture_dd3is"), SubResource("AtlasTexture_jvn0q"), SubResource("AtlasTexture_efm7h"), SubResource("AtlasTexture_6clc4"), SubResource("AtlasTexture_gnbdr"), SubResource("AtlasTexture_hdkdb"), SubResource("AtlasTexture_1pitr"), SubResource("AtlasTexture_ot3c6"), SubResource("AtlasTexture_bugdx"), SubResource("AtlasTexture_c18fr"), SubResource("AtlasTexture_hwcbt"), SubResource("AtlasTexture_bsknd"), SubResource("AtlasTexture_0rimh"), SubResource("AtlasTexture_x4rg0")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jf28a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dd3is")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jvn0q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_efm7h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6clc4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gnbdr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hdkdb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1pitr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ot3c6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bugdx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c18fr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hwcbt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bsknd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0rimh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x4rg0")
+}],
 "loop": true,
 "name": &"default",
 "speed": 5.0
@@ -126,9 +171,8 @@ layout_mode = 2
 texture_filter = 1
 position = Vector2(15, 505)
 scale = Vector2(10.375, 10.375)
-frames = SubResource("SpriteFrames_lmmu3")
+sprite_frames = SubResource("SpriteFrames_lmmu3")
 speed_scale = 2.0
-playing = true
 centered = false
 
 [connection signal="button_up" from="VBoxContainer2/HBoxContainer/MarginContainer/Next" to="." method="_on_next_button_up"]
