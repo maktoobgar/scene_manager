@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://addons/scene_manager/scene_item.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://brxxaey30q7uk" path="res://addons/scene_manager/icons/GuiTabMenuHl.svg" id="3"]
 [ext_resource type="Script" path="res://addons/scene_manager/popup_button.gd" id="3_nwus0"]
+[ext_resource type="Texture2D" uid="uid://c7652b22u400p" path="res://addons/scene_manager/icons/eye_open.png" id="4"]
 
 [node name="item" type="HBoxContainer"]
 offset_right = 280.0
@@ -25,6 +26,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 editable = false
 
+[node name="open_button" type="Button" parent="."]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+icon = ExtResource("4")
+
 [node name="popup_menu" type="PopupMenu" parent="."]
 size = Vector2i(100, 28)
 visible = true
@@ -34,4 +40,5 @@ hide_on_item_selection = false
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
 [connection signal="button_up" from="popup_button" to="." method="_on_popup_button_button_up"]
 [connection signal="gui_input" from="key" to="." method="_on_key_gui_input"]
+[connection signal="button_up" from="open_button" to="." method="_on_open_scene_button_up"]
 [connection signal="index_pressed" from="popup_menu" to="." method="_on_popup_menu_index_pressed"]

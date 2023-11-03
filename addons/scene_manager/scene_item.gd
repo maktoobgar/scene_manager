@@ -96,7 +96,12 @@ func _on_popup_button_button_up():
 	var popup_size = _popup_menu.size
 	_popup_menu.popup(Rect2(get_global_mouse_position(), popup_size))
 
-# Heppends when an item is selected
+# Open scene
+func _on_open_scene_button_up():
+	var scenePath = get_value()
+	EditorPlugin.new().get_editor_interface().open_scene_from_path(scenePath)
+
+# Happens when an item is selected
 func _on_popup_menu_index_pressed(index: int):
 	var id = _popup_menu.get_item_id(index)
 	var checked = _popup_menu.is_item_checked(index)
