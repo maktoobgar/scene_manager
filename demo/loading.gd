@@ -6,8 +6,8 @@ extends Control
 @onready var next: Button = find_child("Next")
 
 func _ready():
-	SceneManager.load_percent_changed.connect(Callable(self, "percent_changed"))
-	SceneManager.load_finished.connect(Callable(self, "loading_finished"))
+	SceneManager.load_percent_changed.connect(percent_changed)
+	SceneManager.load_finished.connect(loading_finished)
 	SceneManager.load_scene_interactive(SceneManager.get_recorded_scene())
 
 func percent_changed(number: int) -> void:

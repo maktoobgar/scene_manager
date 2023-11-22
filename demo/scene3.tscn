@@ -30,24 +30,6 @@ grow_vertical = 2
 layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(200, 150)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
-theme_override_font_sizes/font_size = 32
-text = "LOADING SCREEN"
-script = ExtResource("1")
-scene = "scene1"
-fade_in_speed = 2.0
-fade_out_pattern = "splashed_dirt"
-fade_in_pattern = "squares"
-fade_out_smoothness = 0.2
-fade_in_smoothness = 0.3
-fade_out_inverted = true
-color = Color(0, 0.498039, 0, 1)
-timeout = 0.2
-add_to_back = false
-
 [node name="loading_scene_initialization" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
@@ -67,6 +49,24 @@ fade_out_smoothness = 0.2
 fade_in_smoothness = 0.3
 fade_out_inverted = true
 color = Color(0.831373, 0.458824, 0, 1)
+timeout = 0.2
+add_to_back = false
+
+[node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_font_sizes/font_size = 32
+text = "LOADING SCREEN"
+script = ExtResource("1")
+scene = "scene1"
+fade_in_speed = 2.0
+fade_out_pattern = "splashed_dirt"
+fade_in_pattern = "squares"
+fade_out_smoothness = 0.2
+fade_in_smoothness = 0.3
+fade_out_inverted = true
+color = Color(0, 0.498039, 0, 1)
 timeout = 0.2
 add_to_back = false
 
@@ -149,8 +149,8 @@ fade_out_speed = 0.3
 [node name="check" type="CheckButton" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 
-[connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene" to="CenterContainer/VBoxContainer/loading_scene" method="_on_loading_scene_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene_initialization" to="CenterContainer/VBoxContainer/loading_scene_initialization" method="_on_loading_scene_initialization_button_up"]
+[connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene" to="CenterContainer/VBoxContainer/loading_scene" method="_on_loading_scene_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/next_scene" to="CenterContainer/VBoxContainer/HBoxContainer/next_scene" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" method="_on_reset_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" method="_on_button_button_up"]

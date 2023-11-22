@@ -370,7 +370,11 @@ func no_effect_change_scene(scene, hold_timeout: float = 0.0, add_to_back: bool 
 		_set_out_transition()
 
 # imports loaded scene into the scene tree but doesn't change the scene
-# maily used when your new loaded scene has a loading phase too
+# maily used when your new loaded scene has a loading phase when added to scene tree
+# so to use this, first has to call `load_scene_interactive` to load your scene 
+# and then have to listen on `load_finished` signal and after the signal emits,
+# you call this function and this function adds the loaded scene to the scene
+# tree but exactly behind the current scene so that you still can not see the new scene
 func add_loaded_scene_to_scene_tree() -> void:
 	if _load_scene != "":
 		var scene_resource = ResourceLoader.load_threaded_get(_load_scene) as PackedScene
@@ -383,8 +387,8 @@ func add_loaded_scene_to_scene_tree() -> void:
 			_load_scene = ""
 
 # when you added the loaded scene to the scene tree by `add_loaded_scene_to_scene_tree`
-# function, you call this one after you are sure that the added scene to scene tree
-# is completely ready and functionaly to change the active scene
+# function, you call this function after you are sure that the added scene to scene tree
+# is completely ready and functional to change the active scene
 func change_scene_to_existing_scene_in_scene_tree(fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
 	_set_in_transition()
 	_set_clickable(general_options.clickable)

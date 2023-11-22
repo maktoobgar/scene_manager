@@ -4,7 +4,11 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🎉 feat: added ability to load scenes interactive
+3.8.0 (2023-11-22)
+------------------
+
+* feat: added ability to load scenes interactive and have a loading phase like world generation or any loading in general
+* fix: fixed a bug on when couldn't reload the current scenes when we used loading screen to get to them
 
 3.7.0 (2023-11-03)
 ------------------
