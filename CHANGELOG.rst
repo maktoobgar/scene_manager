@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: added ability to load scenes interactive
 
 3.7.0 (2023-11-03)
 ------------------

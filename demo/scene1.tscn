@@ -34,9 +34,12 @@ theme_override_constants/separation = 15
 [node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 150)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("1_oeex7")
 theme_override_font_sizes/font_size = 32
-text = "LOADING SCREEN"
+text = "LOADING
+
+SCREEN"
 script = ExtResource("1")
 scene = "scene2"
 fade_in_speed = 2.0

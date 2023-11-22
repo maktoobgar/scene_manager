@@ -1,15 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://bshberav0o2hk"]
+[gd_scene load_steps=4 format=3 uid="uid://bdcja8idnw3bu"]
 
-[ext_resource type="Script" path="res://demo/button.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://c5nya6skib7a2" path="res://demo/fonts/Fake Identity.ttf" id="1_e4fv5"]
+[ext_resource type="Script" path="res://demo/loading_phase_mechanic.gd" id="1_eqil7"]
+[ext_resource type="FontFile" uid="uid://c5nya6skib7a2" path="res://demo/fonts/Fake Identity.ttf" id="1_ewqw2"]
+[ext_resource type="Script" path="res://demo/button.gd" id="2_chu1e"]
 
-[node name="Control" type="Control"]
+[node name="SceneWithLoadingPhase" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_eqil7")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
@@ -17,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.831373, 0.298039, 0.298039, 1)
+color = Color(0.729412, 0.317647, 0.682353, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 0
@@ -33,40 +35,17 @@ theme_override_constants/separation = 15
 [node name="loading_scene" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 150)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "LOADING SCREEN"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 scene = "scene1"
-fade_in_speed = 2.0
-fade_out_pattern = "splashed_dirt"
-fade_in_pattern = "squares"
+fade_out_pattern = "circle"
+fade_in_pattern = "circle"
 fade_out_smoothness = 0.2
-fade_in_smoothness = 0.3
-fade_out_inverted = true
-color = Color(0, 0.498039, 0, 1)
-timeout = 0.2
-add_to_back = false
-
-[node name="loading_scene_initialization" type="Button" parent="CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 150)
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("1_e4fv5")
-theme_override_font_sizes/font_size = 32
-text = "LOADING SCREEN
-AND WAIT FOR
-SCENE
-INITIALIZATION"
-script = ExtResource("1")
-scene = "special_scene"
-fade_out_speed = 0.2
-fade_in_speed = 0.0
-fade_in_pattern = "crooked_tiles"
-fade_out_smoothness = 0.2
-fade_in_smoothness = 0.3
-fade_out_inverted = true
-color = Color(0.831373, 0.458824, 0, 1)
+fade_in_smoothness = 0.2
+fade_in_inverted = true
+color = Color(0.552941, 0.356863, 0.141176, 1)
 timeout = 0.2
 add_to_back = false
 
@@ -77,16 +56,19 @@ theme_override_constants/separation = 15
 [node name="next_scene" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 150)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
-text = "SCENE 3"
-script = ExtResource("1")
+text = "SPECIAL
+
+SCENE"
+script = ExtResource("2_chu1e")
 scene = "scene1"
 fade_out_pattern = "vertical"
 fade_in_pattern = "pixel"
 fade_out_smoothness = 0.5
 fade_in_smoothness = 0.5
 fade_in_inverted = true
+color = Color(0.341176, 0.447059, 0.188235, 1)
 timeout = 0.5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
@@ -96,19 +78,19 @@ theme_override_constants/separation = 15
 [node name="reset" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "RESET"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 scene = "ignore"
 
 [node name="reload" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "RELOAD"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 scene = "reload"
 fade_out_speed = 0.2
 fade_in_speed = 0.2
@@ -116,10 +98,10 @@ fade_in_speed = 0.2
 [node name="back" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "BACK"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 scene = "back"
 fade_out_speed = 0.0
 fade_in_speed = 0.0
@@ -127,10 +109,10 @@ fade_in_speed = 0.0
 [node name="nothing" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "NOTHING"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 fade_out_speed = 0.5
 fade_in_speed = 0.5
 color = Color(0.564706, 0.376471, 0.584314, 1)
@@ -139,10 +121,10 @@ timeout = 0.5
 [node name="exit" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("1_e4fv5")
+theme_override_fonts/font = ExtResource("1_ewqw2")
 theme_override_font_sizes/font_size = 32
 text = "EXIT"
-script = ExtResource("1")
+script = ExtResource("2_chu1e")
 scene = "exit"
 fade_out_speed = 0.3
 
@@ -150,7 +132,6 @@ fade_out_speed = 0.3
 layout_mode = 2
 
 [connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene" to="CenterContainer/VBoxContainer/loading_scene" method="_on_loading_scene_button_up"]
-[connection signal="button_up" from="CenterContainer/VBoxContainer/loading_scene_initialization" to="CenterContainer/VBoxContainer/loading_scene_initialization" method="_on_loading_scene_initialization_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/next_scene" to="CenterContainer/VBoxContainer/HBoxContainer/next_scene" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reset" method="_on_reset_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" method="_on_button_button_up"]

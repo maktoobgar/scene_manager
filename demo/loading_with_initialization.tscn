@@ -1,66 +1,66 @@
-[gd_scene load_steps=19 format=3 uid="uid://cy1bqj2yvxknr"]
+[gd_scene load_steps=19 format=3 uid="uid://bswmdis2t272x"]
 
-[ext_resource type="Texture2D" uid="uid://x3d0ui81rgd" path="res://demo/loading_sprite_sheet.png" id="1_a4tky"]
-[ext_resource type="Script" path="res://demo/loading.gd" id="1_pxy56"]
+[ext_resource type="Script" path="res://demo/loading_with_initialization.gd" id="1_nybk3"]
+[ext_resource type="Texture2D" uid="uid://x3d0ui81rgd" path="res://demo/loading_sprite_sheet.png" id="2_bd0y8"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jf28a"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dd3is"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 16, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jvn0q"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 32, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_efm7h"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 48, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6clc4"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 64, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gnbdr"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 80, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hdkdb"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 96, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1pitr"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 112, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ot3c6"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 128, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bugdx"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 144, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c18fr"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 160, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hwcbt"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 176, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bsknd"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 192, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0rimh"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 208, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x4rg0"]
-atlas = ExtResource("1_a4tky")
+atlas = ExtResource("2_bd0y8")
 region = Rect2(0, 224, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_lmmu3"]
@@ -116,14 +116,14 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="loading" type="Control"]
+[node name="LoadingWithInitialization" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_pxy56")
+script = ExtResource("1_nybk3")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -152,7 +152,13 @@ layout_mode = 2
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Next" type="Button" parent="VBoxContainer2/HBoxContainer/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer2/HBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Next" type="Button" parent="VBoxContainer2/HBoxContainer/MarginContainer/HBoxContainer"]
 visible = false
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
@@ -173,7 +179,8 @@ position = Vector2(15, 505)
 scale = Vector2(10.375, 10.375)
 sprite_frames = SubResource("SpriteFrames_lmmu3")
 autoplay = "default"
+frame_progress = 0.92287
 speed_scale = 2.0
 centered = false
 
-[connection signal="button_up" from="VBoxContainer2/HBoxContainer/MarginContainer/Next" to="." method="_on_next_button_up"]
+[connection signal="button_up" from="VBoxContainer2/HBoxContainer/MarginContainer/HBoxContainer/Next" to="." method="_on_next_button_up"]

@@ -44,12 +44,8 @@ class GeneralOptions:
 # sets current scene to starting point (used for `back` functionality)
 func _set_current_scene() -> void:
 	var root_key: String = get_tree().current_scene.scene_file_path
-	for key in Scenes.scenes:
-		if key.begins_with("_"):
-			continue
-		if Scenes.scenes[key]["value"] == root_key:
-			_current_scene = key
-	assert (_current_scene != "", "Scene Manager Error: loaded scene is not defined in scene manager tool.")
+	_current_scene = _get_scene_key_by_value(root_key)
+	assert (_current_scene != "", "Scene Manager Error: loaded scene is not defined in scene manager tool, to fix this, on Scene Manager UI panel, just once click on refresh and then save buttons.")
 
 # gets patterns from `addons/scene_manager/shader_patterns`
 func _get_patterns() -> void:
@@ -129,6 +125,16 @@ func _back() -> bool:
 		return true
 	return false
 
+# returns the scene key of the passed scene value (scene address)
+func _get_scene_key_by_value(path: String) -> String:
+	var found_key = ""
+	for key in Scenes.scenes:
+		if key.begins_with("_"):
+			continue
+		if Scenes.scenes[key]["value"] == path:
+			found_key = key
+	return found_key
+
 # restart the same scene
 func _refresh() -> bool:
 	get_tree().change_scene_to_file(Scenes.scenes[_current_scene]["value"])
@@ -136,17 +142,25 @@ func _refresh() -> bool:
 
 # checks different states of scene and make actual transitions happen
 func _change_scene(scene, add_to_back: bool) -> bool:
+	# when scenes get instanciate, they will loose their `scene_instance.scene_file_path`
+	# varialbe value which is used to reload the current scene again in this addon and that's
+	# why I'm fixing this up by hand and I'm not using `get_tree().change_scene_to_packed()`
+	# fuction in here
 	if scene is PackedScene:
-		get_tree().change_scene_to_packed(scene)
-		var path: String = scene.resource_path
-		var found_key: String = ""
-		for key in Scenes.scenes:
-			if key.begins_with("_"):
-				continue
-			if Scenes.scenes[key]["value"] == path:
-				found_key = key
+		scene.get_local_scene()
+		var scene_instance = scene.instantiate()
+		var root = get_tree().get_root()
+		root.get_child(root.get_child_count() - 1).free()
+		root.add_child(scene_instance)
+		get_tree().set_current_scene(scene_instance)
+		if (_load_scene == ""):
+			assert(false, "Scene Manager Error: please use this addon as described")
+		var path: String = _load_scene
+		var found_key: String = _get_scene_key_by_value(path)
+		scene_instance.scene_file_path = _load_scene
 		if add_to_back && found_key != "":
 			_append_stack(found_key)
+		_load_scene = ""
 		return true
 
 	if scene is Node:
@@ -155,12 +169,7 @@ func _change_scene(scene, add_to_back: bool) -> bool:
 		root.add_child(scene)
 		get_tree().set_current_scene(scene)
 		var path: String = scene.scene_file_path
-		var found_key: String = ""
-		for key in Scenes.scenes:
-			if key.begins_with("_"):
-				continue
-			if Scenes.scenes[key]["value"] == path:
-				found_key = key
+		var found_key: String = _get_scene_key_by_value(path)
 		if add_to_back && found_key != "":
 			_append_stack(found_key)
 		return true
@@ -229,7 +238,7 @@ func _process(_delta: float):
 	elif status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		pass
 	else:
-		assert(false, "for some reason, loading failed")
+		assert(false, "Scene Manager Error: for some reason, loading failed, I don't know why")
 
 # limits how much deep scene manager is allowed to record previous scenes which 
 # affects in changing scene to `back`(previous scene) functionality
@@ -239,7 +248,7 @@ func _process(_delta: float):
 # input =  0 => we can not go back to any previos scenes
 # input >  0 => we can go back to `input` or less previous scenes
 func set_back_limit(input: int) -> void:
-	assert(input >= -1, "input must to >= -1")
+	assert(input >= -1, "Scene Manager Error: input must to >= -1")
 	_stack_limit = input
 	if input == 0:
 		_stack.clear()
@@ -336,7 +345,7 @@ func change_scene(scene, fade_out_options: Options, fade_in_options: Options, ge
 			await _animation_player.animation_finished
 			fade_out_finished.emit()
 		if _change_scene(scene, general_options.add_to_back):
-			if !(scene is Node):
+			if !(scene is Node || scene is PackedScene):
 				await get_tree().node_added
 			scene_changed.emit()
 		if _timeout(general_options.timeout):
@@ -359,6 +368,53 @@ func no_effect_change_scene(scene, hold_timeout: float = 0.0, add_to_back: bool 
 			if !(scene is Node):
 				await get_tree().node_added
 		_set_out_transition()
+
+# imports loaded scene into the scene tree but doesn't change the scene
+# maily used when your new loaded scene has a loading phase too
+func add_loaded_scene_to_scene_tree() -> void:
+	if _load_scene != "":
+		var scene_resource = ResourceLoader.load_threaded_get(_load_scene) as PackedScene
+		if scene_resource:
+			var scene = scene_resource.instantiate()
+			scene.scene_file_path = _load_scene
+			var root = get_tree().get_root()
+			root.add_child(scene)
+			root.move_child(scene, root.get_child_count() - 2)
+			_load_scene = ""
+
+# when you added the loaded scene to the scene tree by `add_loaded_scene_to_scene_tree`
+# function, you call this one after you are sure that the added scene to scene tree
+# is completely ready and functionaly to change the active scene
+func change_scene_to_existing_scene_in_scene_tree(fade_out_options: Options, fade_in_options: Options, general_options: GeneralOptions) -> void:
+	_set_in_transition()
+	_set_clickable(general_options.clickable)
+	_set_pattern(fade_out_options, general_options)
+	if _fade_out(fade_out_options.fade_speed):
+		await _animation_player.animation_finished
+		fade_out_finished.emit()
+	# actual change scene goes here
+	var root = get_tree().get_root()
+	# delete the loading screen scene
+	root.get_child(root.get_child_count() - 1).free()
+	# get the loaded, completely generated scene
+	var scene = root.get_child(root.get_child_count() - 1)
+	# inform godot which now this is the current scene
+	get_tree().set_current_scene(scene)
+	# keeping the track of current scene and previous scenes
+	var path: String = scene.scene_file_path
+	var found_key: String = _get_scene_key_by_value(path)
+	if general_options.add_to_back && found_key != "":
+		_append_stack(found_key)
+	# timeout and ...
+	if _timeout(general_options.timeout):
+		await get_tree().create_timer(general_options.timeout).timeout
+	_animation_player.play(NO_COLOR, -1, 1, false)
+	_set_pattern(fade_in_options, general_options)
+	if _fade_in(fade_in_options.fade_speed):
+		await _animation_player.animation_finished
+		fade_in_finished.emit()
+	_set_clickable(true)
+	_set_out_transition()
 
 # loads scene interactive
 # connect to `load_percent_changed(value: int)` and `load_finished` signals
@@ -383,7 +439,6 @@ func change_scene_to_loaded_scene(fade_out_options: Options, fade_in_options: Op
 	if _load_scene != "":
 		var scene = ResourceLoader.load_threaded_get(_load_scene) as PackedScene
 		if scene:
-			_load_scene = ""
 			change_scene(scene, fade_out_options, fade_in_options, general_options)
 
 # returns previous scene (scene before current scene)
