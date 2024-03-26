@@ -122,6 +122,18 @@ fade_in_speed = 0.5
 color = Color(0.564706, 0.376471, 0.584314, 1)
 timeout = 0.5
 
+[node name="pause_and_resume" type="Button" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_oeex7")
+theme_override_font_sizes/font_size = 32
+text = "PAUSE & RESUME"
+script = ExtResource("1")
+fade_out_speed = 0.5
+fade_in_speed = 0.5
+color = Color(0.564706, 0.376471, 0.584314, 1)
+timeout = 0.5
+
 [node name="exit" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(100, 50)
 layout_mode = 2
@@ -141,4 +153,5 @@ layout_mode = 2
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/reload" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/back" to="CenterContainer/VBoxContainer/HBoxContainer/VBoxContainer/back" method="_on_button_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/nothing" to="CenterContainer/VBoxContainer/nothing" method="_on_button_button_up"]
+[connection signal="button_up" from="CenterContainer/VBoxContainer/pause_and_resume" to="CenterContainer/VBoxContainer/loading_scene" method="_on_pause_and_resume_button_up"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/exit" to="CenterContainer/VBoxContainer/exit" method="_on_button_button_up"]
