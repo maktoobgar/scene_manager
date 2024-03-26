@@ -473,6 +473,7 @@ func set_recorded_scene(key: String) -> void:
 func get_recorded_scene() -> String:
 	return _recorded_scene
 
+# pause (fadeout). You can resume afterwards.
 func pause(fade_out_options: Options, general_options: GeneralOptions) -> void:
 	_set_in_transition()
 	_set_clickable(general_options.clickable)
@@ -481,6 +482,7 @@ func pause(fade_out_options: Options, general_options: GeneralOptions) -> void:
 		await _animation_player.animation_finished
 		fade_out_finished.emit()
 
+## resume (fadein) after pause
 func resume(fade_in_options: Options, general_options: GeneralOptions) -> void:
 	_set_clickable(general_options.clickable)
 	_set_pattern(fade_in_options, general_options)
