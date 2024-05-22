@@ -4,7 +4,12 @@ CHANGELOG
 UNRELEASED
 ----------
 
-* 🐛 fix: #19
+3.9.0 (2024-05-22)
+------------------
+
+* fix: #19
+* feat: added pause and resume functions
+
 3.8.0 (2023-11-22)
 ------------------
 

@@ -14,9 +14,7 @@ Scene Manager v3.X.X is compatible with Godot 4.
 
 **Recently Added**:
 
-* [X] Added a feature to navigate to the scene path in filesystem on godot when clicked on scene address in Scene Manager tool
-* [X] Added a feature to open a desired scene from Scene Manager tab
-* [X] Users now can have some time to load their scene in the background with the new changing scene functionality
+* [X] Pause and Resume functions added
 
 **All**:
 
@@ -51,6 +49,9 @@ Scene Manager v3.X.X is compatible with Godot 4.
   * fade_out_started
   * fade_in_finished
   * fade_out_finished
+* [X] Added a feature to navigate to the scene path in filesystem on godot when clicked on scene address in Scene Manager tool
+* [X] Added a feature to open a desired scene from Scene Manager tab
+* [X] Users now can have some time to load their scene in the background with the new changing scene functionality
 
 ## How To Use?
 
@@ -158,7 +159,7 @@ func _ready() -> void:
  var first_scene_general_options = SceneManager.create_general_options(Color(0, 0, 0), 1, false)
  SceneManager.show_first_scene(fade_in_first_scene_options, first_scene_general_options)
  # code breaks if scene is not recognizable
-SceneManager.validate_scene(scene)
+ SceneManager.validate_scene(scene)
  # code breaks if pattern is not recognizable
  SceneManager.validate_pattern(fade_out_pattern)
  SceneManager.validate_pattern(fade_in_pattern)
@@ -176,6 +177,11 @@ func _on_loading_scene_button_up():
 func _on_loading_scene_initialization_button_up():
  SceneManager.set_recorded_scene(scene)
  SceneManager.change_scene("loading_with_initialization", fade_out_options, fade_in_options, general_options)
+
+func _on_pause_and_resume_button_up():
+ await SceneManager.pause(fade_out_options, general_options)
+ await get_tree().create_timer(3).timeout
+ await SceneManager.resume(fade_in_options, general_options)
 ```
 
 ### Simple Example With Loading Screen
@@ -377,4 +383,10 @@ This is the node you use inside your game code and it has these functions:
     * Maily used when your new loaded scene has a loading phase when added to scene tree
     * So to use this, first has to call `load_scene_interactive` to load your scene and then have to listen on `load_finished` signal and after the signal emits, you call this function and this function adds the loaded scene to the scene tree but exactly behind the current scene so that you still can not see the new scene
 24. `change_scene_to_existing_scene_in_scene_tree`(**fade_out_options**: Options, **fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
-    * when you added the loaded scene to the scene tree by `add_loaded_scene_to_scene_tree` function, you call this function after you are sure that the added scene to scene tree is completely ready and functional to change the active scene
+    * When you added the loaded scene to the scene tree by `add_loaded_scene_to_scene_tree` function, you call this function after you are sure that the added scene to scene tree is completely ready and functional to change the active scene
+25. `pause`(**fade_out_options**: Options, **general_options**: GeneralOptions) -> void:
+    * Just executes the fade out animation.
+    * Use it with `resume` function when you need to do something but do not want the player to see it.
+26. `resume`(**fade_in_options**: Options, **general_options**: GeneralOptions) -> void:
+    * Just executes the fade in animation.
+    * Use it with `pause` function when you need to do something but do not want the player to see it.
