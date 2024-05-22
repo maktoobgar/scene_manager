@@ -324,14 +324,34 @@ func show_first_scene(fade_in_options: Options, general_options: GeneralOptions)
 		_set_out_transition()
 
 # returns scene instance of passed scene key (blocking)
-func create_scene_instance(key: String) -> Node:
-	return get_scene(key).instantiate()
+#
+# Note: you can activate `use_sub_threads` but just know that In the newest 
+# versions of Godot there seems to be a bug that can cause a threadlock in
+# the resource loader that will result in infinite loading of the scene 
+# without any error.
+#
+# Related Github Issues About `use_sub_threads`:
+#
+# https://github.com/godotengine/godot/issues/85255
+# https://github.com/godotengine/godot/issues/84012
+func create_scene_instance(key: String, use_sub_threads = false) -> Node:
+	return get_scene(key, use_sub_threads).instantiate()
 
 # returns PackedScene of passed scene key (blocking)
-func get_scene(key: String) -> PackedScene:
+#
+# Note: you can activate `use_sub_threads` but just know that In the newest 
+# versions of Godot there seems to be a bug that can cause a threadlock in
+# the resource loader that will result in infinite loading of the scene 
+# without any error.
+#
+# Related Github Issues About `use_sub_threads`:
+#
+# https://github.com/godotengine/godot/issues/85255
+# https://github.com/godotengine/godot/issues/84012
+func get_scene(key: String, use_sub_threads = false) -> PackedScene:
 	validate_scene(key)
 	var address = Scenes.scenes[key]["value"]
-	ResourceLoader.load_threaded_request(address, "", true, ResourceLoader.CACHE_MODE_REUSE)
+	ResourceLoader.load_threaded_request(address, "", use_sub_threads, ResourceLoader.CACHE_MODE_REUSE)
 	return ResourceLoader.load_threaded_get(address)
 
 # changes current scene to the next scene
@@ -423,11 +443,21 @@ func change_scene_to_existing_scene_in_scene_tree(fade_out_options: Options, fad
 # loads scene interactive
 # connect to `load_percent_changed(value: int)` and `load_finished` signals
 # to listen to updates on your scene loading status
-func load_scene_interactive(key: String) -> void:
+#
+# Note: you can activate `use_sub_threads` but just know that In the newest 
+# versions of Godot there seems to be a bug that can cause a threadlock in
+# the resource loader that will result in infinite loading of the scene 
+# without any error.
+#
+# Related Github Issues About `use_sub_threads`:
+#
+# https://github.com/godotengine/godot/issues/85255
+# https://github.com/godotengine/godot/issues/84012
+func load_scene_interactive(key: String, use_sub_threads = false) -> void:
 	if safe_validate_scene(key):
 		set_process(true)
 		_load_scene = Scenes.scenes[key]["value"]
-		ResourceLoader.load_threaded_request(_load_scene, "", true, ResourceLoader.CACHE_MODE_IGNORE)
+		ResourceLoader.load_threaded_request(_load_scene, "", use_sub_threads, ResourceLoader.CACHE_MODE_IGNORE)
 
 # returns loaded scene
 #
