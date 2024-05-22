@@ -240,7 +240,7 @@ func _process(_delta: float):
 	else:
 		assert(false, "Scene Manager Error: for some reason, loading failed, I don't know why")
 
-# limits how much deep scene manager is allowed to record previous scenes which 
+# limits how much deep scene manager is allowed to record previous scenes which
 # affects in changing scene to `back`(previous scene) functionality
 #
 # allowed `input` values:
@@ -391,7 +391,7 @@ func no_effect_change_scene(scene, hold_timeout: float = 0.0, add_to_back: bool 
 
 # imports loaded scene into the scene tree but doesn't change the scene
 # maily used when your new loaded scene has a loading phase when added to scene tree
-# so to use this, first has to call `load_scene_interactive` to load your scene 
+# so to use this, first has to call `load_scene_interactive` to load your scene
 # and then have to listen on `load_finished` signal and after the signal emits,
 # you call this function and this function adds the loaded scene to the scene
 # tree but exactly behind the current scene so that you still can not see the new scene
@@ -493,7 +493,7 @@ func pop_previous_scene() -> String:
 func previous_scenes_length() -> int:
 	return len(_stack)
 
-# records a scene key to be used for loading scenes to know where to go after getting loaded 
+# records a scene key to be used for loading scenes to know where to go after getting loaded
 # into loading scene or just for next scene to know where to go next
 func set_recorded_scene(key: String) -> void:
 	validate_scene(key)
@@ -502,3 +502,22 @@ func set_recorded_scene(key: String) -> void:
 # returns recorded scene
 func get_recorded_scene() -> String:
 	return _recorded_scene
+
+# pause (fadeout). You can resume afterwards.
+func pause(fade_out_options: Options, general_options: GeneralOptions) -> void:
+	_set_in_transition()
+	_set_clickable(general_options.clickable)
+	_set_pattern(fade_out_options, general_options)
+	if _fade_out(fade_out_options.fade_speed):
+		await _animation_player.animation_finished
+		fade_out_finished.emit()
+
+## resume (fadein) after pause
+func resume(fade_in_options: Options, general_options: GeneralOptions) -> void:
+	_set_clickable(general_options.clickable)
+	_set_pattern(fade_in_options, general_options)
+	if _fade_in(fade_in_options.fade_speed):
+		await _animation_player.animation_finished
+		fade_in_finished.emit()
+	_set_out_transition()
+	_set_clickable(true)

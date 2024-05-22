@@ -41,3 +41,8 @@ func _on_loading_scene_button_up():
 func _on_loading_scene_initialization_button_up():
 	SceneManager.set_recorded_scene(scene)
 	SceneManager.change_scene("loading_with_initialization", fade_out_options, fade_in_options, general_options)
+
+func _on_pause_and_resume_button_up():
+	await SceneManager.pause(fade_out_options, general_options)
+	await get_tree().create_timer(3).timeout
+	await SceneManager.resume(fade_in_options, general_options)
