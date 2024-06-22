@@ -150,7 +150,7 @@ func _change_scene(scene, add_to_back: bool) -> bool:
 		scene.get_local_scene()
 		var scene_instance = scene.instantiate()
 		var root = get_tree().get_root()
-		root.get_child(root.get_child_count() - 1).free()
+		get_tree().get_current_scene().free()
 		root.add_child(scene_instance)
 		get_tree().set_current_scene(scene_instance)
 		if (_load_scene == ""):
@@ -165,7 +165,7 @@ func _change_scene(scene, add_to_back: bool) -> bool:
 
 	if scene is Node:
 		var root = get_tree().get_root()
-		root.get_child(root.get_child_count() - 1).free()
+		get_tree().get_current_scene().free()
 		root.add_child(scene)
 		get_tree().set_current_scene(scene)
 		var path: String = scene.scene_file_path
