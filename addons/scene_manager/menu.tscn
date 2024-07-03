@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://crnf0w0s44hxx"]
+[gd_scene load_steps=8 format=3 uid="uid://crnf0w0s44hxx"]
 
-[ext_resource type="Texture2D" uid="uid://cnhtsuf78gsy7" path="res://addons/scene_manager/icons/GuiChecked.svg" id="1"]
 [ext_resource type="PackedScene" path="res://addons/scene_manager/label.tscn" id="2"]
 [ext_resource type="Texture2D" uid="uid://bt1mtu3gbmwqc" path="res://addons/scene_manager/icons/FileDialog.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://jsditrvsfs5h" path="res://addons/scene_manager/icons/Reload.svg" id="5_2r30m"]
+[ext_resource type="Texture2D" uid="uid://briccm8yhbi21" path="res://addons/scene_manager/icons/Save.svg" id="5_yw87d"]
 [ext_resource type="Script" path="res://addons/scene_manager/manager.gd" id="6"]
+[ext_resource type="Texture2D" uid="uid://db46q6hma7y7o" path="res://addons/scene_manager/icons/FolderActive.svg" id="7_3r2fd"]
+[ext_resource type="Texture2D" uid="uid://cnhtsuf78gsy7" path="res://addons/scene_manager/icons/GuiChecked.svg" id="7_d04a5"]
 
 [node name="root_container" type="MarginContainer"]
 anchors_preset = 15
@@ -56,7 +59,7 @@ text = "+ List"
 [node name="separator" type="HSeparator" parent="main_container"]
 layout_mode = 2
 
-[node name="ignores" type="ScrollContainer" parent="main_container"]
+[node name="ignores" type="VBoxContainer" parent="main_container"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
@@ -66,84 +69,136 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ignore_list" type="VBoxContainer" parent="main_container/ignores/container"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="_title" type="HBoxContainer" parent="main_container/ignores/container/ignore_list"]
+[node name="_title" type="HBoxContainer" parent="main_container/ignores/container"]
 layout_mode = 2
 
-[node name="delete_list" type="Button" parent="main_container/ignores/container/ignore_list/_title"]
+[node name="delete_list" type="Button" parent="main_container/ignores/container/_title"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 disabled = true
 
-[node name="scenes" parent="main_container/ignores/container/ignore_list/_title" instance=ExtResource("2")]
+[node name="scenes" parent="main_container/ignores/container/_title" instance=ExtResource("2")]
 layout_mode = 2
 text = "Ignores:"
 
-[node name="interactive_section_container" type="VBoxContainer" parent="main_container"]
+[node name="ignores" type="ScrollContainer" parent="main_container/ignores/container"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ignore_list" type="VBoxContainer" parent="main_container/ignores/container/ignores"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ignores_panel" type="VBoxContainer" parent="main_container/ignores"]
 layout_mode = 2
 
-[node name="ignore_interactive_section_container" type="MarginContainer" parent="main_container/interactive_section_container"]
+[node name="ignore_interactive_section_container" type="MarginContainer" parent="main_container/ignores/ignores_panel"]
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="add_ignore_container" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container"]
+[node name="add_ignore_container" type="HBoxContainer" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container"]
 layout_mode = 2
 
-[node name="dialog_add_ignore_container" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container"]
+[node name="dialog_add_ignore_container" type="HBoxContainer" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="file_dialog" type="FileDialog" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
+[node name="file_dialog" type="FileDialog" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
 mode = 2
 title = "Open a File or Directory"
 ok_button_text = "Open"
 file_mode = 3
 
-[node name="file_dialog_button" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
+[node name="file_dialog_button" type="Button" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 icon = ExtResource("3")
 
-[node name="address" type="LineEdit" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
+[node name="address" type="LineEdit" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="dialog_add_ignore_container2" type="HBoxContainer" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container"]
+[node name="dialog_add_ignore_container2" type="HBoxContainer" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="add" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
+[node name="add" type="Button" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Add"
 
-[node name="hide" type="Button" parent="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
+[node name="hide" type="Button" parent="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2"]
 layout_mode = 2
 focus_mode = 0
-icon = ExtResource("1")
+icon = ExtResource("7_d04a5")
+metadata/enabled = true
+
+[node name="separator" type="HSeparator" parent="main_container/ignores/ignores_panel"]
+layout_mode = 2
+
+[node name="interactive_section_container" type="VBoxContainer" parent="main_container"]
+layout_mode = 2
 
 [node name="margin_refresh_save_container" type="MarginContainer" parent="main_container/interactive_section_container"]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="refresh_save_container" type="HBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container"]
+[node name="refresh_save_container" type="VBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container"]
 layout_mode = 2
 
-[node name="refresh" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
+[node name="save_refresh_container" type="HBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="refresh" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Refresh"
+icon = ExtResource("5_2r30m")
 
-[node name="save" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
+[node name="save_container" type="HBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="save" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container/save_container"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 2
+disabled = true
 text = "Save"
+icon = ExtResource("5_yw87d")
+
+[node name="hide_unhide" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container/save_container"]
+visible = false
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("7_d04a5")
+metadata/enabled = true
+
+[node name="auto_save_refresh_container" type="HBoxContainer" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="auto_save" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "If an update happens in UI, save gets called automatically."
+focus_mode = 0
+text = "Auto Save"
+icon = ExtResource("7_d04a5")
+metadata/enabled = true
+
+[node name="auto_refresh" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "If checked, \"SceneManager\" will listen to \"FileSystem\" changes in godot and refreshes automatically.
+It will save after the refresh if \"Auto Save\" is active too."
+focus_mode = 0
+text = "Reactive"
+icon = ExtResource("7_3r2fd")
+metadata/enabled = true
 
 [node name="accept_dialog" type="AcceptDialog" parent="."]
 dialog_autowrap = true
@@ -152,11 +207,14 @@ dialog_autowrap = true
 [connection signal="text_changed" from="main_container/add_category_container/add_category_container/section_name" to="." method="_on_section_name_text_changed"]
 [connection signal="button_up" from="main_container/add_category_container/add_category_container/HBoxContainer/add_subsection" to="." method="_on_add_subsection_button_up"]
 [connection signal="button_up" from="main_container/add_category_container/add_category_container/HBoxContainer/add_section" to="." method="_on_add_section_button_up"]
-[connection signal="dir_selected" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
-[connection signal="file_selected" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
-[connection signal="button_up" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog_button" to="." method="_on_file_dialog_button_button_up"]
-[connection signal="text_changed" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/address" to="." method="_on_address_text_changed"]
-[connection signal="button_up" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2/add" to="." method="_on_add_button_up"]
-[connection signal="button_up" from="main_container/interactive_section_container/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2/hide" to="." method="_on_hide_button_up"]
-[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/refresh" to="." method="_on_refresh_button_up"]
-[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save" to="." method="_on_save_button_up"]
+[connection signal="dir_selected" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
+[connection signal="file_selected" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog" to="." method="_on_file_dialog_dir_file_selected"]
+[connection signal="button_up" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/file_dialog_button" to="." method="_on_file_dialog_button_button_up"]
+[connection signal="text_changed" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container/address" to="." method="_on_address_text_changed"]
+[connection signal="button_up" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2/add" to="." method="_on_add_button_up"]
+[connection signal="button_up" from="main_container/ignores/ignores_panel/ignore_interactive_section_container/add_ignore_container/dialog_add_ignore_container2/hide" to="." method="_on_hide_button_up"]
+[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container/refresh" to="." method="_on_refresh_button_up"]
+[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container/save_container/save" to="." method="_on_save_button_up"]
+[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/save_refresh_container/save_container/hide_unhide" to="." method="_on_hide_button_up"]
+[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container/auto_save" to="." method="_on_auto_save_button_up"]
+[connection signal="button_up" from="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container/auto_refresh" to="." method="_on_auto_refresh_button_up"]

@@ -99,7 +99,10 @@ func _on_popup_button_button_up():
 
 # Happens when open scene button clicks
 func _on_open_scene_button_up():
+	# Open it
 	EditorPlugin.new().get_editor_interface().open_scene_from_path(get_value())
+	# Show in FileSystem
+	EditorInterface.get_file_system_dock().navigate_to_path(get_value())
 
 # Happens on input on the value element
 func _on_value_gui_input(event: InputEvent):
@@ -123,11 +126,15 @@ func _on_popup_menu_index_pressed(index: int):
 	if id == 0:
 		if !checked:
 			_root.add_scene_to_list(text, get_key(), get_value(), ItemSetting.default())
+			_root.item_added_to_list.emit(self, text)
 		else:
 			_root.remove_scene_from_list(text, get_key(), get_value())
+			_root.item_removed_from_list.emit(self, text)
 	elif id == 1:
 		if text == "Visible":
-			set_visibility(!get_visibility())
+			var new_visibility = !get_visibility()
+			set_visibility(new_visibility)
+			_root.item_visibility_changed.emit(self, new_visibility)
 
 # Runs by hand in `_on_key_gui_input` function when text of key LineEdit
 # changes and key event of it was released
@@ -164,6 +171,7 @@ func _on_key_gui_input(event: InputEvent) -> void:
 			_on_key_value_text_changed()
 			_key = get_key()
 			_root.check_duplication()
+			_root.item_renamed.emit(self)
 
 # When added
 func _on_tree_entered():

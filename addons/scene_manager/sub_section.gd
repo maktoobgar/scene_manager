@@ -96,11 +96,14 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	if parent == self:
 		return
 	parent.remove_item(node)
-	setting.subsection = name
-	node.set_setting(setting)
 	node.set_subsection(self)
 	add_item(node)
 	open()
+	if name == "All":
+		node.set_setting(ItemSetting.default())
+		return
+	setting.subsection = name
+	node.set_setting(setting)
 
 # Button Delete 
 func _on_delete_button_up():

@@ -41,11 +41,20 @@ class GeneralOptions:
 	var clickable: bool = true
 	var add_to_back: bool = true
 
+func _current_scene_is_ignored(scene_file_path: String) -> bool:
+	for ignore_path in Scenes.scenes._ignore_list:
+		if scene_file_path.begins_with(ignore_path):
+			return true
+	return false
+
 # sets current scene to starting point (used for `back` functionality)
 func _set_current_scene() -> void:
-	var root_key: String = get_tree().current_scene.scene_file_path
-	_current_scene = _get_scene_key_by_value(root_key)
-	assert (_current_scene != "", "Scene Manager Error: loaded scene is not defined in scene manager tool, to fix this, on Scene Manager UI panel, just once click on refresh and then save buttons.")
+	var scene_file_path: String = get_tree().current_scene.scene_file_path
+	_current_scene = _get_scene_key_by_value(scene_file_path)
+
+	assert (!(_current_scene == "" and !_current_scene_is_ignored(scene_file_path)), "Scene Manager Error: loaded scene is not defined in scene manager tool, to fix this, on Scene Manager UI panel, just once click on refresh and then save buttons respectively.")
+	if _current_scene == "":
+		push_warning("loaded scene is ignored by scene manager, it means that you can not go back to this scene by 'back' key word.")
 
 # gets patterns from `addons/scene_manager/shader_patterns`
 func _get_patterns() -> void:
@@ -284,7 +293,7 @@ func create_general_options(color: Color = Color(0, 0, 0), timeout: float = 0.0,
 
 # validates passed scene key
 func validate_scene(key: String) -> void:
-	assert((key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true) && !key.begins_with("_"), "Scene Manager Error: `%s` key for scene is not recognized, please double check."% key)
+	assert((key in _reserved_keys || key == "" || Scenes.scenes.has(key) == true) && !key.begins_with("_"), "Scene Manager Error: `%s` key is not recognized, please double check. You may have the scene in your File System but Scene Manager has no idea, clicking refresh and then save buttons respectively may fix the problem."% key)
 
 # validates passed scene key
 func safe_validate_scene(key: String) -> bool:

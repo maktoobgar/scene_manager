@@ -16,10 +16,14 @@ const _scene_list_item = preload("res://addons/scene_manager/scene_list.tscn")
 # icons
 const _hide_button_checked = preload("res://addons/scene_manager/icons/GuiChecked.svg")
 const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiCheckedDisabled.svg")
+const _folder_button_checked = preload("res://addons/scene_manager/icons/FolderActive.svg")
+const _folder_button_unchecked = preload("res://addons/scene_manager/icons/Folder.svg")
 @onready var _ignore_list: Node = self.find_child("ignore_list")
 # add save, refresh
 @onready var _save_button: Button = self.find_child("save")
 @onready var _refresh_button: Button = self.find_child("refresh")
+@onready var _auto_save_button: Button = self.find_child("auto_save")
+@onready var _auto_refresh_button: Button = self.find_child("auto_refresh")
 # add list
 @onready var _add_subsection_button: Button = self.find_child("add_subsection")
 @onready var _add_section_button: Button = self.find_child("add_section")
@@ -28,10 +32,12 @@ const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiChec
 @onready var _address_line_edit: LineEdit = self.find_child("address")
 @onready var _file_dialog: FileDialog = self.find_child("file_dialog")
 @onready var _hide_button: Button = self.find_child("hide")
+@onready var _hide_unhide_button: Button = self.find_child("hide_unhide")
 @onready var _add_button: Button = self.find_child("add")
 # containers
 @onready var _tab_container: TabContainer = self.find_child("tab_container")
 @onready var _ignores_container: Node = self.find_child("ignores")
+@onready var _ignores_panel_container: Node = self.find_child("ignores_panel")
 # generals
 @onready var _accept_dialog: AcceptDialog = self.find_child("accept_dialog")
 
@@ -42,13 +48,63 @@ const _hide_button_unchecked = preload("res://addons/scene_manager/icons/GuiChec
 var _sections: Dictionary = {}
 var reserved_keys: Array = ["back", "null", "ignore", "refresh",
 	"reload", "restart", "exit", "quit"]
+var _timer: Timer = null;
 
-signal delete_ignore_child(node)
+# When an ignore item remove button clicks
+signal ignore_child_deleted(node: Node)
+# When rename happens
+signal item_renamed(node: Node)
+# When item hides or unhides
+signal item_visibility_changed(node: Node, visibility: bool)
+# When item adds to a list
+signal item_added_to_list(node: Node, list_name: String)
+# When item deletes from a list
+signal item_removed_from_list(node: Node, list_name: String)
 
 # Refreshes the whole UI
 func _ready() -> void:
 	_on_refresh_button_up()
-	self.connect("delete_ignore_child",Callable(self,"_on_delete_ignore_child"))
+	EditorInterface.get_resource_filesystem().filesystem_changed.connect(_filesystem_changed)
+	self.ignore_child_deleted.connect(_on_ignore_child_deleted)
+	self.item_renamed.connect(_on_item_renamed)
+	self.item_visibility_changed.connect(_on_item_visibility_changed)
+	self.item_added_to_list.connect(_on_added_to_list)
+	self.item_removed_from_list.connect(_on_item_removed_from_list)
+	
+	# Create a new Timer node
+	_timer = Timer.new()
+	_timer.wait_time = 0.5
+	_timer.one_shot = true
+	add_child(_timer)
+	_timer.timeout.connect(_on_timer_timeout)
+
+func _on_timer_timeout() -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+func _on_item_renamed(node: Node) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_timer.wait_time = 0.5
+		_timer.start()
+
+func _on_item_visibility_changed(node: Node, visibility: bool) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+func _on_added_to_list(node: Node, list_name: String) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+func _on_item_removed_from_list(node: Node, list_name: String) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+# Gets called by filesystem changes
+func _filesystem_changed() -> void:
+	if _auto_refresh_button.get_meta("enabled", false):
+		_on_refresh_button_up()
+		#if _auto_save_button.get_meta("enabled", false):
+			#_save_all(_create_save_dic())
 
 # Returns absolute current working directory
 func _absolute_current_working_directory() -> String:
@@ -122,11 +178,11 @@ func _get_scenes(root_path: String, ignores: Array) -> Dictionary:
 			if len(new_files) != 0:
 				_merge_dict(files, new_files)
 	else:
+		# If `root_path` was really a file and not a folder, we know the reason and
+		# propably this is comming from `_on_ignore_child_deleted`, so just add it to list
 		if !(original_root_path in ignores):
-			# If `root_path` was really a file and not a folder, we know the reason and
-			# propably this is comming from `_on_delete_ignore_child`, so just add it to list
 			if (!FileAccess.file_exists(original_root_path)):
-				print("Couldn't open ", original_root_path)
+				print ("Couldn't open ", original_root_path)
 			else:
 				var splits = original_root_path.split("/", false)
 				var file = splits[len(splits) - 1]
@@ -177,14 +233,14 @@ func remove_scene_from_list(section_name: String, scene_name: String, scene_addr
 	var setting = all_list.get_node_by_scene_address(scene_address).get_setting()
 	all_list.remove_item(scene_name, scene_address)
 	setting.categorized = has_sections(scene_address)
-	all_list.add_item(scene_name, scene_address, setting)
+	await all_list.add_item(scene_name, scene_address, setting)
 
 # Adds an item to a list
 #
 # Used mainly in this script
 func _add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
 	var list: Node = _get_one_list_node_by_name(list_name)
-	list.add_item(scene_name, scene_address, setting)
+	await list.add_item(scene_name, scene_address, setting)
 	_sections_add(scene_address, list_name)
 
 # Adds an item to a list
@@ -200,7 +256,7 @@ func add_scene_to_list(list_name: String, scene_name: String, scene_address: Str
 	setting = all_list.get_node_by_scene_address(scene_address).get_setting()
 	all_list.remove_item(scene_name, scene_address)
 	setting.categorized = has_sections(scene_address)
-	all_list.add_item(scene_name, scene_address, setting)
+	await all_list.add_item(scene_name, scene_address, setting)
 
 # Adds an address to ignore list
 func _add_ignore_item(address: String) -> void:
@@ -210,7 +266,7 @@ func _add_ignore_item(address: String) -> void:
 
 # Appends all scenes into their assigned UI lists
 #
-# This function gets called just from `_on_delete_ignore_child`
+# This function gets called just from `_on_ignore_child_deleted`
 func _append_scenes(scenes: Dictionary) -> void:
 	_get_one_list_node_by_name("All").append_scenes(scenes)
 	for list in _get_lists_nodes():
@@ -218,7 +274,7 @@ func _append_scenes(scenes: Dictionary) -> void:
 			continue
 		for key in scenes:
 			if list.name in get_sections(scenes[key]):
-				list.add_item(key, scenes[key], ItemSetting.default())
+				await list.add_item(key, scenes[key], ItemSetting.default())
 
 # Clears all tabs, UI lists and ignore list
 func _clear_all() -> void:
@@ -234,6 +290,15 @@ func _reload_scenes() -> void:
 	# Reloads all scenes in `Scenes` script in UI and in this script
 	for key in data:
 		var scene = data[key]
+		if key == "_auto_refresh":
+			_change_auto_refresh_state(scene)
+			continue
+		if key == "_auto_save":
+			_change_auto_save_state(scene)
+			continue
+		if key == "_ignores_visible":
+			_hide_unhide_ignores_list(scene)
+			continue
 		var keys = scene.keys()
 		assert (("value" in keys) && ("sections" in keys), "Scene Manager Error: this format is not supported. Every scene item has to have 'value' and 'sections' field inside them.'")
 		if !(scene["value"] in scenes_values):
@@ -259,7 +324,8 @@ func _reload_scenes() -> void:
 	var data_dics = data.values()
 	if data:
 		for i in range(len(data_dics)):
-			data_values.append(data_dics[i]["value"])
+			if typeof(data_dics[i]) == TYPE_DICTIONARY:
+				data_values.append(data_dics[i]["value"])
 	for key in scenes:
 		if !(scenes[key] in data_values):
 			var setting = ItemSetting.default()
@@ -276,7 +342,12 @@ func _reload_tabs() -> void:
 	if _get_one_list_node_by_name("All") == null:
 		_add_scene_list("All")
 	for section in sections:
-		_add_scene_list(section)
+		var found = false
+		for list in _get_lists_nodes():
+			if list.name == section:
+				found = true
+		if !found:
+			_add_scene_list(section)
 
 # Refresh button
 func _on_refresh_button_up() -> void:
@@ -423,25 +494,29 @@ func _get_scene_nodes_from_view() -> Array:
 	var list: Node = _get_one_list_node_by_name("All")
 	var nodes: Array = []
 	for i in range(list.get_child_count()):
-		if i == 0: continue
 		var node: Node = list.get_child(i)
 		nodes.append(node)
 	return nodes
 
-# Save button
-func _on_save_button_up():
-	_clean_sections()
+# Gathers all data from UI and returns it
+func _create_save_dic() -> Dictionary:
 	var dic: Dictionary = _get_scenes_from_ui()
 	dic["_ignore_list"] = _get_ignores_in_ignore_ui()
 	dic["_sections"] = get_all_lists_names_except(["All"])
-	_save_all(dic)
-	_on_refresh_button_up()
+	dic["_auto_refresh"] = _auto_refresh_button.get_meta("enabled", false)
+	dic["_auto_save"] = _auto_save_button.get_meta("enabled", false)
+	dic["_ignores_visible"] = _ignores_container.visible
+	return dic
+
+# Save button
+func _on_save_button_up():
+	_clean_sections()
+	_save_all(_create_save_dic())
 
 # Returns array of ignore nodes from UI view
 func _get_nodes_in_ignore_ui() -> Array:
 	var arr: Array = []
 	for i in range(_ignore_list.get_child_count()):
-		if i == 0: continue
 		arr.append(_ignore_list.get_child(i))
 	return arr
 
@@ -495,7 +570,7 @@ func _on_file_dialog_dir_file_selected(path):
 	_on_address_text_changed(path)
 
 # When an ignore item remove button clicks
-func _on_delete_ignore_child(node: Node) -> void:
+func _on_ignore_child_deleted(node: Node) -> void:
 	var address: String = node.get_address()
 	node.queue_free()
 	var ignores: Array = []
@@ -540,14 +615,24 @@ func _on_section_name_text_changed(new_text):
 	else:
 		_add_subsection_button.disabled = true
 
+func _hide_unhide_ignores_list(value: bool) -> void:
+	if value:
+		_hide_button.icon = _hide_button_checked
+		_hide_unhide_button.icon = _hide_button_checked
+		_ignores_container.visible = true
+		_ignores_panel_container.visible = true
+		_hide_unhide_button.visible = false
+	else:
+		_hide_button.icon = _hide_button_unchecked
+		_hide_unhide_button.icon = _hide_button_unchecked
+		_ignores_container.visible = false
+		_ignores_panel_container.visible = false
+		_hide_unhide_button.visible = true
+
 # Hide Button
 func _on_hide_button_up():
-	if _ignores_container.visible:
-		_hide_button.icon = _hide_button_unchecked
-		_ignores_container.visible = false
-	else:
-		_hide_button.icon = _hide_button_checked
-		_ignores_container.visible = true
+	_hide_unhide_ignores_list(!_ignores_container.visible)
+	_save_all(_create_save_dic())
 
 # Tab changes
 func _on_tab_container_tab_changed(tab: int):
@@ -561,3 +646,30 @@ func _on_add_subsection_button_up():
 		_section_name_line_edit.text = ""
 		_add_subsection_button.disabled = true
 		_add_section_button.disabled = true
+
+func _change_auto_save_state(value: bool) -> void:
+	if !value:
+		_save_button.disabled = false
+		_auto_save_button.set_meta("enabled", false)
+		_auto_save_button.icon = _hide_button_unchecked
+	else:
+		_auto_save_button.set_meta("enabled", true)
+		_auto_save_button.icon = _hide_button_checked
+	_save_button.disabled = _auto_refresh_button.get_meta("enabled", true) and _auto_save_button.get_meta("enabled", true)
+
+func _on_auto_save_button_up():
+	_change_auto_save_state(!_auto_save_button.get_meta("enabled", false))
+	_save_all(_create_save_dic())
+
+func _change_auto_refresh_state(value: bool) -> void:
+	if !value:
+		_auto_refresh_button.set_meta("enabled", false)
+		_auto_refresh_button.icon = _folder_button_unchecked
+	else:
+		_auto_refresh_button.set_meta("enabled", true)
+		_auto_refresh_button.icon = _folder_button_checked
+	_save_button.disabled = _auto_refresh_button.get_meta("enabled", true) and _auto_save_button.get_meta("enabled", true)
+
+func _on_auto_refresh_button_up():
+	_change_auto_refresh_state(!_auto_refresh_button.get_meta("enabled", true))
+	_save_all(_create_save_dic())

@@ -6,15 +6,23 @@
 [ext_resource type="Texture2D" uid="uid://dw322nmqpqwfq" path="res://addons/scene_manager/icons/ImportFail.svg" id="4_chjuj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6qci"]
+content_margin_left = 5.0
+content_margin_right = 5.0
 bg_color = Color(0.156863, 0.176471, 0.207843, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yqp47"]
+content_margin_left = 5.0
+content_margin_right = 5.0
 bg_color = Color(0.219608, 0.239216, 0.266667, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kx1we"]
+content_margin_left = 5.0
+content_margin_right = 5.0
 bg_color = Color(0.129412, 0.14902, 0.180392, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uvnds"]
+content_margin_left = 5.0
+content_margin_right = 5.0
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [node name="All" type="VBoxContainer"]

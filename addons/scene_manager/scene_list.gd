@@ -1,5 +1,5 @@
 @tool
-extends ScrollContainer
+extends Node
 
 # Scene itema and sub_section to instance and add in list
 const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
@@ -60,6 +60,8 @@ func determine_item_visibility(setting: ItemSetting) -> bool:
 
 # Adds an item to list
 func add_item(key: String, value: String, setting: ItemSetting) -> void:
+	if !self.is_node_ready():
+		await self.ready
 	var item = _scene_item.instantiate()
 	item.set_key(key)
 	item.set_value(value)
@@ -84,7 +86,6 @@ func add_item(key: String, value: String, setting: ItemSetting) -> void:
 # Finds and returns a sub_section in the list
 func find_subsection(key: String) -> Node:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var element = _container.get_child(i)
 		if element.name == key:
 			return element
@@ -93,7 +94,6 @@ func find_subsection(key: String) -> Node:
 # Removes an item from list
 func remove_item(key: String, value: String) -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			if children[j].get_key() == key && children[j].get_value() == value:
@@ -103,7 +103,6 @@ func remove_item(key: String, value: String) -> void:
 # Removes items that their value begins with passed value
 func remove_items_begins_with(value: String) -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			if children[j].get_value().begins_with(value):
@@ -112,7 +111,6 @@ func remove_items_begins_with(value: String) -> void:
 # Clear all scene records from UI list
 func clear_list() -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		_container.get_child(i).queue_free()
 
 # Appends all scenes into UI list
@@ -132,9 +130,10 @@ func append_scenes(nodes: Dictionary) -> void:
 
 # Return an array of record nodes from UI list
 func get_list_nodes() -> Array:
+	if _container == null:
+		_container = find_child("container")
 	var arr: Array[Node] = []
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var nodes = _container.get_child(i).get_items()
 		arr.append_array(nodes)
 	return arr
@@ -142,7 +141,6 @@ func get_list_nodes() -> Array:
 # Returns a specific node from passed scene name
 func get_node_by_scene_name(scene_name: String) -> Node:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var items = _container.get_child(i).get_items()
 		for j in range(len(items)):
 			if items[j].get_key() == scene_name:
@@ -152,7 +150,6 @@ func get_node_by_scene_name(scene_name: String) -> Node:
 # Returns a specific node from passed scene address
 func get_node_by_scene_address(scene_address: String) -> Node:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var items = _container.get_child(i).get_items()
 		for j in range(len(items)):
 			if items[j].get_value() == scene_address:
@@ -162,7 +159,6 @@ func get_node_by_scene_address(scene_address: String) -> Node:
 # Update a specific scene record with passed data in UI
 func update_scene_with_key(key: String, new_key: String, value: String, setting: ItemSetting) -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array[Node] = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			if children[j].get_key() == key && children[j].get_value() == value:
@@ -187,7 +183,6 @@ func check_duplication() -> Array:
 # Reset theme for all children in UI
 func set_reset_theme_for_all() -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array[Node] = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			children[j].remove_custom_theme()
@@ -195,7 +190,6 @@ func set_reset_theme_for_all() -> void:
 # Sets duplicate theme for children in passed list in UI
 func set_duplicate_theme(list: Array) -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array[Node] = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			if children[j].get_key() in list:
@@ -205,7 +199,6 @@ func set_duplicate_theme(list: Array) -> void:
 func get_all_sublists() -> Array:
 	var arr: Array[String] = []
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		arr.append(_container.get_child(i).name)
 	return arr
 
@@ -225,7 +218,6 @@ func _on_delete_list_button_up() -> void:
 # Refreshes `visible` of all items in list
 func _refresh_visible_of_all_items() -> void:
 	for i in range(_container.get_child_count()):
-		if i == 0: continue
 		var children: Array[Node] = _container.get_child(i).get_items()
 		for j in range(len(children)):
 			children[j].visible = determine_item_visibility(children[j].get_setting())

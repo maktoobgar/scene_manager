@@ -4,32 +4,35 @@
 [ext_resource type="Texture2D" uid="uid://dw322nmqpqwfq" path="res://addons/scene_manager/icons/ImportFail.svg" id="3"]
 [ext_resource type="Texture2D" uid="uid://d250i5cu8lgbd" path="res://addons/scene_manager/icons/eye_open.png" id="4_u7g41"]
 
-[node name="scenes" type="ScrollContainer"]
+[node name="scene_list" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 script = ExtResource("2")
 
-[node name="container" type="VBoxContainer" parent="."]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="_title" type="HBoxContainer" parent="container"]
+[node name="_title" type="HBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="delete_list" type="Button" parent="container/_title"]
+[node name="delete_list" type="Button" parent="_title"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 icon = ExtResource("3")
 
-[node name="hidden" type="Button" parent="container/_title"]
+[node name="hidden" type="Button" parent="_title"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 icon = ExtResource("4_u7g41")
 
-[connection signal="button_up" from="container/_title/delete_list" to="." method="_on_delete_list_button_up"]
-[connection signal="button_up" from="container/_title/hidden" to="." method="_on_hidden_button_up"]
+[node name="scenes" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="container" type="VBoxContainer" parent="scenes"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="button_up" from="_title/delete_list" to="." method="_on_delete_list_button_up"]
+[connection signal="button_up" from="_title/hidden" to="." method="_on_hidden_button_up"]

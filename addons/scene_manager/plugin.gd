@@ -25,7 +25,6 @@ func set_properties_for_setting():
 
 # Plugin installation
 func _enter_tree():
-	
 	var path_to_scenes = DEFAULT_PATH_TO_SCENES
 	
 	# Adding settings property to Project/Settings & loading

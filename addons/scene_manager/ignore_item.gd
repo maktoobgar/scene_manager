@@ -24,4 +24,4 @@ func get_address() -> String:
 
 # Remove Button
 func _on_remove_button_up() -> void:
-	_root.emit_signal("delete_ignore_child", self)
+	_root.emit_signal("ignore_child_deleted", self)
