@@ -21,31 +21,6 @@ var _secondary_subsection: Node = null
 #
 # Start up of `All` list
 func _ready() -> void:
-	if self.name == "All":
-		_delete_list_button.icon = null
-		_delete_list_button.disabled = true
-		_delete_list_button.focus_mode = Control.FOCUS_NONE
-
-		var sub = _sub_section.instantiate()
-		sub.name = "Uncategorized"
-		_container.add_child(sub)
-		sub.open()
-		sub.hide_delete_button()
-		_main_subsection = sub
-
-		var sub2 = _sub_section.instantiate()
-		sub2.name = "Categorized"
-		_container.add_child(sub2)
-		sub2.hide_delete_button()
-		_secondary_subsection = sub2
-	else:
-		var sub = _sub_section.instantiate()
-		sub.name = "All"
-		sub.visible = false
-		_container.add_child(sub)
-		sub.open()
-		sub.hide_delete_button()
-		_main_subsection = sub
 	while true:
 		if _root == null:
 			## If we are here, we are running in editor, so get out
@@ -53,6 +28,35 @@ func _ready() -> void:
 		elif _root.name == "Scene Manager" || _root.name == "menu":
 			break
 		_root = _root.get_parent()
+
+	if self.name == "All":
+		_delete_list_button.icon = null
+		_delete_list_button.disabled = true
+		_delete_list_button.focus_mode = Control.FOCUS_NONE
+
+		var sub = _sub_section.instantiate()
+		sub._root = _root
+		sub.name = "Uncategorized"
+		_container.add_child(sub)
+		sub.open()
+		sub.hide_delete_button()
+		_main_subsection = sub
+
+		var sub2 = _sub_section.instantiate()
+		sub._root = _root
+		sub2.name = "Categorized"
+		_container.add_child(sub2)
+		sub2.hide_delete_button()
+		_secondary_subsection = sub2
+	else:
+		var sub = _sub_section.instantiate()
+		sub._root = _root
+		sub.name = "All"
+		sub.visible = false
+		_container.add_child(sub)
+		sub.open()
+		sub.hide_delete_button()
+		_main_subsection = sub
 
 # Determines item can be visible with current settings or not
 func determine_item_visibility(setting: ItemSetting) -> bool:
@@ -205,6 +209,7 @@ func get_all_sublists() -> Array:
 # Adds a subsection
 func add_subsection(text: String) -> Control:
 	var sub = _sub_section.instantiate()
+	sub._root = _root
 	sub.name = text.capitalize()
 	_container.add_child(sub)
 	return sub
@@ -213,7 +218,9 @@ func add_subsection(text: String) -> Control:
 func _on_delete_list_button_up() -> void:
 	if self.name == "All":
 		return
-	self.queue_free()
+	queue_free()
+	await self.tree_exited
+	_root.section_removed.emit(self)
 
 # Refreshes `visible` of all items in list
 func _refresh_visible_of_all_items() -> void:

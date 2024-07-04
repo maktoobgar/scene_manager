@@ -4,6 +4,7 @@ CHANGELOG
 UNRELEASED
 ----------
 
+* 🎉 feat: added auto save + reactive buttons and fully tested
 * 🐛 fix: #23 + refactoring + some half implemented features
 * 🐛 fix: #27 Free current scene instead of last node of the tree
 3.9.0 (2024-05-22)

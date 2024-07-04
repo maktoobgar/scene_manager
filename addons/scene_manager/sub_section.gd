@@ -10,6 +10,8 @@ const _open = preload("res://addons/scene_manager/icons/GuiOptionArrowDown.svg")
 const _close = preload("res://addons/scene_manager/icons/GuiOptionArrowRight.png")
 # Instances
 const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
+# root
+var _root: Node = self
 
 # If it is "All" subsection, open it
 func _ready() -> void:
@@ -101,10 +103,15 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	open()
 	if name == "All":
 		node.set_setting(ItemSetting.default())
+		_root.added_to_sub_section.emit(node, self)
 		return
+	_root.added_to_sub_section.emit(node, self)
 	setting.subsection = name
 	node.set_setting(setting)
+	_root.sub_section_removed.emit(self)
 
 # Button Delete 
 func _on_delete_button_up():
 	queue_free()
+	await self.tree_exited
+	_root.sub_section_removed.emit(self)

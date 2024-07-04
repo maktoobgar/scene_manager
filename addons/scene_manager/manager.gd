@@ -60,6 +60,12 @@ signal item_visibility_changed(node: Node, visibility: bool)
 signal item_added_to_list(node: Node, list_name: String)
 # When item deletes from a list
 signal item_removed_from_list(node: Node, list_name: String)
+# When a sub section is removed
+signal sub_section_removed(node: Node)
+# When a section is removed
+signal section_removed(node: Node)
+# When a scene gets added to a sub section
+signal added_to_sub_section(node: Node, sub_section: Node)
 
 # Refreshes the whole UI
 func _ready() -> void:
@@ -70,13 +76,28 @@ func _ready() -> void:
 	self.item_visibility_changed.connect(_on_item_visibility_changed)
 	self.item_added_to_list.connect(_on_added_to_list)
 	self.item_removed_from_list.connect(_on_item_removed_from_list)
-	
+	self.sub_section_removed.connect(_on_sub_section_removed)
+	self.section_removed.connect(_on_section_removed)
+	self.added_to_sub_section.connect(_on_added_to_sub_section)
+
 	# Create a new Timer node
 	_timer = Timer.new()
 	_timer.wait_time = 0.5
 	_timer.one_shot = true
 	add_child(_timer)
 	_timer.timeout.connect(_on_timer_timeout)
+
+func _on_added_to_sub_section(node: Node, sub_section: Node) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+func _on_section_removed(node: Node) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
+
+func _on_sub_section_removed(node: Node) -> void:
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
 
 func _on_timer_timeout() -> void:
 	if _auto_save_button.get_meta("enabled", false):
@@ -101,10 +122,12 @@ func _on_item_removed_from_list(node: Node, list_name: String) -> void:
 
 # Gets called by filesystem changes
 func _filesystem_changed() -> void:
-	if _auto_refresh_button.get_meta("enabled", false):
-		_on_refresh_button_up()
-		#if _auto_save_button.get_meta("enabled", false):
-			#_save_all(_create_save_dic())
+	if Engine.is_editor_hint() and is_inside_tree():
+		if _auto_refresh_button.get_meta("enabled", true):
+			_on_refresh_button_up()
+			await get_tree().process_frame
+			if _auto_save_button.get_meta("enabled", false):
+				_save_all(_create_save_dic())
 
 # Returns absolute current working directory
 func _absolute_current_working_directory() -> String:
@@ -240,6 +263,8 @@ func remove_scene_from_list(section_name: String, scene_name: String, scene_addr
 # Used mainly in this script
 func _add_scene_to_list(list_name: String, scene_name: String, scene_address: String, setting :ItemSetting) -> void:
 	var list: Node = _get_one_list_node_by_name(list_name)
+	if list == null:
+		return
 	await list.add_item(scene_name, scene_address, setting)
 	_sections_add(scene_address, list_name)
 
@@ -475,6 +500,8 @@ func _get_scenes_from_ui() -> Dictionary:
 		var settings = {}
 		for section in sections:
 			var li = _get_one_list_node_by_name(section)
+			if li == null:
+				continue
 			var specific_node = li.get_node_by_scene_address(value)
 			var setting = specific_node.get_setting()
 			settings[section] = setting.as_dictionary()
@@ -541,7 +568,7 @@ func _clear_ignore_list() -> void:
 # Returns true if passed address exists in ignore list
 func _ignore_exists_in_list(address: String) -> bool:
 	for node in _get_nodes_in_ignore_ui():
-		if node.get_address() == address:
+		if node.get_address() == address or address.begins_with(node.get_address()):
 			return true
 	return false
 
@@ -559,6 +586,8 @@ func _on_add_button_up():
 	_remove_scenes_begin_with(_address_line_edit.text)
 	_address_line_edit.text = ""
 	_add_button.disabled = true
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
 
 # Pops up file dialog to select a ignore folder
 func _on_file_dialog_button_button_up():
@@ -578,6 +607,9 @@ func _on_ignore_child_deleted(node: Node) -> void:
 		if ignore.begins_with(address) && ignore != address:
 			ignores.append(ignore)
 	_append_scenes(_get_scenes(address, ignores))
+	await node.tree_exited
+	if _auto_save_button.get_meta("enabled", false):
+		_save_all(_create_save_dic())
 
 # When ignore address bar text changes
 func _on_address_text_changed(new_text: String) -> void:
@@ -602,6 +634,8 @@ func _on_add_section_button_up():
 		_section_name_line_edit.text = ""
 		_add_subsection_button.disabled = true
 		_add_section_button.disabled = true
+		if _auto_save_button.get_meta("enabled", false):
+			_save_all(_create_save_dic())
 
 # When section name text changes
 func _on_section_name_text_changed(new_text):
