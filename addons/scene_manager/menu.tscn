@@ -184,7 +184,7 @@ size_flags_vertical = 3
 [node name="auto_save" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container"]
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "If an update happens in UI, save gets called automatically."
+tooltip_text = "If some scene properties update (edit, delete, change list or sublist of a scene and ...), save happens automatically."
 focus_mode = 0
 text = "Auto Save"
 icon = ExtResource("7_d04a5")
@@ -193,7 +193,7 @@ metadata/enabled = true
 [node name="auto_refresh" type="Button" parent="main_container/interactive_section_container/margin_refresh_save_container/refresh_save_container/auto_save_refresh_container"]
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "If checked, \"SceneManager\" will listen to \"FileSystem\" changes in godot and refreshes automatically.
+tooltip_text = "If checked, \"SceneManager\" will listen to \"FileSystem\" changes in godot and refreshes the UI tool automatically.
 It will save after the refresh if \"Auto Save\" is active too."
 focus_mode = 0
 text = "Reactive"
