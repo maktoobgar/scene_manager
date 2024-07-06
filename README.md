@@ -15,6 +15,8 @@ Scene Manager v3.X.X is compatible with Godot 4.
 **Recently Added**:
 
 * [X] Pause and Resume functions added
+* [X] Reactive button added which makes the `Scene Manager UI` reactive to changes on `File System` of godot and refreshes the `Scene Manager UI` automatically every time an update happens on files in `res://` location
+* [X] Auto Save button added which saves automatically every time a new change found in `Scene Manager UI` + If Reactive is enabled too, after that mechanism, save gets called automatically so that there would be no need to use the save button at all
 
 **All**:
 
