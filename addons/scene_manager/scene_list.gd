@@ -1,77 +1,141 @@
 @tool
 extends Node
 
-# Scene itema and sub_section to instance and add in list
+# Constants for scene items and subsections
 const _scene_item = preload("res://addons/scene_manager/scene_item.tscn")
 const _sub_section = preload("res://addons/scene_manager/sub_section.tscn")
-# Duplicate + normal scene theme
-const _duplicate_line_edit: StyleBox = preload("res://addons/scene_manager/themes/line_edit_duplicate.tres")
-# Open close icons
+const _duplicate_line_edit: StyleBox = preload(
+	"res://addons/scene_manager/themes/line_edit_duplicate.tres"
+)
 const _eye_open = preload("res://addons/scene_manager/icons/eye_open.png")
 const _eye_close = preload("res://addons/scene_manager/icons/eye_close.png")
-# variables
+
+# Node references
 @onready var _container: VBoxContainer = find_child("container")
 @onready var _delete_list_button: Button = find_child("delete_list")
 @onready var _hidden_button: Button = find_child("hidden")
+
+# Instance variables
 var _root: Node = self
 var _main_subsection: Node = null
 var _secondary_subsection: Node = null
 
-# Finds and fills `_root` variable properly
-#
-# Start up of `All` list
+# Optimization: Object pooling
+var _scene_item_pool: Array[Node] = []
+const POOL_SIZE := 50  # Adjust based on typical usage
+
+# Optimization: Caching
+var _node_cache: Dictionary = {}
+var _subsection_cache: Dictionary = {}
+var _is_initialized := false
+
+# Optimization: Batch processing
+const BATCH_SIZE := 20
+
+
 func _ready() -> void:
-	while true:
-		if _root == null:
-			## If we are here, we are running in editor, so get out
-			break
-		elif _root.name == "Scene Manager" || _root.name == "menu":
+	_initialize_root()
+
+	# Initialize based on list type
+	if self.name == "All":
+		_initialize_all_list()
+	else:
+		_initialize_regular_list()
+
+	# Pre-populate object pool
+	_initialize_object_pool()
+
+	_is_initialized = true
+
+
+func _initialize_root() -> void:
+	while _root != null:
+		if _root.name == "Scene Manager" || _root.name == "menu":
 			break
 		_root = _root.get_parent()
+		if _root == null:
+			break
 
-	if self.name == "All":
-		_delete_list_button.icon = null
-		_delete_list_button.disabled = true
-		_delete_list_button.focus_mode = Control.FOCUS_NONE
 
-		var sub = _sub_section.instantiate()
-		sub._root = _root
-		sub.name = "Uncategorized"
-		_container.add_child(sub)
+func _initialize_all_list() -> void:
+	_delete_list_button.icon = null
+	_delete_list_button.disabled = true
+	_delete_list_button.focus_mode = Control.FOCUS_NONE
+
+	_main_subsection = _create_subsection("Uncategorized", true)
+	_main_subsection.open()
+	_main_subsection.hide_delete_button()
+
+	_secondary_subsection = _create_subsection("Categorized", false)
+	_secondary_subsection.hide_delete_button()
+
+
+func _initialize_regular_list() -> void:
+	var sub = _create_subsection("All", false)
+	sub.open()
+	sub.hide_delete_button()
+	_main_subsection = sub
+
+
+func _initialize_object_pool() -> void:
+	for i in range(POOL_SIZE):
+		var item = _scene_item.instantiate()
+		_scene_item_pool.append(item)
+
+
+func _create_subsection(name: String, is_open: bool) -> Node:
+	var sub = _sub_section.instantiate()
+	sub._root = _root
+	sub.name = name
+	_container.add_child(sub)
+	if is_open:
 		sub.open()
-		sub.hide_delete_button()
-		_main_subsection = sub
+	return sub
 
-		var sub2 = _sub_section.instantiate()
-		sub._root = _root
-		sub2.name = "Categorized"
-		_container.add_child(sub2)
-		sub2.hide_delete_button()
-		_secondary_subsection = sub2
+
+# Optimization: Object pooling methods
+func _get_scene_item() -> Node:
+	if _scene_item_pool.is_empty():
+		return _scene_item.instantiate()
+	return _scene_item_pool.pop_back()
+
+
+func _return_to_pool(item: Node) -> void:
+	if _scene_item_pool.size() < POOL_SIZE:
+		item.get_parent().remove_child(item)
+		_scene_item_pool.append(item)
 	else:
-		var sub = _sub_section.instantiate()
-		sub._root = _root
-		sub.name = "All"
-		sub.visible = false
-		_container.add_child(sub)
-		sub.open()
-		sub.hide_delete_button()
-		_main_subsection = sub
+		item.queue_free()
 
-# Determines item can be visible with current settings or not
-func determine_item_visibility(setting: ItemSetting) -> bool:
-	return true if _hidden_button.icon == _eye_close && !setting.visibility else true if _hidden_button.icon == _eye_open && setting.visibility else false
 
-# Adds an item to list
+# Optimization: Batch processing for adding items
+func add_items_batch(items: Array) -> void:
+	var current_batch := []
+
+	for i in range(items.size()):
+		current_batch.append(items[i])
+
+		if current_batch.size() >= BATCH_SIZE || i == items.size() - 1:
+			for item_data in current_batch:
+				add_item(item_data.key, item_data.value, item_data.setting)
+			await get_tree().process_frame
+			current_batch.clear()
+
+
 func add_item(key: String, value: String, setting: ItemSetting) -> void:
 	if !self.is_node_ready():
 		await self.ready
-	var item = _scene_item.instantiate()
+
+	var item = _get_scene_item()
 	item.set_key(key)
 	item.set_value(value)
 	item.set_setting(setting)
 	item.visible = determine_item_visibility(setting)
 	item._list = self
+
+	# Cache the item for faster lookups
+	_node_cache[value] = item
+
 	if name == "All":
 		if !setting.categorized:
 			_main_subsection.add_item(item)
@@ -87,134 +151,155 @@ func add_item(key: String, value: String, setting: ItemSetting) -> void:
 		else:
 			_main_subsection.add_item(item)
 
-# Finds and returns a sub_section in the list
+
+func determine_item_visibility(setting: ItemSetting) -> bool:
+	if _hidden_button.icon == _eye_close:
+		return !setting.visibility
+	return setting.visibility
+
+
+# Optimization: Cached subsection lookup
 func find_subsection(key: String) -> Node:
-	for i in range(_container.get_child_count()):
-		var element = _container.get_child(i)
-		if element.name == key:
-			return element
+	if _subsection_cache.has(key):
+		return _subsection_cache[key]
+
+	for child in _container.get_children():
+		if child.name == key:
+			_subsection_cache[key] = child
+			return child
 	return null
 
-# Removes an item from list
+
 func remove_item(key: String, value: String) -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			if children[j].get_key() == key && children[j].get_value() == value:
-				children[j].queue_free()
+	# Use cached lookup if available
+	if _node_cache.has(value):
+		var item = _node_cache[value]
+		_node_cache.erase(value)
+		_return_to_pool(item)
+		return
+
+	# Fallback to manual search
+	for subsection in _container.get_children():
+		var items = subsection.get_items()
+		for item in items:
+			if item.get_key() == key && item.get_value() == value:
+				_return_to_pool(item)
 				return
 
-# Removes items that their value begins with passed value
+
 func remove_items_begins_with(value: String) -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			if children[j].get_value().begins_with(value):
-				children[j].queue_free()
+	var items_to_remove := []
 
-# Clear all scene records from UI list
+	# Collect all items to remove first
+	for subsection in _container.get_children():
+		var items = subsection.get_items()
+		for item in items:
+			if item.get_value().begins_with(value):
+				items_to_remove.append(item)
+
+	# Then remove them in batch
+	for item in items_to_remove:
+		_return_to_pool(item)
+		if _node_cache.has(item.get_value()):
+			_node_cache.erase(item.get_value())
+
+
 func clear_list() -> void:
-	for i in range(_container.get_child_count()):
-		_container.get_child(i).queue_free()
+	_node_cache.clear()
+	_subsection_cache.clear()
 
-# Appends all scenes into UI list
-#
-# This function is used for new items that are new in project directory and are
-# not saved before, so they have no settings
-#
-# Input example:
-# {"scene_key": "scene_address", "scene_key": "scene_address", ...}
+	for child in _container.get_children():
+		child.queue_free()
+
+
 func append_scenes(nodes: Dictionary) -> void:
-	if name == "All":
-		for key in nodes:
-			add_item(key, nodes[key], ItemSetting.new(true, _root.has_sections(nodes[key])))
-	else:
-		for key in nodes:
-			add_item(key, nodes[key], ItemSetting.default())
+	var items_to_add := []
 
-# Return an array of record nodes from UI list
-func get_list_nodes() -> Array:
-	if _container == null:
-		_container = find_child("container")
-	var arr: Array[Node] = []
-	for i in range(_container.get_child_count()):
-		var nodes = _container.get_child(i).get_items()
-		arr.append_array(nodes)
-	return arr
+	for key in nodes:
+		var setting = (
+			ItemSetting.new(true, _root.has_sections(nodes[key]))
+			if name == "All"
+			else ItemSetting.default()
+		)
+		items_to_add.append({"key": key, "value": nodes[key], "setting": setting})
 
-# Returns a specific node from passed scene name
-func get_node_by_scene_name(scene_name: String) -> Node:
-	for i in range(_container.get_child_count()):
-		var items = _container.get_child(i).get_items()
-		for j in range(len(items)):
-			if items[j].get_key() == scene_name:
-				return items[j]
-	return null
+	add_items_batch(items_to_add)
 
-# Returns a specific node from passed scene address
+
+# Optimization: Cached node lookup
 func get_node_by_scene_address(scene_address: String) -> Node:
-	for i in range(_container.get_child_count()):
-		var items = _container.get_child(i).get_items()
-		for j in range(len(items)):
-			if items[j].get_value() == scene_address:
-				return items[j]
+	return _node_cache.get(scene_address)
+
+
+func get_node_by_scene_name(scene_name: String) -> Node:
+	for value in _node_cache:
+		var node = _node_cache[value]
+		if node.get_key() == scene_name:
+			return node
 	return null
 
-# Update a specific scene record with passed data in UI
-func update_scene_with_key(key: String, new_key: String, value: String, setting: ItemSetting) -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array[Node] = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			if children[j].get_key() == key && children[j].get_value() == value:
-				children[j].set_key(new_key)
-				children[j].set_setting(setting)
 
-# Checks duplication in current list and return their scene addresses in an array from UI
+func update_scene_with_key(
+	key: String, new_key: String, value: String, setting: ItemSetting
+) -> void:
+	if _node_cache.has(value):
+		var node = _node_cache[value]
+		if node.get_key() == key:
+			node.set_key(new_key)
+			node.set_setting(setting)
+			return
+
+	# Fallback to manual search if not in cache
+	for subsection in _container.get_children():
+		var items = subsection.get_items()
+		for item in items:
+			if item.get_key() == key && item.get_value() == value:
+				item.set_key(new_key)
+				item.set_setting(setting)
+				return
+
+
 func check_duplication() -> Array:
-	var all: Array[Node] = get_list_nodes()
-	var arr: Array[String] = []
-	for i in range(len(all)):
-		var j: int = i + 1
-		while j < len(all):
-			var child1: Node = all[i]
-			var child2: Node = all[j]
-			if child1.get_key() == child2.get_key():
-				if !(child1.get_key() in arr):
-					arr.append(child1.get_key())
-			j += 1
-	return arr
+	var key_map := {}
+	var duplicates: Array[String] = []
 
-# Reset theme for all children in UI
+	for value in _node_cache:
+		var node = _node_cache[value]
+		var key = node.get_key()
+
+		if key_map.has(key):
+			if !(key in duplicates):
+				duplicates.append(key)
+		else:
+			key_map[key] = true
+
+	return duplicates
+
+
 func set_reset_theme_for_all() -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array[Node] = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			children[j].remove_custom_theme()
+	for node in _node_cache.values():
+		node.remove_custom_theme()
 
-# Sets duplicate theme for children in passed list in UI
+
 func set_duplicate_theme(list: Array) -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array[Node] = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			if children[j].get_key() in list:
-				children[j].custom_set_theme(_duplicate_line_edit)
+	for node in _node_cache.values():
+		if node.get_key() in list:
+			node.custom_set_theme(_duplicate_line_edit)
 
-# Returns all names of sublist
+
 func get_all_sublists() -> Array:
-	var arr: Array[String] = []
-	for i in range(_container.get_child_count()):
-		arr.append(_container.get_child(i).name)
-	return arr
+	return _container.get_children().map(func(child): return child.name)
 
-# Adds a subsection
+
 func add_subsection(text: String) -> Control:
 	var sub = _sub_section.instantiate()
 	sub._root = _root
 	sub.name = text.capitalize()
 	_container.add_child(sub)
+	_subsection_cache[text.capitalize()] = sub
 	return sub
 
-# List deletion
+
 func _on_delete_list_button_up() -> void:
 	if self.name == "All":
 		return
@@ -222,18 +307,16 @@ func _on_delete_list_button_up() -> void:
 	await self.tree_exited
 	_root.section_removed.emit(self)
 
-# Refreshes `visible` of all items in list
-func _refresh_visible_of_all_items() -> void:
-	for i in range(_container.get_child_count()):
-		var children: Array[Node] = _container.get_child(i).get_items()
-		for j in range(len(children)):
-			children[j].visible = determine_item_visibility(children[j].get_setting())
 
-# Hidden Button
-func _on_hidden_button_up():
-	if _hidden_button.icon == _eye_open:
-		_hidden_button.icon = _eye_close
-		_refresh_visible_of_all_items()
-	elif _hidden_button.icon == _eye_close:
-		_hidden_button.icon = _eye_open
-		_refresh_visible_of_all_items()
+func _refresh_visible_of_all_items() -> void:
+	for node in _node_cache.values():
+		node.visible = determine_item_visibility(node.get_setting())
+
+
+func _on_hidden_button_up() -> void:
+	_hidden_button.icon = _eye_close if _hidden_button.icon == _eye_open else _eye_open
+	_refresh_visible_of_all_items()
+
+
+func get_list_nodes() -> Array:
+	return _node_cache.values()
